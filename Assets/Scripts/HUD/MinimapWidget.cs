@@ -1,8 +1,12 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Minimapa que dibuja los cuartos del MapGenerator, marca los limpiados y sigue la posición del jugador.
+    /// </summary>
     public class MinimapWidget : MonoBehaviour
     {
         [SerializeField] private RectTransform container;
@@ -17,12 +21,15 @@ namespace MadnessDreams
 
         private MapGenerator mapGenerator;
         private Transform player;
-        private Image[,] cells;
+        private Image[] roomImages;
         private int width;
         private int height;
         private int chunkSize;
         private bool built;
 
+        /// <summary>
+        /// Asocia el minimapa al MapGenerator (reconstruye al generarse) y al transform del jugador, y lo construye.
+        /// </summary>
         public void Bind(MapGenerator generator, Transform playerTransform)
         {
             if (mapGenerator != null)
@@ -41,6 +48,9 @@ namespace MadnessDreams
             Build();
         }
 
+        /// <summary>
+        /// Deja de escuchar la regeneración del mapa al destruirse.
+        /// </summary>
         private void OnDestroy()
         {
             if (mapGenerator != null)
@@ -52,31 +62,23 @@ namespace MadnessDreams
         private void Build()
         {
             WorldConfigSO config = mapGenerator != null ? mapGenerator.Config : null;
-            Vector2Int startChunk;
-            Vector2Int bossChunk;
-            int bossRegionSize;
+            chunkSize = config != null ? config.ChunkSize : 16;
+            width = config != null ? config.Width : 8;
+            height = config != null ? config.Height : 8;
 
-            if (config != null)
+            MapGrid.ClearCells(container, playerMarker);
+
+            if (mapGenerator != null && mapGenerator.Rooms.Count > 0)
             {
-                width = config.Width;
-                height = config.Height;
-                chunkSize = config.ChunkSize;
-                bossRegionSize = config.BossRegionSize;
-                startChunk = mapGenerator.StartChunk;
-                bossChunk = mapGenerator.BossOriginChunk;
+                roomImages = MapGrid.BuildRooms(container, mapGenerator.Rooms, cellSize, cellGap, startColor, normalColor, bossColor);
             }
             else
             {
-                width = 8;
-                height = 8;
-                chunkSize = 16;
-                bossRegionSize = 2;
-                startChunk = new Vector2Int(width / 2, height / 2);
-                bossChunk = new Vector2Int(width - bossRegionSize, height - bossRegionSize);
+                roomImages = null;
+                Vector2Int start = new Vector2Int(width / 2, height / 2);
+                Vector2Int boss = new Vector2Int(width - 1, height - 1);
+                MapGrid.Build(container, width, height, cellSize, cellGap, start, boss, 1, startColor, normalColor, bossColor);
             }
-
-            MapGrid.ClearCells(container, playerMarker);
-            cells = MapGrid.Build(container, width, height, cellSize, cellGap, startChunk, bossChunk, bossRegionSize, startColor, normalColor, bossColor);
 
             if (playerMarker != null)
             {
@@ -92,18 +94,17 @@ namespace MadnessDreams
             built = true;
         }
 
-        public void MarkCleared(Vector2Int cell)
+        /// <summary>
+        /// Pinta el cuarto indicado con el color de cuarto limpiado.
+        /// </summary>
+        public void MarkCleared(int roomIndex)
         {
-            if (cells == null || cell.x < 0 || cell.y < 0 || cell.x >= width || cell.y >= height)
+            if (roomImages == null || roomIndex < 0 || roomIndex >= roomImages.Length || roomImages[roomIndex] == null)
             {
                 return;
             }
 
-            Image img = cells[cell.x, cell.y];
-            if (img != null)
-            {
-                img.color = clearedColor;
-            }
+            roomImages[roomIndex].color = clearedColor;
         }
 
         private void LateUpdate()

@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Controlador del HUD: enlaza al jugador, el MapGenerator y el BossArenaController, y delega la actualización en cada widget.
+    /// </summary>
     public class HUDController : MonoBehaviour
     {
         [SerializeField] private HealthBarWidget healthBar;
@@ -15,6 +18,9 @@ namespace MadnessDreams
 
         private BossArenaController arena;
 
+        /// <summary>
+        /// Busca al jugador, el mapa y la arena, enlaza los widgets y se suscribe a los eventos del BossArenaController.
+        /// </summary>
         private void Start()
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -39,6 +45,9 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>
+        /// Se desuscribe de los eventos del BossArenaController al destruirse.
+        /// </summary>
         private void OnDestroy()
         {
             if (arena != null)
@@ -48,6 +57,9 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>
+        /// Refresca cada fotograma el widget de enfriamiento de ataque.
+        /// </summary>
         private void LateUpdate()
         {
             if (attacks != null)

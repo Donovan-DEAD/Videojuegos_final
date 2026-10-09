@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Percepción del enemigo: visión por radio y cono con línea de visión, y audición por radio,
+    /// según EnemyStatsSO.
+    /// </summary>
     public class EnemyFOV : MonoBehaviour
     {
         [SerializeField] private LayerMask obstacleMask = ~0;
@@ -9,11 +13,13 @@ namespace MadnessDreams
 
         private EnemyStatsSO stats;
 
+        /// <summary>Asigna las estadísticas que definen visión y audición.</summary>
         public void SetStats(EnemyStatsSO value)
         {
             stats = value;
         }
 
+        /// <summary>Indica si el jugador está dentro del radio de audición.</summary>
         public bool CanHearPlayer(Transform player)
         {
             if (stats == null || player == null)
@@ -26,6 +32,7 @@ namespace MadnessDreams
             return sqrDistance <= stats.HearingRadius * stats.HearingRadius;
         }
 
+        /// <summary>Indica si el jugador está en el cono de visión y con línea de visión despejada.</summary>
         public bool CanSeePlayer(Transform player)
         {
             if (stats == null || player == null)

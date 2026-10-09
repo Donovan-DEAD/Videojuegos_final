@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Controla la pausa: se alterna con Escape y gestiona los paneles, congelando el juego (Time.timeScale 0/1).
+    /// </summary>
     public class PauseController : MonoBehaviour
     {
         [SerializeField] private GameObject pausePanel;
@@ -15,6 +18,9 @@ namespace MadnessDreams
 
         public bool IsPaused { get; private set; }
 
+        /// <summary>
+        /// Enlaza los botones, se suscribe al cierre de ajustes y oculta los paneles al arrancar.
+        /// </summary>
         private void Awake()
         {
             if (resumeButton != null) resumeButton.onClick.AddListener(Resume);
@@ -52,6 +58,9 @@ namespace MadnessDreams
             return Input.GetKeyDown(KeyCode.Escape);
         }
 
+        /// <summary>
+        /// Pausa el juego (Time.timeScale 0) y muestra el panel de pausa.
+        /// </summary>
         public void Pause()
         {
             IsPaused = true;
@@ -61,6 +70,9 @@ namespace MadnessDreams
             if (settingsPanel != null) settingsPanel.SetActive(false);
         }
 
+        /// <summary>
+        /// Reanuda el juego (Time.timeScale 1) y oculta los paneles.
+        /// </summary>
         public void Resume()
         {
             IsPaused = false;

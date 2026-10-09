@@ -971,7 +971,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1372381223}
   - component: {fileID: 1372381221}
-  - component: {fileID: 1372381222}
+  - component: {fileID: 1372381224}
   m_Layer: 0
   m_Name: World
   m_TagString: Untagged
@@ -993,22 +993,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.MapGenerator
   config: {fileID: 0}
   targetTilemap: {fileID: 16130167}
-  chunkContent: {fileID: 1372381222}
---- !u!114 &1372381222
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1372381220}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94042c2fc88238c44931942bd376d325, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.ChunkContent
-  config: {fileID: 0}
-  spawner: {fileID: 824076614}
-  tilemap: {fileID: 16130167}
+  contentSpawner: {fileID: 1372381224}
 --- !u!4 &1372381223
 Transform:
   m_ObjectHideFlags: 0
@@ -1024,6 +1009,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1372381224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1372381220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 778a1b6348d05c748a2e9c219b8cf9f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.RoomContentSpawner
+  mapGenerator: {fileID: 1372381221}
+  spawner: {fileID: 824076614}
 --- !u!1 &1585152216
 GameObject:
   m_ObjectHideFlags: 0

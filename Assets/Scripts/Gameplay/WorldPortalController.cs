@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Revela el portal cuando muere el jefe: escucha BossManager.BossDefeated o, si no hay BossManager, engancha el Health del jefe de la escena (IBossController).
+    /// </summary>
     public class WorldPortalController : MonoBehaviour
     {
         [SerializeField] private BossManager bossManager;
@@ -10,6 +13,9 @@ namespace MadnessDreams
 
         private Health directBossHealth;
 
+        /// <summary>
+        /// Oculta el portal, localiza el BossManager y se suscribe a su derrota (o engancha el jefe de la escena si no hay).
+        /// </summary>
         private void Start()
         {
             if (portal != null)
@@ -55,6 +61,9 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>
+        /// Deja de escuchar la derrota del jefe al destruirse.
+        /// </summary>
         private void OnDestroy()
         {
             if (bossManager != null)

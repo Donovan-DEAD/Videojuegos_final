@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Arena de jefe: bloquea las salidas mientras hay combate, instancia al jefe en el punto
+    /// de aparición, configura su IA y notifica su derrota.
+    /// </summary>
     public class BossArenaController : MonoBehaviour
     {
         [SerializeField] private Collider2D[] exitBlockers;
@@ -11,11 +15,20 @@ namespace MadnessDreams
 
         public bool BossActive { get; private set; }
         public GameObject BossInstance => bossInstance;
+        /// <summary>
+        /// Se dispara cuando el jefe invocado en la arena es derrotado.
+        /// </summary>
         public event System.Action BossDefeated;
+        /// <summary>
+        /// Se dispara al invocar al jefe, entregando su <see cref="Health"/> y el nombre del prefab.
+        /// </summary>
         public event System.Action<Health, string> BossSpawned;
 
         private GameObject bossInstance;
 
+        /// <summary>
+        /// Localiza el <see cref="BossSpawnPoint"/> entre los hijos si no se asignó en el inspector.
+        /// </summary>
         private void Awake()
         {
             if (bossSpawnPoint == null)
@@ -24,6 +37,9 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>
+        /// Define el prefab del jefe y sus estadísticas antes de iniciar el combate.
+        /// </summary>
         public void Setup(GameObject prefab, BossStatsSO stats)
         {
             bossPrefab = prefab;
@@ -45,6 +61,10 @@ namespace MadnessDreams
             StartBossFight();
         }
 
+        /// <summary>
+        /// Inicia el combate: bloquea las salidas, instancia al jefe, lo configura vía
+        /// <see cref="IBossController"/> y suscribe su derrota. No hace nada si ya está activo.
+        /// </summary>
         public void StartBossFight()
         {
             if (BossActive)

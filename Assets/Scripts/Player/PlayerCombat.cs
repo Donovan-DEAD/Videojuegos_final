@@ -3,6 +3,10 @@ using UnityEngine.InputSystem;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Controla los ataques melee (barrido circular) y a distancia (proyectil) del jugador,
+    /// con enfriamientos, multiplicador de daño y entrada por teclado.
+    /// </summary>
     public class PlayerCombat : MonoBehaviour
     {
         [Header("Melee")]
@@ -30,6 +34,7 @@ namespace MadnessDreams
         public float MeleeCooldownNormalized => meleeCooldown > 0f ? Mathf.Clamp01(meleeCooldownRemaining / meleeCooldown) : 0f;
         public float RangedCooldownNormalized => rangedCooldown > 0f ? Mathf.Clamp01(rangedCooldownRemaining / rangedCooldown) : 0f;
 
+        /// <summary>Ajusta el multiplicador de daño aplicado a los ataques.</summary>
         public void SetDamageMultiplier(float value)
         {
             damageMultiplier = Mathf.Max(0f, value);
@@ -67,6 +72,7 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>Ejecuta un ataque melee si no está en enfriamiento, dañando a los IDamageable del área.</summary>
         public bool TryMeleeAttack()
         {
             if (meleeCooldownRemaining > 0f)
@@ -97,6 +103,7 @@ namespace MadnessDreams
             return hits.Length > 0;
         }
 
+        /// <summary>Dispara un proyectil hacia el cursor si no está en enfriamiento.</summary>
         public bool TryRangedAttack()
         {
             if (rangedCooldownRemaining > 0f || projectilePrefab == null)

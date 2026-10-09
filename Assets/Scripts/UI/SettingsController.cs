@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Pantalla de ajustes: enlaza los sliders y el toggle con SettingsData y guarda al pulsar Volver.
+    /// </summary>
     public class SettingsController : MonoBehaviour
     {
         [SerializeField] private Slider masterSlider;
@@ -11,10 +14,16 @@ namespace MadnessDreams
         [SerializeField] private Toggle fullscreenToggle;
         [SerializeField] private Button backButton;
 
+        /// <summary>
+        /// Se dispara al pulsar Volver tras guardar los ajustes (lo escucha PauseController).
+        /// </summary>
         public event System.Action Closed;
 
         private SettingsData data;
 
+        /// <summary>
+        /// Obtiene los datos desde GameFlowManager y enlaza los controles de la UI.
+        /// </summary>
         private void Start()
         {
             data = GameFlowManager.Instance.Settings;

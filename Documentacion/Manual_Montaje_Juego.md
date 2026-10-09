@@ -9,9 +9,11 @@
 > El resto es visión del juego ideal, no parte del demo.
 >
 > **Estado (actualizado):** todos los scripts de `Assets/Scripts/` están implementados, **incluido
-> el Lote 2** (objetos y habilidades). Se agregaron además: flujo de pantallas con fundidos, HUD,
+> el Lote 2** (objetos y habilidades). Se agregaron además: el **mapa procedural por cuartos de tamaño
+> fijo por celdas con ambientación por tag** (`RoomLayout` → `MapGenerator` → `RoomContentSpawner`),
+> props y barreras naturales, dificultad escalada por nivel, flujo de pantallas con fundidos, HUD,
 > pausa/ajustes in-game, minimapa/mapa, menú DEV, animadores (estado por color), Cinemachine y el
-> flujo de **portal → carga → siguiente mundo** con mapas de *sample*. Ver
+> flujo de **portal → carga → siguiente mundo**. Ver
 > [`Estado_Implementacion_Unity.md`](./Estado_Implementacion_Unity.md).
 
 ---
@@ -19,14 +21,20 @@
 ## Estado de implementación (resumen)
 
 - **Scripts:** carpeta completa en `Assets/Scripts/` (Boss, Core, Data, Editor, Enemies, Gameplay,
-  Generation, HUD, Pickups, Player, UI). El **LOTE 2** ya existe: `BossAbilitySO`, `PlayerAbilities`,
-  `AbilityPickup`, `SlowEffect`.
+  Generation, HUD, Pickups, Player, UI), **todos con documentación XML**. El **LOTE 2** ya existe:
+  `BossAbilitySO`, `PlayerAbilities`, `AbilityPickup`, `SlowEffect`.
 - **Escenas:** `01_MainMenu`, `02_Loading`, `03_Gameplay`, `04_Defeat`, `05_Settings` y `Greybox`
   (todas en Build Settings).
+- **Mapa procedural:** `RoomLayout` (grafo conexo de cuartos de tamaño fijo por celdas, con **Spawn y
+  Boss garantizados**), `MapGenerator` (estampado + pasos) y `RoomContentSpawner` (**barreras, props y
+  enemigos por tag** desde `ZoneThemeSO`, con dificultad por `DifficultyProfileSO`).
 - **HUD:** prefab `Assets/Prefabs/UI/HUD.prefab` (vida, ataques, hotbar de habilidades, barra del
-  jefe, minimapa/mapa, pausa+ajustes, menú DEV).
-- **Prefabs/assets de sample** ya creados (jugador, enemigos del GDD, jefe, proyectiles, pickups,
-  tile, chunks, banco, 2 `WorldConfigSO`).
+  jefe, minimapa/mapa por cuartos, pausa+ajustes, menú DEV).
+- **Assets de sample** ya creados: arquetipos de cuarto por tamaño×tag + boss 3×3, 6 props/barreras,
+  `ZoneTheme_Forest/Sea`, `DifficultyProfile_Default`, enemigos del GDD, jefe, proyectiles, pickups,
+  tile, banco y 2 `WorldConfigSO`.
+- **Editor:** `Tools > Madness Dreams > Map Chunk Capture` (captura tiles, `sizeInCells`, tag y spawn
+  points desde los hijos) y `Validate Worlds` (1 Spawn y 1 Boss por mundo).
 
 > En este manual, las fases que dependen de código ya no requieren “programar”: solo montar/enlazar
 > en el editor. Donde diga `[LOTE 2]`, el código ya está (ver §“Estado de implementación”).
@@ -67,13 +75,17 @@
 
 ```
 Assets/Scripts/
+├── Boss/         IBossController, CaperucitaBoss, PeterPanBoss, BossAI, BossArenaController, BossManager, BossSpawnPoint
 ├── Core/         Health, Projectile, RunManager, AnimationState, AttackType
 ├── Data/         ScriptableObjects (configuración y plantillas)
-├── Editor/       MapChunkCaptureEditor (herramienta de editor)
-├── Enemies/      EnemyAI, EnemyMovement, EnemyAttack, EnemyFOV
-├── Boss/         IBossController, CaperucitaBoss, PeterPanBoss, BossAI, BossArenaController, BossManager, BossSpawnPoint
-├── Generation/   MapGenerator, TilemapStamper, ChunkContent, Spawner, CellRole
-└── Player/       PlayerController, PlayerCombat, PlayerAnimationController
+├── Editor/       MapChunkCaptureEditor (captura de cuartos + Validate Worlds)
+├── Enemies/      EnemyAI, EnemyMovement, EnemyAttack, EnemyFOV, SlowEffect
+├── Gameplay/     WorldLayout, WorldPortalController, Portal
+├── Generation/   RoomLayout, MapGenerator, RoomContentSpawner, TilemapStamper, Spawner, CellRole
+├── HUD/          HUDController y widgets, Pausa, Mapa, Menú DEV
+├── Pickups/      AbilityPickup
+├── Player/       PlayerController, PlayerCombat, PlayerAbilities, PlayerStats, PlayerAnimationController, PlayerDeathHandler
+└── UI/           GameFlowManager, ScreenFader, LoadingScreen, SettingsController, Menús
 ```
 
 4. Si Unity marca errores de compilación, revisá que `Assets/Scripts/Editor/` esté dentro de
@@ -208,14 +220,16 @@ a 33%, **fase 3** por debajo de 33%.
 
 ### 3.3 `Enemy Archetype` (`EnemyArchetypeSO`)
 
-Vincula un **prefab** con sus **stats**.
+Vincula un **prefab** con sus **stats**, su **tier** de poder y su peso.
 
 | Campo | Qué poner |
 |---|---|
 | `prefab` | El prefab del enemigo (ver Fase 9) |
 | `stats` | Su `EnemyStatsSO` |
+| `tier` | Nivel de poder (1 = débil); la dificultad filtra por tier según el nivel del jugador |
+| `weight` | Peso relativo dentro del banco del `ZoneThemeSO` |
 
-Se usan en la `enemyPool` del mundo. **Cada enemigo distinto necesita su propio arquetipo.**
+Se usan en el `enemyBank` de cada `ZoneThemeSO`. **Cada enemigo distinto necesita su propio arquetipo.**
 
 ### 3.4 `Map Chunk` (`MapChunkSO`)
 
@@ -225,8 +239,9 @@ Ver **Fase 4** (se crea mejor después de tener un room pintado).
 
 | Campo | Qué poner |
 |---|---|
-| `normalChunks` | Lista de `MapChunkSO` **normales** (rooms) |
-| `bossArena` | Un único `MapChunkSO` con la arena del jefe |
+| `normalChunks` | Lista de `MapChunkSO` **normales** (de todos los tamaños y tags) |
+| `startRoom` | Arquetipo del **cuarto de Spawn** (1×1 recomendado) |
+| `bossArena` | Un único `MapChunkSO` con la arena del jefe (3×3 recomendado) |
 
 ### 3.6 `World Config` (`WorldConfigSO`)
 
@@ -234,12 +249,14 @@ Ver **Fase 4** (se crea mejor después de tener un room pintado).
 |---|---|---|
 | `seed` | 0 | Semilla del mapa (mismo número = mismo mapa) |
 | `bank` | — | Su `BlockBankSO` |
-| `width` | 8 | Ancho del grid, **en chunks** |
-| `height` | 8 | Alto del grid, en chunks |
-| `chunkSize` | 16 | Lado del chunk **en tiles** (debe coincidir con el `size` del `MapChunkSO`) |
-| `bossRegionSize` | 3 | Lado de la región del jefe, en chunks |
-| `enemyPool` | vacío | Lista de `EnemyArchetypeSO` que pueden aparecer |
-| `enemiesPerChunk` | 3 | Cuántos enemigos por room |
+| `width` / `height` | 14 | Tamaño de la rejilla, **en celdas** (grande = menos repetición) |
+| `chunkSize` | 16 | Lado de la **celda** en tiles (los arquetipos deben ser múltiplos de esto) |
+| `bossRegionSize` | 3 | (legacy) tamaño de la región del jefe |
+| `sizeWeights` | 4,3,1,1 | Peso por clase de tamaño (1×1 / 2×1-1×2 / 2×2 / 3×3) |
+| `openingWidth` | 4 | Ancho (en tiles) de los pasos entre cuartos |
+| `fillRatio` | 1.0 | Cobertura de la rejilla (1 = todo es cuarto) |
+| `themes` | — | Lista `tag → ZoneThemeSO` (qué bancos usa cada tag) |
+| `difficulty` | — | `DifficultyProfileSO` (densidad y tier por nivel del jugador) |
 | `bossPrefab` | — | Prefab del jefe del mundo |
 | `boss` | — | Su `BossStatsSO` |
 
@@ -249,10 +266,13 @@ Ver Fase 11.
 
 ---
 
-## Fase 4 — Rooms / chunks (`MapChunkSO`)
+## Fase 4 — Arquetipos de cuarto (`MapChunkSO`)
 
-Un *chunk* es una plantilla de room (16×16 tiles por defecto): sus tiles, sus puertas y sus
-puntos de spawn de enemigos.
+Un **arquetipo** es una plantilla de cuarto con **tamaño en celdas** (`sizeInCells`: 1×1, 2×1, 1×2,
+2×2, 3×3), su `tag` temático, sus tiles, sus puntos de spawn de enemigos y sus regiones de props.
+
+> **Regla de autoría:** un **único espacio abierto** con **anillo de muro de 1 tile** en el borde del
+> footprint; el piso va **sin tile** (sólo los muros llevan `TileBase`).
 
 ### 4.1 Pintar el room en un Tilemap de trabajo
 
@@ -261,43 +281,45 @@ puntos de spawn de enemigos.
    huecos si podés.
 3. Dejá el tilemap de trabajo **separado** del tilemap de juego: se usa solo para capturar.
 
-### 4.2 Capturar el room
+### 4.2 Capturar el cuarto
 
-1. `Tools > Madness Dreams > Map Chunk Capture`.
-2. **Source Tilemap** → tu tilemap de trabajo.
-3. **Target MapChunkSO** → creá un `Map Chunk` y arrastralo acá.
-4. Clic en **Capture**.
+1. Agregá **hijos vacíos** al tilemap (o hermanos) en las posiciones de aparición de enemigos,
+   nombrados con el prefijo `EnemySpawn` (y `EnemySpawn1`, `EnemySpawn2`, …).
+2. `Tools > Madness Dreams > Map Chunk Capture`.
+3. **Source Tilemap** → tu tilemap de trabajo.
+4. **Target MapChunkSO** → creá un `Map Chunk` y arrastralo acá.
+5. **Cell size** → 16 (debe coincidir con el `chunkSize` del mundo).
+6. **Tag** → la temática del cuarto (`Forest`, `Sea`, …).
+7. Clic en **Capture**.
 
-La herramienta lee `source.cellBounds`, aplana los tiles fila a fila y guarda `size` + `tiles`
-en el asset.
+La herramienta calcula los límites **reales** de los tiles pintados (no `cellBounds`, que incluye
+padding), aplana los tiles fila a fila, deriva **`sizeInCells`** y recoge los **`enemySpawns`** desde
+los hijos con el prefijo.
 
-> ⚠ **Ojo con el borrador:** la captura usa el *bounds* del tilemap, no el bounding box de los
-> tiles pintados. Si borraste tiles en los bordes, el chunk puede quedar con espacio vacío.
-> Solución: pintá y capturá en un tilemap limpio.
->
-> ⚠ **La captura SOLO guarda `size` y `tiles`.** Los campos `doorPositions`, `enemySpawns` y
-> `role` **se llenan a mano** en el Inspector (paso 4.3).
+> **Validaciones** (warnings): tamaño múltiplo de la celda, anillo de muro completo y presencia de
+> spawn points.
 
-### 4.3 Completar el `MapChunkSO` a mano
-
-Seleccioná el asset y completá en el Inspector:
+### 4.3 Campos del `MapChunkSO`
 
 | Campo | Qué poner |
 |---|---|
-| `size` | Se llenó solo con la captura |
-| `tiles` | Se llenó solo (aplanado, índice = `y * size.x + x`) |
-| `doorPositions` | Posiciones **locales** (en tiles) de las puertas. Ej: `(0,8)`, `(15,8)` |
-| `enemySpawns` | Lista de `{ localPosition, weight }` en tiles locales. `weight` es informativo |
-| `role` | `Normal` para rooms, `Boss` para la arena |
+| `size` | Tiles del footprint (se llenó solo) |
+| `sizeInCells` | 1×1, 2×1, 1×2, 2×2 o 3×3 (se derivó solo) |
+| `tag` | Temática (se llenó solo con el desplegable) |
+| `role` | `Normal` para cuartos, `Boss` para la arena |
+| `tiles` | Aplanado (índice = `y * size.x + x`) |
+| `enemySpawns` | Lista de `{ localPosition, weight }` en tiles locales (se llenó solo desde los hijos) |
+| `propRegions` | Rects locales donde esparcir props (opcional) |
 
-### 4.4 Chunks que necesitás como mínimo
+### 4.4 Cuartos que necesitás como mínimo
 
-- **3–5 chunks normales** (rooms) para el pool de cada mundo.
-- **1 chunk de arena** (`role = Boss`): una sala amplia, despejada, sin enemigos en
-  `enemySpawns`. Acá va la pelea del jefe.
+- **Un arquetipo por clase de tamaño × tag** (1×1, 2×1, 1×2, 2×2, 3×3) para cada temática.
+- **1 cuarto de Spawn** (`1×1`) en `BlockBankSO.startRoom`.
+- **1 arena del jefe** (`3×3`) en `BlockBankSO.bossArena`.
 
-> El `ChunkContent` coloca como máximo `enemiesPerChunk` enemigos, y como máximo tantos como
-> `enemySpawns` tenga el chunk. Si un chunk tiene 0 `enemySpawns`, queda vacío.
+> `RoomLayout` **garantiza** el cuarto de Spawn (centro) y el de Boss (el más lejano) en todos los
+> mundos; el resto se empaqueta por peso. `RoomContentSpawner` coloca los enemigos según el **tier**
+> permitido por el **nivel del jugador** y la densidad del `DifficultyProfileSO`.
 
 ---
 
@@ -332,7 +354,7 @@ Seleccioná el asset y completá en el Inspector:
 ### 6.2 Objeto `World`
 
 1. Creá un GameObject vacío llamado `World`.
-2. Añadí **`MapGenerator`** y **`ChunkContent`**.
+2. Añadí **`MapGenerator`** y **`RoomContentSpawner`**.
 
 **`MapGenerator`**
 
@@ -340,15 +362,14 @@ Seleccioná el asset y completá en el Inspector:
 |---|---|
 | `config` | Se sobreescribe desde `RunManager`; podés dejarlo vacío |
 | `targetTilemap` | Arrastrá `Tilemap_Walls` |
-| `chunkContent` | Arrastrá el mismo GameObject `World` (tiene el `ChunkContent`) |
+| `contentSpawner` | Arrastrá el mismo GameObject `World` (tiene el `RoomContentSpawner`) |
 
-**`ChunkContent`**
+**`RoomContentSpawner`**
 
 | Campo | Qué poner |
 |---|---|
-| `config` | Se sobreescribe desde `RunManager`; podés dejarlo vacío |
+| `mapGenerator` | Arrastrá el mismo GameObject `World` |
 | `spawner` | Arrastrá el GameObject `Spawner` |
-| `tilemap` | Arrastrá `Tilemap_Walls` (se usa para convertir celda → mundo) |
 
 > **Probar sin jugar:** `MapGenerator` tiene `[ContextMenu("Generate")]`, así que desde el
 > menú de tres puntos del componente podés hacer clic en **Generate** y ver el mapa armado
@@ -357,17 +378,17 @@ Seleccioná el asset y completá en el Inspector:
 ### 6.3 Cómo se genera (para entender qué estás configurando)
 
 1. `RunManager` carga el `WorldConfigSO` del mundo 0 → `MapGenerator.Configure()` + `Generate()`.
-2. `Generate()` limpia el tilemap y crea `System.Random(seed)`.
-3. **`BuildRoles`**: pone `Start` en el chunk central, `Boss` en la celda más lejana
-   (una región de `bossRegionSize × bossRegionSize`) y `Normal` en el resto.
-4. **`StampNormalChunks`**: por cada celda `Start`/`Normal` pide un chunk aleatorio al
-   `BlockBankSO`, le aplica una rotación aleatoria (0–3) y lo estampa con `TilemapStamper`.
-5. **`StampBossArena`**: estampa el `bossArena` en la región del jefe.
-6. **`SpawnEnemies`** → `ChunkContent.SpawnEnemies()`: por cada room normal lee sus
-   `enemySpawns`, elige un arquetipo del `enemyPool` y lo coloca con el `Spawner`.
+2. `Generate()` limpia el tilemap y las listas, y crea `System.Random(seed)`.
+3. **`RoomLayout.Build`**: reserva el cuarto de **Spawn** (centro) y el de **Boss** (el más lejano),
+   empaqueta el resto por **clase de tamaño** con pesos, asigna **tag** por cuarto y calcula la
+   adyacencia. El grafo es **totalmente conexo**.
+4. **`StampRooms`**: estampa cada arquetipo en su celda de origen (sin rotación).
+5. **`CarveConnections`**: por cada celda compartida limpia un paso en el borde (`openingWidth`).
+6. **`SpawnContent`** → `RoomContentSpawner.SpawnAll()`: por cuarto resuelve el `ZoneThemeSO` de su
+   `tag` y coloca **barreras** (validadas para no sellar el cuarto), **props** y **enemigos**.
 
-> **El tamaño importa:** `chunkSize` del mundo debe coincidir con el `size` del `MapChunkSO`,
-> si no los rooms se solapan o quedan con huecos. Si capturaste un room de 16×16, poné `chunkSize = 16`.
+> **El tamaño importa:** los `MapChunkSO` deben medir `sizeInCells × chunkSize` en tiles
+> (p. ej. un 2×1 son 32×16 tiles con `chunkSize = 16`), si no los cuartos se solapan o quedan con huecos.
 
 ---
 
@@ -509,7 +530,7 @@ Solo cambia el `EnemyStatsSO`:
 
 ### 9.5 Crear los `EnemyArchetypeSO`
 
-Uno por enemigo: `prefab` + `stats`. Después van en la `enemyPool` del `WorldConfigSO`.
+Uno por enemigo: `prefab` + `stats` + `tier` + `weight`. Después van en el `enemyBank` de cada `ZoneThemeSO`.
 
 ### 9.6 Enemigos del demo (valores sugeridos)
 
@@ -886,13 +907,13 @@ Antes de dar el demo por bueno, corré esto **en Play Mode**:
 
 | Síntoma | Causa probable | Solución |
 |---|---|---|
-| El mapa sale vacío | `MapGenerator` sin `targetTilemap`, o el banco sin `normalChunks`, o `chunkSize` no coincide con el `size` del chunk | Revisá los tres en el Inspector |
+| El mapa sale vacío | `MapGenerator` sin `targetTilemap`, banco sin `normalChunks`, o falta el cuarto de Spawn/Boss | Revisá los tres y corré `Validate Worlds` |
 | NullReference al dar Play | `RunManager` sin `mapGenerator` o sin `bossManager`, o `BossArenaController` sin `arena` | Completá las referencias de la Fase 10.5 |
 | `"RunManager: no worlds configured"` | Lista `worlds` vacía | Cargá los `WorldConfigSO` |
-| Los rooms se solapan o quedan con huecos | `chunkSize` del mundo ≠ `size` del `MapChunkSO` | Igualalos (p. ej. 16) |
-| El chunk tiene una franja vacía al final | Se capturó un tilemap con tiles borrados en el borde (`cellBounds`) | Capturá desde un tilemap limpio |
-| El `MapChunkSO` no tiene puertas ni spawns | La captura **solo** guarda `size` + `tiles` | Llená `doorPositions`, `enemySpawns` y `role` a mano |
-| Los enemigos no aparecen | `enemySpawns` vacío, `enemyPool` vacío o `enemiesPerChunk = 0` | Revisá la Fase 4.3 y el `WorldConfigSO` |
+| Los cuartos se solapan o quedan con huecos | El `MapChunkSO` no mide `sizeInCells × chunkSize` en tiles | Revisá `sizeInCells` y `chunkSize` |
+| Los enemigos no aparecen | El cuarto no tiene `enemySpawns`, el `ZoneThemeSO` no tiene `enemyBank`, o el **tier** permitido por el nivel es 0 | Revisá la Fase 4 y el `ZoneThemeSO`/`DifficultyProfileSO` |
+| No aparecen props ni barreras | El `ZoneThemeSO` del tag del cuarto no tiene `propBank`/`barrierBank`, o el mundo no tiene `themes` cableados | Cableá `WorldConfigSO.themes` |
+| Las barreras no aparecen | La validación anti-sellado descarta las que bloquearían el cuarto | Normal: probá con footprints más chicos |
 | Los enemigos no te ven | `fovAngle` angosto y el sprite no mira hacia el jugador (la visión usa `transform.up`) | Poné `fovAngle = 360`, o rotá el sprite |
 | Los proyectiles atraviesan o no dañan | Layer/matriz de colisión mal, o `targetMask` sin el layer correcto | Revisá Fase 1.3 y el `targetMask`/`enemyMask` |
 | Los disparos del jugador salen en dirección rara | No hay `Camera.main` (falta el tag `MainCamera`) | Etiquetá la cámara |
@@ -916,10 +937,10 @@ RunManager.Start()
    └─ GenerateWorld(0)
         ├─ mapGenerator.Configure(world) + mapGenerator.Generate()
         │     ├─ targetTilemap.ClearAllTiles()
-        │     ├─ BuildRoles()          → Start / Normal / Boss
-        │     ├─ StampNormalChunks()   → TilemapStamper.Stamp()
-        │     ├─ StampBossArena()
-        │     └─ ChunkContent.SpawnEnemies() → Spawner.TrySpawn()
+        │     ├─ RoomLayout.Build()     → Spawn + Boss reservados + empaquetado + adyacencia
+        │     ├─ StampRooms()          → TilemapStamper.Stamp()
+        │     ├─ CarveConnections()    → un paso por celda compartida
+        │     └─ RoomContentSpawner.SpawnAll() → barreras/props/enemigos → Spawner.TrySpawn()
         └─ bossManager.Configure(world) + SetupBossFight() → arena.Setup(prefab, stats)
 
 [el jugador explora y pelea]

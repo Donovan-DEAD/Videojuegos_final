@@ -5,12 +5,18 @@ using UnityEngine.UI;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Pantalla de carga: carga de forma asíncrona la escena indicada por GameFlowManager.NextScene mostrando el progreso.
+    /// </summary>
     public class LoadingScreen : MonoBehaviour
     {
         [SerializeField] private Image progressFill;
         [SerializeField] private Text progressLabel;
         [SerializeField] private float minimumTime = 0.75f;
 
+        /// <summary>
+        /// Lee la escena destino desde GameFlowManager y arranca la carga asíncrona mostrando el progreso.
+        /// </summary>
         private void Start()
         {
             string target = GameFlowManager.Instance != null ? GameFlowManager.Instance.NextScene : GameFlowManager.GameplayScene;

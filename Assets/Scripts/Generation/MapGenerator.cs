@@ -4,31 +4,58 @@ using UnityEngine.Tilemaps;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Construye un mundo de cuartos conectados: delega la disposición en RoomLayout, estampa los tiles
+    /// (sin rotación), excava una abertura por cada borde compartido y cede el contenido a RoomContentSpawner.
+    /// Expone Rooms, Connections, StartRoom, BossRoom, StartRoomCenterCell, BossRoomCenterCell y el evento Generated.
+    /// </summary>
     public class MapGenerator : MonoBehaviour
     {
         [Header("Configuration")]
         [SerializeField] private WorldConfigSO config;
         [SerializeField] private Tilemap targetTilemap;
 
-        [Header("Optional: enemy spawning")]
-        [SerializeField] private ChunkContent chunkContent;
-
-        public Vector2Int StartChunk { get; private set; }
-        public Vector2Int BossOriginChunk { get; private set; }
-        public Vector3Int BossOriginCell { get; private set; }
-        public List<ChunkPlacement> NormalPlacements { get; } = new List<ChunkPlacement>();
+        [Header("Optional: content spawning")]
+        [SerializeField] private RoomContentSpawner contentSpawner;
 
         public WorldConfigSO Config => config;
         public Tilemap TargetTilemap => targetTilemap;
+
+        /// <summary>Cuartos colocados en la última generación.</summary>
+        public List<RoomPlacement> Rooms { get; } = new List<RoomPlacement>();
+        /// <summary>Conexiones (aberturas) entre cuartos adyacentes.</summary>
+        public List<RoomConnection> Connections { get; } = new List<RoomConnection>();
+
+        /// <summary>Celda de origen del cuarto inicial tras generar.</summary>
+        public Vector2Int StartChunk { get; private set; }
+        /// <summary>Celda de origen del cuarto de jefe tras generar.</summary>
+        public Vector2Int BossOriginChunk { get; private set; }
+
+        /// <summary>Esquina del cuarto inicial en coordenadas de celda de tilemap.</summary>
+        public Vector3Int StartCell => ChunkToCell(StartChunk);
+        /// <summary>Esquina del cuarto de jefe en coordenadas de celda de tilemap.</summary>
+        public Vector3Int BossOriginCell => ChunkToCell(BossOriginChunk);
+
+        /// <summary>Primer cuarto con rol Start.</summary>
+        public RoomPlacement StartRoom => FindRoom(CellRole.Start);
+        /// <summary>Primer cuarto con rol Boss.</summary>
+        public RoomPlacement BossRoom => FindRoom(CellRole.Boss);
+
+        /// <summary>Centro del cuarto inicial en celdas de tilemap.</summary>
+        public Vector3Int StartRoomCenterCell => RoomCenterCell(StartRoom);
+        /// <summary>Centro del cuarto de jefe en celdas de tilemap.</summary>
+        public Vector3Int BossRoomCenterCell => RoomCenterCell(BossRoom);
+
+        /// <summary>Se dispara al finalizar una generación completa.</summary>
         public event System.Action Generated;
 
-        public Vector3Int StartCell => ChunkToCell(StartChunk);
-
+        /// <summary>Permite inyectar la configuración del mundo en tiempo de ejecución.</summary>
         public void Configure(WorldConfigSO worldConfig)
         {
             config = worldConfig;
         }
 
+        /// <summary>Genera el mundo completo (limpia, dispone cuartos, estampa tiles, conecta y puebla contenido).</summary>
         [ContextMenu("Generate")]
         public void Generate()
         {
@@ -39,121 +66,79 @@ namespace MadnessDreams
             }
 
             targetTilemap.ClearAllTiles();
-            NormalPlacements.Clear();
+            Rooms.Clear();
+            Connections.Clear();
 
             System.Random rng = new System.Random(config.Seed);
-            int width = Mathf.Max(1, config.Width);
-            int height = Mathf.Max(1, config.Height);
+            RoomLayout.Build(config, rng, Rooms, Connections);
 
-            CellRole[,] grid = BuildRoles(width, height);
-            StampNormalChunks(grid, width, height, rng);
-            StampBossArena();
+            StampRooms();
+            CarveConnections();
 
-            if (chunkContent != null)
-            {
-                chunkContent.Configure(config);
-                SpawnEnemies(rng);
-            }
+            StartChunk = StartRoom.originCell;
+            BossOriginChunk = BossRoom.originCell;
+
+            SpawnContent(rng);
 
             Generated?.Invoke();
         }
 
-        private CellRole[,] BuildRoles(int width, int height)
+        private void StampRooms()
         {
-            CellRole[,] grid = new CellRole[width, height];
-
-            StartChunk = new Vector2Int(width / 2, height / 2);
-
-            int region = Mathf.Clamp(config.BossRegionSize, 1, Mathf.Min(width, height));
-            Vector2Int farthest = FindFarthestChunk(width, height, StartChunk);
-            BossOriginChunk = new Vector2Int(
-                Mathf.Clamp(farthest.x, 0, width - region),
-                Mathf.Clamp(farthest.y, 0, height - region)
-            );
-
-            for (int cy = 0; cy < height; cy++)
+            for (int i = 0; i < Rooms.Count; i++)
             {
-                for (int cx = 0; cx < width; cx++)
+                RoomPlacement room = Rooms[i];
+                if (room.chunk == null)
                 {
-                    bool inBoss = cx >= BossOriginChunk.x && cx < BossOriginChunk.x + region &&
-                                  cy >= BossOriginChunk.y && cy < BossOriginChunk.y + region;
-                    bool isStart = cx == StartChunk.x && cy == StartChunk.y;
-
-                    if (inBoss)
-                    {
-                        grid[cx, cy] = CellRole.Boss;
-                    }
-                    else if (isStart)
-                    {
-                        grid[cx, cy] = CellRole.Start;
-                    }
-                    else
-                    {
-                        grid[cx, cy] = CellRole.Normal;
-                    }
+                    continue;
                 }
-            }
 
-            return grid;
+                TilemapStamper.Stamp(targetTilemap, room.chunk, ChunkToCell(room.originCell));
+            }
         }
 
-        private void StampNormalChunks(CellRole[,] grid, int width, int height, System.Random rng)
+        private void CarveConnections()
         {
-            BlockBankSO bank = config.Bank;
+            int cellSize = Mathf.Max(1, config.ChunkSize);
+            int opening = Mathf.Clamp(config.OpeningWidth, 1, Mathf.Max(1, cellSize - 2));
+            int offset = (cellSize - opening) / 2;
 
-            for (int cy = 0; cy < height; cy++)
+            for (int i = 0; i < Connections.Count; i++)
             {
-                for (int cx = 0; cx < width; cx++)
+                RoomConnection connection = Connections[i];
+                Vector3Int origin = ChunkToCell(connection.cell);
+
+                if (connection.side == RoomSide.Right)
                 {
-                    CellRole role = grid[cx, cy];
-                    if (role != CellRole.Normal && role != CellRole.Start)
-                    {
-                        continue;
-                    }
-
-                    MapChunkSO chunk = bank.GetRandomChunk(rng);
-                    if (chunk == null)
-                    {
-                        continue;
-                    }
-
-                    Vector3Int origin = ChunkToCell(new Vector2Int(cx, cy));
-                    int rotation = rng.Next(4);
-                    TilemapStamper.Stamp(targetTilemap, chunk, origin, rotation);
-
-                    if (role == CellRole.Normal)
-                    {
-                        NormalPlacements.Add(new ChunkPlacement { chunk = chunk, originCell = origin });
-                    }
+                    Vector3Int min = new Vector3Int(origin.x + cellSize - 1, origin.y + offset, origin.z);
+                    TilemapStamper.ClearCells(targetTilemap, min, new Vector3Int(2, opening, 1));
+                }
+                else
+                {
+                    Vector3Int min = new Vector3Int(origin.x + offset, origin.y + cellSize - 1, origin.z);
+                    TilemapStamper.ClearCells(targetTilemap, min, new Vector3Int(opening, 2, 1));
                 }
             }
         }
 
-        private void StampBossArena()
+        private void SpawnContent(System.Random rng)
         {
-            MapChunkSO arena = config.Bank.BossArena;
-            if (arena == null)
+            if (contentSpawner == null)
             {
                 return;
             }
 
-            BossOriginCell = ChunkToCell(BossOriginChunk);
-            TilemapStamper.Stamp(targetTilemap, arena, BossOriginCell, 0);
+            contentSpawner.Configure(config);
+            contentSpawner.SpawnAll(rng);
         }
 
-        private void SpawnEnemies(System.Random rng)
-        {
-            foreach (ChunkPlacement placement in NormalPlacements)
-            {
-                chunkContent.SpawnEnemies(placement, rng);
-            }
-        }
-
+        /// <summary>Convierte una celda de rejilla (chunk) a la esquina en coordenadas de tilemap.</summary>
         public Vector3Int ChunkToCell(Vector2Int chunk)
         {
             return new Vector3Int(chunk.x * config.ChunkSize, chunk.y * config.ChunkSize, 0);
         }
 
+        /// <summary>Devuelve el centro de un chunk en coordenadas de tilemap.</summary>
         public Vector3Int ChunkCenterCell(Vector2Int chunk)
         {
             Vector3Int origin = ChunkToCell(chunk);
@@ -161,32 +146,28 @@ namespace MadnessDreams
             return new Vector3Int(origin.x + half, origin.y + half, origin.z);
         }
 
-        private static Vector2Int FindFarthestChunk(int width, int height, Vector2Int start)
+        /// <summary>Devuelve el centro (en celdas de tilemap) de un cuarto colocado.</summary>
+        public Vector3Int RoomCenterCell(RoomPlacement room)
         {
-            Vector2Int farthest = start;
-            int best = -1;
+            Vector3Int origin = ChunkToCell(room.originCell);
+            int size = config != null ? config.ChunkSize : 0;
+            return new Vector3Int(
+                origin.x + room.sizeInCells.x * size / 2,
+                origin.y + room.sizeInCells.y * size / 2,
+                origin.z);
+        }
 
-            for (int cy = 0; cy < height; cy++)
+        private RoomPlacement FindRoom(CellRole role)
+        {
+            for (int i = 0; i < Rooms.Count; i++)
             {
-                for (int cx = 0; cx < width; cx++)
+                if (Rooms[i].role == role)
                 {
-                    int distance = Mathf.Abs(cx - start.x) + Mathf.Abs(cy - start.y);
-                    if (distance > best)
-                    {
-                        best = distance;
-                        farthest = new Vector2Int(cx, cy);
-                    }
+                    return Rooms[i];
                 }
             }
 
-            return farthest;
+            return default;
         }
-    }
-
-    [System.Serializable]
-    public struct ChunkPlacement
-    {
-        public MapChunkSO chunk;
-        public Vector3Int originCell;
     }
 }

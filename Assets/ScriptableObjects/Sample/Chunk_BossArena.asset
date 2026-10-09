@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6501e9f78955de43907fa426880c218, type: 3}
   m_Name: Chunk_BossArena
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.MapChunkSO
+  sizeInCells: {x: 1, y: 1}
+  tag: 0
+  role: 3
   size: {x: 16, y: 16}
   tiles:
   - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
@@ -270,6 +273,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
   - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
   - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
-  doorPositions: []
   enemySpawns: []
-  role: 3
+  propRegions: []

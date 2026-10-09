@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Barra de vida genérica que se suscribe a un Health y refleja la vida actual y máxima.
+    /// </summary>
     public class HealthBarWidget : MonoBehaviour
     {
         [SerializeField] private Image fill;
@@ -12,6 +15,9 @@ namespace MadnessDreams
 
         private Health health;
 
+        /// <summary>
+        /// Asocia la barra a un Health y se suscribe a sus cambios de vida.
+        /// </summary>
         public void Bind(Health target)
         {
             if (health != null)

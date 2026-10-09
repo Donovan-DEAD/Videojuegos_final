@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Recogible que, al tocar al jugador, le enseña una BossAbilitySO y opcionalmente se destruye;
+    /// además aplica un ligero vaivén visual.
+    /// </summary>
     [RequireComponent(typeof(Collider2D))]
     public class AbilityPickup : MonoBehaviour
     {
@@ -12,11 +16,13 @@ namespace MadnessDreams
 
         private Vector3 startPosition;
 
+        /// <summary>Guarda la posición inicial usada para el vaivén.</summary>
         private void Start()
         {
             startPosition = transform.position;
         }
 
+        /// <summary>Aplica el vaivén vertical mientras bobAmplitude sea mayor que cero.</summary>
         private void Update()
         {
             if (bobAmplitude > 0f)
@@ -25,6 +31,7 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>Si lo toca el jugador, intenta enseñar la habilidad y se destruye si tuvo éxito.</summary>
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (!other.CompareTag("Player"))

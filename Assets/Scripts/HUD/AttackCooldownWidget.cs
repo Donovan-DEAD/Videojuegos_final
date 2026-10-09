@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Widget que muestra el enfriamiento de los ataques cuerpo a cuerpo y a distancia de PlayerCombat.
+    /// </summary>
     public class AttackCooldownWidget : MonoBehaviour
     {
         [SerializeField] private PlayerCombat combat;
@@ -13,12 +16,18 @@ namespace MadnessDreams
         [SerializeField] private Color readyColor = Color.white;
         [SerializeField] private Color coolingColor = new Color(0.4f, 0.4f, 0.4f);
 
+        /// <summary>
+        /// Asocia el widget al PlayerCombat indicado y refresca los indicadores.
+        /// </summary>
         public void Bind(PlayerCombat target)
         {
             combat = target;
             Refresh();
         }
 
+        /// <summary>
+        /// Actualiza las barras de enfriamiento y el color de los iconos según el estado de PlayerCombat.
+        /// </summary>
         public void Refresh()
         {
             if (combat == null)

@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Escucha la muerte del jugador (Health.Died) y avisa a GameFlowManager.
+    /// </summary>
     [RequireComponent(typeof(Health))]
     public class PlayerDeathHandler : MonoBehaviour
     {
@@ -12,6 +15,7 @@ namespace MadnessDreams
             health = GetComponent<Health>();
         }
 
+        /// <summary>Se suscribe a Health.Died.</summary>
         private void OnEnable()
         {
             if (health != null)
@@ -20,6 +24,7 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>Se desuscribe de Health.Died.</summary>
         private void OnDisable()
         {
             if (health != null)

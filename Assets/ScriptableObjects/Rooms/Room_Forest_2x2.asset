@@ -1,0 +1,1063 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6501e9f78955de43907fa426880c218, type: 3}
+  m_Name: Room_Forest_2x2
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.MapChunkSO
+  sizeInCells: {x: 2, y: 2}
+  tag: 1
+  role: 2
+  size: {x: 32, y: 32}
+  tiles:
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  - {fileID: 11400000, guid: f153300a38b6b3249977ef3c4c13d7ce, type: 2}
+  enemySpawns:
+  - localPosition: {x: 3, y: 3}
+    weight: 1
+  - localPosition: {x: 16, y: 3}
+    weight: 1
+  - localPosition: {x: 28, y: 3}
+    weight: 1
+  - localPosition: {x: 3, y: 16}
+    weight: 1
+  - localPosition: {x: 16, y: 16}
+    weight: 1
+  - localPosition: {x: 28, y: 16}
+    weight: 1
+  - localPosition: {x: 3, y: 28}
+    weight: 1
+  - localPosition: {x: 16, y: 28}
+    weight: 1
+  - localPosition: {x: 28, y: 28}
+    weight: 1
+  propRegions: []

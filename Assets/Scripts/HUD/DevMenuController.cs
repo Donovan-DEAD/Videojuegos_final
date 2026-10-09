@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Menú de desarrollo (debug) que expone en la UI controles de nivel, velocidad, daño, vida y desbloqueo de habilidades del jugador.
+    /// </summary>
     public class DevMenuController : MonoBehaviour
     {
         [SerializeField] private GameObject panel;
@@ -19,6 +22,9 @@ namespace MadnessDreams
         private PlayerStats stats;
         private PlayerAbilities abilities;
 
+        /// <summary>
+        /// Enlaza los botones, configura los rangos de los sliders y oculta el panel al arrancar.
+        /// </summary>
         private void Awake()
         {
             if (openButton != null) openButton.onClick.AddListener(Open);
@@ -33,6 +39,9 @@ namespace MadnessDreams
             if (panel != null) panel.SetActive(false);
         }
 
+        /// <summary>
+        /// Busca al jugador y enlaza los sliders y toggles con sus PlayerStats y PlayerAbilities.
+        /// </summary>
         private void Start()
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -82,6 +91,9 @@ namespace MadnessDreams
             RefreshLevelLabel();
         }
 
+        /// <summary>
+        /// Refresca la etiqueta de nivel y muestra el panel del menú.
+        /// </summary>
         public void Open()
         {
             RefreshLevelLabel();

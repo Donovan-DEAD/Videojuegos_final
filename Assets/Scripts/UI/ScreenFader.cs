@@ -5,10 +5,16 @@ using UnityEngine.UI;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Fundido a negro persistente (singleton creado bajo demanda): construye su propio canvas y hace FadeIn al cargar cada escena.
+    /// </summary>
     public class ScreenFader : MonoBehaviour
     {
         private static ScreenFader instance;
 
+        /// <summary>
+        /// Singleton de acceso global: si no existe lo busca o lo crea y lo marca como DontDestroyOnLoad.
+        /// </summary>
         public static ScreenFader Instance
         {
             get
@@ -34,6 +40,9 @@ namespace MadnessDreams
 
         private Image fadeImage;
 
+        /// <summary>
+        /// Aplica el patrón singleton persistente, construye el canvas del fundido y se suscribe a la carga de escenas.
+        /// </summary>
         private void Awake()
         {
             if (instance != null && instance != this)
@@ -48,6 +57,9 @@ namespace MadnessDreams
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
+        /// <summary>
+        /// Deja de escuchar la carga de escenas al destruirse.
+        /// </summary>
         private void OnDestroy()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
@@ -82,11 +94,17 @@ namespace MadnessDreams
             StartCoroutine(FadeIn(defaultFadeInDuration));
         }
 
+        /// <summary>
+        /// Corrutina que funde la pantalla a negro durante <paramref name="duration"/>.
+        /// </summary>
         public IEnumerator FadeOut(float duration)
         {
             yield return Fade(CurrentAlpha(), 1f, duration);
         }
 
+        /// <summary>
+        /// Corrutina que funde la pantalla de negro a transparente durante <paramref name="duration"/>.
+        /// </summary>
         public IEnumerator FadeIn(float duration)
         {
             yield return Fade(CurrentAlpha(), 0f, duration);

@@ -2,9 +2,9 @@
 
 > Documento de referencia para entender qué hace cada script y cómo se conectan entre sí.
 >
-> **Actualizado:** además de los sistemas originales (datos, generación, enemigos, jefes, núcleo,
-> jugador), ahora incluye **Flujo de pantallas (UI)**, **HUD**, **Habilidades (LOTE 2)**,
-> **Flujo de mundo (portal)** y **Menú DEV** (secciones 10–14). Ver también
+> **Actualizado:** además de los sistemas originales (datos, enemigos, jefes, núcleo, jugador), incluye
+> el **mapa procedural por cuartos** (secciones 2–3), y además **Flujo de pantallas (UI)**, **HUD**,
+> **Habilidades (LOTE 2)**, **Flujo de mundo (portal)** y **Menú DEV** (secciones 10–14). Ver también
 > [`Estado_Implementacion_Unity.md`](./Estado_Implementacion_Unity.md).
 
 ## 1. Visión general
@@ -23,26 +23,57 @@ El proyecto se organiza en capas:
 ```
 RunManager
    └─ carga WorldConfigSO
-        └─ MapGenerator estampa chunks (TilemapStamper)
-             └─ ChunkContent / Spawner colocan enemigos
-                  └─ el jugador explora y combate
-                       └─ BossArenaController spawnea al jefe
-                            └─ al morir, RunManager pasa al siguiente mundo
+        └─ RoomLayout reserva Spawn (centro) + Boss (el más lejano) y empaqueta cuartos
+           de tamaño fijo por celdas (1x1, 2x1/1x2, 2x2, 3x3), asignando tag por cuarto
+             └─ MapGenerator estampa (TilemapStamper) y talla los pasos de cada celda compartida
+                  └─ RoomContentSpawner puebla por tag: barreras → props → enemigos
+                       └─ el jugador explora y combate
+                            └─ BossArenaController spawnea al jefe
+                                 └─ al morir se activa el Portal y RunManager pasa al siguiente mundo
 ```
 
 ## 2. Capa de datos (ScriptableObjects)
 
 ### BlockBankSO
-- **Propósito**: banco de chunks disponibles por nivel + la arena del jefe.
-- **Campos**: `normalChunks` (lista de `MapChunkSO`), `bossArena` (`MapChunkSO`).
-- **Métodos**: `GetRandomChunk(System.Random)`, `GetChunk(int)`.
-- **Flujo**: `MapGenerator` pide un chunk aleatorio por cada celda del grid.
+- **Propósito**: banco de arquetipos de cuarto + el cuarto de Spawn y la arena del jefe.
+- **Campos**: `normalChunks` (lista de `MapChunkSO`), `startRoom` (`MapChunkSO`), `bossArena` (`MapChunkSO`).
+- **Métodos**: `GetRandomChunk(System.Random)`, `GetChunk(int)`, `FindBySize(sizeInCells, cellSize, results)`, `FindByTag(tag, results)`.
+- **Flujo**: `RoomLayout` pide un arquetipo por **clase de tamaño + tag** en cada celda libre.
 
 ### MapChunkSO
-- **Propósito**: plantilla de un bloque/room (tiles, puertas y puntos de spawn).
-- **Campos**: `size`, `tiles` (aplanado fila a fila), `doorPositions`, `enemySpawns`, `role`.
-- **Helpers**: `GetTile(x, y)`, `LocalArea`, `SetSize`, `SetTileData`.
-- **Flujo**: el editor captura un `Tilemap` pintado con `GetTilesBlock` y guarda los datos; `TilemapStamper` lo estampa con `SetTilesBlock`.
+- **Propósito**: arquetipo de un cuarto (tamaño, tiles, puntos de spawn y regiones de props).
+- **Campos**: `sizeInCells` (1×1, 2×1, 1×2, 2×2, 3×3), `tag` (`RoomTag`), `role` (`CellRole`),
+  `size` (tiles), `tiles` (aplanado fila a fila), `enemySpawns` (`{localPosition, weight}`),
+  `propRegions`.
+- **Helpers**: `GetTile(x, y)`, `LocalArea`, `TileIndex`, `ResolveSizeInCells(cellSize)`,
+  `SetSize`/`SetTileData`/`SetSizeInCells`/`SetTag`.
+- **Flujo**: el editor captura el `Tilemap` (`GetTilesBlock`) y los spawn points desde los hijos;
+  `TilemapStamper` lo estampa con `SetTilesBlock`.
+- **Convención**: espacio abierto con **anillo de muro de 1 tile**; **piso = celda sin tile**.
+
+### RoomTag · RoomSizeClass / RoomSizes
+- `RoomTag`: temática del cuarto (`None`, `Forest`, `Sea`, `Cave`, `Ruins`, …).
+- `RoomSizeClass`: `Small` (1×1), `Wide` (2×1/1×2), `Square` (2×2), `Large` (3×3).
+- `RoomSizes`: `Candidates(class)` (formas posibles), `Classify(cells)` y `CellCount(cells)`.
+
+### ZoneThemeSO
+- **Propósito**: el **banco por tag** — qué enemigos, props y barreras puede usar un cuarto.
+- **Campos**: `tag`, `enemyBank`/`propBank`/`barrierBank` (listas ponderadas), y densidades base
+  (`enemiesMin/Max`, `propsMin/Max`, `barriersMin/Max`).
+- **Flujo**: `RoomContentSpawner` resuelve el tema por el `tag` del cuarto
+  (`WorldConfigSO.ThemeFor`), con fallback a `RoomTag.None`.
+
+### PropDefinitionSO
+- **Propósito**: un prop de ambientación.
+- **Campos**: `prefab`, `kind` (`Decor` sin collider / `Barrier` con collider), `footprint` (tiles),
+  `weight`, `avoidPassages`.
+
+### DifficultyProfileSO
+- **Propósito**: curva de dificultad del combate.
+- **Campos**: `entries` (`{minLevel, maxTier, densityMultiplier, enemiesMin/Max}`), topes duros por
+  tamaño de cuarto y `minTierGuaranteed` (piso).
+- **Flujo**: `RoomContentSpawner` la consulta con **`PlayerStats.Level`** para filtrar el `tier` de
+  enemigos y modular la cantidad.
 
 ### EnemyStatsSO
 - **Propósito**: plantilla de propiedades comunes de un enemigo.
@@ -55,43 +86,79 @@ RunManager
 - **Flujo**: `BossAI` usa los umbrales para detectar cambios de fase.
 
 ### EnemyArchetypeSO
-- **Propósito**: vincula un prefab con sus stats.
-- **Campos**: `prefab`, `stats`.
+- **Propósito**: vincula un prefab con sus stats y su nivel de poder.
+- **Campos**: `prefab`, `stats`, `tier` (1..N), `weight`.
 
 ### WorldConfigSO
 - **Propósito**: configuración de un mundo (cuento).
-- **Campos**: `seed`, `bank`, `width`, `height`, `chunkSize`, `bossRegionSize`, `enemyPool`, `enemiesPerChunk`, `bossPrefab`, `boss`.
+- **Campos**: `seed`, `bank`, `width`, `height` (rejilla, por defecto 14×14), `chunkSize`,
+  `bossRegionSize`, `sizeWeights` (peso por clase de tamaño), `openingWidth` (ancho del paso),
+  `fillRatio`, `themes` (lista `tag → ZoneThemeSO`), `difficulty` (`DifficultyProfileSO`),
+  `bossPrefab`, `boss`.
+- **Métodos**: `WeightFor(RoomSizeClass)`, `ThemeFor(RoomTag)`.
 
 ### MapChunkCaptureEditor (editor)
-- **Propósito**: capturar un room pintado a un `MapChunkSO`.
-- **Flujo**: `Tools > Madness Dreams > Map Chunk Capture` → asignar Tilemap y target → `Capture` → `GetTilesBlock` + aplanado → guardar en el SO.
+- **Propósito**: capturar un cuarto pintado a un `MapChunkSO` y validar los mundos.
+- **Flujo**: `Tools > Madness Dreams > Map Chunk Capture` → asignar Tilemap, target, `Cell size` y
+  `Tag` → `Capture` → calcula los límites reales de los tiles, aplana (`GetTilesBlock`), deriva
+  `sizeInCells`, guarda `tag` y recoge los `enemySpawns` desde los **hijos** nombrados con el prefijo
+  (por defecto `EnemySpawn`).
+- **Validaciones**: tamaño múltiplo de la celda, anillo de muro de 1 tile y presencia de spawn points.
+- **`Tools > Madness Dreams > Validate Worlds`**: corre `RoomLayout` por cada `WorldConfigSO` y
+  comprueba que haya **exactamente 1 cuarto de Spawn y 1 de Boss**.
 
-## 3. Generación procedural
+## 3. Generación procedural (mapa por cuartos)
 
 ### CellRole
-- Enum: `Empty`, `Start`, `Normal`, `Boss`. Marca el rol de cada celda del grid.
+- Enum: `Empty`, `Start`, `Normal`, `Boss`. Marca el rol de cada cuarto (no de cada celda de tile).
+
+### RoomPlacement / RoomConnection
+- `RoomPlacement`: struct con `chunk`, `sizeInCells`, `originCell` (en celdas de rejilla), `tag` y `role`.
+- `RoomConnection` / `RoomSide` (`Right`, `Up`): qué dos cuartos conecta una celda compartida, y por qué lado.
+
+### RoomLayout (estático)
+- **Propósito**: construir la topología del nivel.
+- **Flujo**:
+  1. **Reserva el cuarto de Spawn** (centro de la rejilla) y el de **Boss** (el más lejano que quepa,
+     con degradación de tamaño si no entra). Garantizados en todos los mundos; sin sobrescrituras.
+  2. **Empaqueta** el resto: recorre las celdas en orden aleatorio, elige una **clase de tamaño** por
+     peso (`WorldConfigSO.WeightFor`) y coloca un arquetipo del banco filtrado por **tamaño + tag**.
+     Las celdas sobrantes se rellenan con 1×1 (cobertura total).
+  3. **Adyacencia**: cada par de celdas vecinas de cuartos distintos genera una `RoomConnection`.
+     El grafo resultante es **totalmente conexo**.
 
 ### TilemapStamper
-- **Propósito**: estampar un `MapChunkSO` en un Tilemap global.
-- **Flujo**: `Stamp(tilemap, chunk, origin, rotationSteps)` → rota el layout si es necesario → `SetTilesBlock`.
+- **Propósito**: estampar un `MapChunkSO` en el Tilemap global y tallar los pasos.
+- **Flujo**: `Stamp(tilemap, chunk, origin)` → `SetTilesBlock` (sin rotación).
+  `ClearCells(tilemap, min, size)` limpia el borde para abrir el paso.
 
 ### MapGenerator
 - **Propósito**: orquestar toda la generación.
 - **Flujo**:
-  1. Valida `config`, `bank` y `targetTilemap`; limpia el tilemap.
-  2. Crea `System.Random(seed)`.
-  3. `BuildRoles`: `Start` al centro, `Boss` en la celda más lejana (región `bossRegionSize`), resto `Normal`.
-  4. `StampNormalChunks`: por celda `Normal`/`Start`, pide un chunk al banco, rota y estampa.
-  5. `StampBossArena`: estampa la arena en la región del jefe.
-  6. `SpawnEnemies`: delega en `ChunkContent`.
+  1. Valida `config`, `bank` y `targetTilemap`; limpia el tilemap y las listas.
+  2. Crea `System.Random(seed)` y llama a `RoomLayout.Build`.
+  3. `StampRooms`: estampa cada arquetipo en su celda de origen.
+  4. `CarveConnections`: por cada conexión limpia el borde (`openingWidth` centrado) — un paso por celda
+     compartida, **2 en lados de 2 celdas**.
+  5. `SpawnContent`: delega en `RoomContentSpawner`.
+  6. Dispara `Generated` (lo consumen `WorldLayout` y el HUD).
+- **API**: `Rooms`, `Connections`, `StartRoom`, `BossRoom`, `StartRoomCenterCell`, `BossRoomCenterCell`,
+  `ChunkToCell`, `ChunkCenterCell`, `RoomCenterCell`.
 
 ### Spawner
 - **Propósito**: instanciar con chequeo de colisión.
 - **Flujo**: `TrySpawn(prefab, position, rng)` → genera candidatos con jitter → `Physics2D.OverlapCircle` → instancia si no hay solapamiento (hasta `maxTries`).
 
-### ChunkContent
-- **Propósito**: poblar un chunk con enemigos.
-- **Flujo**: lee `enemySpawns` del chunk, elige enemigos del `enemyPool`, convierte celda→mundo con `GetCellCenterWorld` y usa el `Spawner`.
+### RoomContentSpawner
+- **Propósito**: poblar cada cuarto según su `tag`.
+- **Flujo**, por cuarto (el cuarto de Spawn no recibe enemigos ni barreras):
+  1. Resuelve el `ZoneThemeSO` por `tag` (fallback `RoomTag.None`).
+  2. **Barreras** primero: las busca apoyadas al borde y **valida con flood-fill** que no sellen el
+     cuarto (si sellan, se descartan). El `footprint` no puede pisar props/aberturas.
+  3. **Props** de decoración: esparcidos sobre piso libre, evitando los pasos si `avoidPassages`.
+  4. **Enemigos**: en los `enemySpawns` del arquetipo (respetando `weight`), del banco **filtrado por
+     tier** permitido; cantidad modulada por la densidad del `DifficultyProfileSO` según
+     `PlayerStats.Level`, con piso garantizado y techo por tamaño de cuarto.
 
 ## 4. Enemigos
 
@@ -171,8 +238,8 @@ Transiciones:
 ## 8. Flujo end-to-end
 
 1. `RunManager` carga el mundo 0.
-2. `MapGenerator` genera tiles y reserva la región del jefe.
-3. `ChunkContent`/`Spawner` spawnean esbirros.
+2. `RoomLayout` empaqueta los cuartos y `MapGenerator` genera los tiles y talla los pasos.
+3. `RoomContentSpawner`/`Spawner` pueblan los cuartos (barreras, props y esbirros por tag).
 4. El jugador explora; los enemigos detectan, persiguen y atacan.
 5. Al entrar en la arena, `BossArenaController` sella las puertas y spawnea al jefe.
 6. `BossAI` pelea cambiando de fase.

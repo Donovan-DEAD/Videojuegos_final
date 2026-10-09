@@ -2,16 +2,29 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Estados de la máquina de estados finitos (FSM) del enemigo.
+    /// </summary>
     public enum EnemyState
     {
+        /// <summary>Deambula y vigila la posición inicial.</summary>
         Patrol,
+        /// <summary>Detectó al jugador; pausa antes de perseguir.</summary>
         Alert,
+        /// <summary>Persigue al objetivo hasta entrar en rango o perderlo.</summary>
         Chase,
+        /// <summary>Ataca al objetivo cuando está en rango.</summary>
         Attack,
+        /// <summary>Regresa a su posición inicial tras perder al jugador.</summary>
         Return,
+        /// <summary>Muerto; detiene el movimiento y desactiva colisionadores.</summary>
         Dead
     }
 
+    /// <summary>
+    /// IA del enemigo mediante una FSM (Patrol/Alert/Chase/Attack/Return/Dead); coordina EnemyMovement,
+    /// EnemyAttack, EnemyFOV y Health, y refleja el estado en el Animator (int "State").
+    /// </summary>
     [RequireComponent(typeof(EnemyMovement))]
     [RequireComponent(typeof(EnemyAttack))]
     [RequireComponent(typeof(EnemyFOV))]
@@ -28,7 +41,9 @@ namespace MadnessDreams
         [SerializeField] private float lostPlayerTimeout = 3f;
         [SerializeField] private float deathLingerTime = 2f;
 
+        /// <summary>Estado actual de la FSM.</summary>
         public EnemyState State { get; private set; } = EnemyState.Patrol;
+        /// <summary>Se dispara al morir el enemigo, antes de destruirse.</summary>
         public event System.Action<EnemyAI> Died;
 
         protected EnemyMovement movement;
@@ -47,6 +62,7 @@ namespace MadnessDreams
         private float patrolTimer;
         private bool patrolIsMoving;
 
+        /// <summary>Cachea los componentes requeridos, guarda la posición inicial y aplica las estadísticas.</summary>
         private void Awake()
         {
             movement = GetComponent<EnemyMovement>();
@@ -58,6 +74,7 @@ namespace MadnessDreams
             ApplyStats();
         }
 
+        /// <summary>Busca al jugador por etiqueta si no hay objetivo y se suscribe a Health.Died.</summary>
         protected virtual void Start()
         {
             if (player == null)
@@ -72,6 +89,7 @@ namespace MadnessDreams
             health.Died += OnDied;
         }
 
+        /// <summary>Se desuscribe de Health.Died.</summary>
         protected virtual void OnDestroy()
         {
             if (health != null)
@@ -80,6 +98,7 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>Inyecta estadísticas y objetivo, y las aplica a los componentes dependientes.</summary>
         public void Configure(EnemyStatsSO newStats, Transform target)
         {
             stats = newStats;
@@ -87,12 +106,14 @@ namespace MadnessDreams
             ApplyStats();
         }
 
+        /// <summary>Fija el Transform objetivo y cachea su IDamageable.</summary>
         public void SetTarget(Transform target)
         {
             player = target;
             playerDamageable = target != null ? target.GetComponent<IDamageable>() : null;
         }
 
+        /// <summary>Ejecuta el tick de la FSM; se omite cuando el enemigo está muerto.</summary>
         protected virtual void Update()
         {
             if (State == EnemyState.Dead)
@@ -274,7 +295,9 @@ namespace MadnessDreams
             OnEnterState(State);
         }
 
+        /// <summary>Punto de extensión al entrar en un estado.</summary>
         protected virtual void OnEnterState(EnemyState state) { }
+        /// <summary>Punto de extensión al salir de un estado.</summary>
         protected virtual void OnExitState(EnemyState state) { }
 
         private void UpdateAnimation()
@@ -287,6 +310,7 @@ namespace MadnessDreams
             animator.SetInteger(stateParameter, (int)DetermineAnimationState());
         }
 
+        /// <summary>Traduce el estado de la FSM al AnimationState del Animator.</summary>
         protected virtual AnimationState DetermineAnimationState()
         {
             switch (State)

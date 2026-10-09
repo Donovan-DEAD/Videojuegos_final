@@ -3,6 +3,10 @@ using UnityEngine.InputSystem;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Lee la entrada de movimiento y aplica la velocidad al Rigidbody2D del jugador;
+    /// el control puede suspenderse temporalmente (p. ej. durante un dash).
+    /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     public class PlayerController : MonoBehaviour
     {
@@ -11,9 +15,12 @@ namespace MadnessDreams
         private Rigidbody2D rb;
         private Vector2 movement;
 
+        /// <summary>Indica si hay entrada de movimiento en el frame actual.</summary>
         public bool IsMoving => movement.sqrMagnitude > 0.0001f;
+        /// <summary>Permite habilitar o suspender el control de movimiento.</summary>
         public bool ControlEnabled { get; set; } = true;
 
+        /// <summary>Ajusta la velocidad de movimiento (mínimo 0.1).</summary>
         public void SetMoveSpeed(float value)
         {
             moveSpeed = Mathf.Max(0.1f, value);

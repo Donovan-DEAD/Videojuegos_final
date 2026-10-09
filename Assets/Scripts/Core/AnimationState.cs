@@ -1,5 +1,8 @@
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Estados de animación compartidos que los enemigos escriben en su <c>Animator</c>.
+    /// </summary>
     public enum AnimationState
     {
         Idle = 0,

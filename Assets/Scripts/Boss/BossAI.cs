@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Jefe genérico derivado de <see cref="EnemyAI"/>; calcula fases según la salud,
+    /// invoca esbirros al cambiar de fase y expone el contrato <see cref="IBossController"/>.
+    /// </summary>
     public class BossAI : EnemyAI, IBossController
     {
         [SerializeField] private Spawner minionSpawner;
@@ -14,6 +18,10 @@ namespace MadnessDreams
 
         public int CurrentPhase => currentPhase;
 
+        /// <summary>
+        /// Configura el jefe con sus estadísticas, objetivo y generador aleatorio, y aplica
+        /// la configuración base de <see cref="EnemyAI"/>.
+        /// </summary>
         public void ConfigureBoss(BossStatsSO bossStats, Transform target, System.Random random)
         {
             this.bossStats = bossStats;
@@ -21,11 +29,18 @@ namespace MadnessDreams
             Configure(bossStats, target);
         }
 
+        /// <summary>
+        /// Sobrecarga que configura el jefe sin un generador aleatorio explícito.
+        /// </summary>
         public void ConfigureBoss(BossStatsSO bossStats, Transform target)
         {
             ConfigureBoss(bossStats, target, null);
         }
 
+        /// <summary>
+        /// Recupera las estadísticas de jefe si faltan, reinicia la fase y suscribe
+        /// <c>OnHealthChanged</c> al evento <c>HealthChanged</c> de la salud.
+        /// </summary>
         protected override void Start()
         {
             base.Start();

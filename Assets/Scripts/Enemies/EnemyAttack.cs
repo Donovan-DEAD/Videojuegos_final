@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Gestiona los ataques del enemigo (melee o a distancia) con windup y enfriamiento,
+    /// tomando rango, daño, cadencia y proyectil de EnemyStatsSO.
+    /// </summary>
     public class EnemyAttack : MonoBehaviour
     {
         [SerializeField] private Transform firePoint;
@@ -10,7 +14,9 @@ namespace MadnessDreams
 
         private EnemyStatsSO stats;
 
+        /// <summary>Rango de ataque efectivo según las estadísticas (con valor por defecto).</summary>
         public float AttackRange => stats != null ? stats.AttackRange : 1.5f;
+        /// <summary>Tipo de ataque configurado (melee o a distancia).</summary>
         public AttackType AttackType => stats != null ? stats.AttackType : AttackType.Melee;
         public bool IsCoolingDown => cooldownRemaining > 0f;
         public bool IsWindingUp => windingUp;
@@ -18,11 +24,13 @@ namespace MadnessDreams
         private float cooldownRemaining;
         private bool windingUp;
 
+        /// <summary>Asigna las estadísticas usadas por los ataques.</summary>
         public void SetStats(EnemyStatsSO value)
         {
             stats = value;
         }
 
+        /// <summary>Avanza el enfriamiento; lo invoca EnemyAI cada frame.</summary>
         public void Tick(float deltaTime)
         {
             if (cooldownRemaining > 0f)
@@ -31,6 +39,7 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>Indica si el objetivo está dentro del rango de ataque.</summary>
         public bool IsInRange(Transform target)
         {
             if (stats == null || target == null)
@@ -41,11 +50,13 @@ namespace MadnessDreams
             return Vector3.Distance(transform.position, target.position) <= stats.AttackRange;
         }
 
+        /// <summary>Indica si puede atacar ahora (en rango, sin enfriamiento ni windup).</summary>
         public bool CanAttack(Transform target)
         {
             return IsInRange(target) && !IsCoolingDown && !IsWindingUp;
         }
 
+        /// <summary>Lanza el ataque (melee o a distancia) si es posible; devuelve si se inició.</summary>
         public bool TryAttack(IDamageable target, Transform targetTransform)
         {
             if (stats == null || target == null || targetTransform == null)

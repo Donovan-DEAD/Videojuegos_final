@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Overlay de mapa a pantalla completa (tecla M): reconstruye la cuadrícula de cuartos y posiciona el marcador del jugador.
+    /// </summary>
     public class MapOverlayWidget : MonoBehaviour
     {
         [SerializeField] private GameObject root;
@@ -24,8 +27,14 @@ namespace MadnessDreams
         private int chunkSize;
         private bool built;
 
+        /// <summary>
+        /// Indica si el overlay está actualmente abierto (su raíz activa).
+        /// </summary>
         public bool IsOpen => root != null && root.activeSelf;
 
+        /// <summary>
+        /// Enlaza el botón de cierre y arranca con el overlay cerrado.
+        /// </summary>
         private void Awake()
         {
             if (closeButton != null)
@@ -36,6 +45,9 @@ namespace MadnessDreams
             Close();
         }
 
+        /// <summary>
+        /// Se suscribe a la regeneración del mapa al activarse.
+        /// </summary>
         private void OnEnable()
         {
             if (mapGenerator != null)
@@ -44,6 +56,9 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>
+        /// Deja de escuchar la regeneración del mapa al desactivarse.
+        /// </summary>
         private void OnDisable()
         {
             if (mapGenerator != null)
@@ -52,6 +67,9 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>
+        /// Asocia el overlay al MapGenerator (para reconstruir al generarse) y al transform del jugador.
+        /// </summary>
         public void Bind(MapGenerator generator, Transform playerTransform)
         {
             if (mapGenerator != null)
@@ -79,6 +97,9 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>
+        /// Abre el overlay si está cerrado o lo cierra si ya está abierto.
+        /// </summary>
         public void Toggle()
         {
             if (IsOpen)
@@ -91,6 +112,9 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>
+        /// Reconstruye el mapa y muestra el overlay.
+        /// </summary>
         public void Open()
         {
             Build();
@@ -101,6 +125,9 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>
+        /// Oculta el overlay.
+        /// </summary>
         public void Close()
         {
             if (root != null)
@@ -112,31 +139,22 @@ namespace MadnessDreams
         private void Build()
         {
             WorldConfigSO config = mapGenerator != null ? mapGenerator.Config : null;
-            Vector2Int startChunk;
-            Vector2Int bossChunk;
-            int bossRegionSize;
+            chunkSize = config != null ? config.ChunkSize : 16;
+            width = config != null ? config.Width : 8;
+            height = config != null ? config.Height : 8;
 
-            if (config != null)
+            MapGrid.ClearCells(container, playerMarker);
+
+            if (mapGenerator != null && mapGenerator.Rooms.Count > 0)
             {
-                width = config.Width;
-                height = config.Height;
-                chunkSize = config.ChunkSize;
-                bossRegionSize = config.BossRegionSize;
-                startChunk = mapGenerator.StartChunk;
-                bossChunk = mapGenerator.BossOriginChunk;
+                MapGrid.BuildRooms(container, mapGenerator.Rooms, cellSize, cellGap, startColor, normalColor, bossColor);
             }
             else
             {
-                width = 8;
-                height = 8;
-                chunkSize = 16;
-                bossRegionSize = 2;
-                startChunk = new Vector2Int(width / 2, height / 2);
-                bossChunk = new Vector2Int(width - bossRegionSize, height - bossRegionSize);
+                Vector2Int start = new Vector2Int(width / 2, height / 2);
+                Vector2Int boss = new Vector2Int(width - 1, height - 1);
+                MapGrid.Build(container, width, height, cellSize, cellGap, start, boss, 1, startColor, normalColor, bossColor);
             }
-
-            MapGrid.ClearCells(container, playerMarker);
-            MapGrid.Build(container, width, height, cellSize, cellGap, startChunk, bossChunk, bossRegionSize, startColor, normalColor, bossColor);
 
             if (playerMarker != null)
             {

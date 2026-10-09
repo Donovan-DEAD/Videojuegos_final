@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59cd6edb8051d7b43933712110de2919, type: 3}
+  m_Name: DifficultyProfile_Default
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.DifficultyProfileSO
+  entries:
+  - minLevel: 0
+    maxTier: 1
+    densityMultiplier: 1
+    enemiesMin: 1
+    enemiesMax: 2
+  - minLevel: 4
+    maxTier: 2
+    densityMultiplier: 1.1
+    enemiesMin: 1
+    enemiesMax: 3
+  - minLevel: 9
+    maxTier: 3
+    densityMultiplier: 1.2
+    enemiesMin: 2
+    enemiesMax: 4
+  - minLevel: 14
+    maxTier: 4
+    densityMultiplier: 1.3
+    enemiesMin: 2
+    enemiesMax: 5
+  maxEnemiesSmall: 2
+  maxEnemiesMedium: 4
+  maxEnemiesLarge: 6
+  maxEnemiesExtraLarge: 9
+  minTierGuaranteed: 1

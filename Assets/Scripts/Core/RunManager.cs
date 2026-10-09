@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Orquesta una partida: genera cada mundo con el <c>MapGenerator</c> y el <see cref="BossManager"/>,
+    /// y avanza al siguiente mundo o cierra la run al derrotar al jefe.
+    /// </summary>
     public class RunManager : MonoBehaviour
     {
         [SerializeField] private List<WorldConfigSO> worlds = new List<WorldConfigSO>();
@@ -13,6 +17,9 @@ namespace MadnessDreams
         public int CurrentWorldIndex { get; private set; }
         public int WorldCount => worlds != null ? worlds.Count : 0;
 
+        /// <summary>
+        /// Se suscribe a la derrota del jefe y genera el mundo inicial indicado por <c>GameFlowManager</c>.
+        /// </summary>
         private void Start()
         {
             if (bossManager != null)
@@ -24,6 +31,9 @@ namespace MadnessDreams
             GenerateWorld(startIndex);
         }
 
+        /// <summary>
+        /// Se desuscribe del evento de jefe derrotado al destruirse.
+        /// </summary>
         private void OnDestroy()
         {
             if (bossManager != null)
@@ -32,6 +42,10 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>
+        /// Fija y genera el mundo indicado (índice limitado al rango válido), reconfigurando
+        /// el generador de mapa y el jefe.
+        /// </summary>
         public void GenerateWorld(int index)
         {
             if (worlds == null || worlds.Count == 0)
@@ -61,6 +75,10 @@ namespace MadnessDreams
             Debug.Log($"World {CurrentWorldIndex + 1} cleared. Busca el portal.");
         }
 
+        /// <summary>
+        /// Avanza al siguiente mundo si existe o notifica que la run se completó, cargando la
+        /// escena de juego mediante <c>GameFlowManager</c>.
+        /// </summary>
         public void RequestAdvance()
         {
             if (worlds == null || worlds.Count == 0)

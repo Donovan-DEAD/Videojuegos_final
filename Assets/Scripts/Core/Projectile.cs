@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Proyectil que se autodestruye tras un tiempo, hace daño a los objetivos de su máscara
+    /// y aplica una ralentización opcional al impactar.
+    /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     public class Projectile : MonoBehaviour
     {
@@ -12,11 +16,18 @@ namespace MadnessDreams
         private float slowMultiplier = 1f;
         private float slowDuration;
 
+        /// <summary>
+        /// Programa la destrucción automática del proyectil tras su tiempo de vida.
+        /// </summary>
         private void Awake()
         {
             Destroy(gameObject, lifetime);
         }
 
+        /// <summary>
+        /// Lanza el proyectil en una dirección con daño, velocidad, máscara de objetivos y,
+        /// opcionalmente, un multiplicador y duración de ralentización.
+        /// </summary>
         public void Launch(Vector2 direction, int damage, float speed, LayerMask targetMask, float slowMultiplier = 1f, float slowDuration = 0f)
         {
             this.damage = damage;

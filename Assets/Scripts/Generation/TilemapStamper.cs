@@ -3,9 +3,13 @@ using UnityEngine.Tilemaps;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Utilidades estáticas para escribir y borrar tiles en un Tilemap (estampado de cuartos y excavado de aberturas).
+    /// </summary>
     public static class TilemapStamper
     {
-        public static void Stamp(Tilemap tilemap, MapChunkSO chunk, Vector3Int origin, int rotationSteps = 0)
+        /// <summary>Copia en bloque los tiles de un MapChunkSO en el Tilemap, sin rotación, desde la celda de origen.</summary>
+        public static void Stamp(Tilemap tilemap, MapChunkSO chunk, Vector3Int origin)
         {
             if (tilemap == null || chunk == null)
             {
@@ -14,45 +18,30 @@ namespace MadnessDreams
 
             Vector2Int size = chunk.Size;
             TileBase[] flat = chunk.Tiles;
-            if (flat == null || flat.Length == 0)
+            if (flat == null || flat.Length == 0 || size.x <= 0 || size.y <= 0)
             {
                 return;
             }
 
-            int steps = ((rotationSteps % 4) + 4) % 4;
-            Vector2Int rotatedSize = (steps % 2 == 0) ? size : new Vector2Int(size.y, size.x);
-            TileBase[] rotated = steps == 0 ? flat : RotateTiles(flat, size, steps);
-
-            BoundsInt area = new BoundsInt(origin.x, origin.y, origin.z, rotatedSize.x, rotatedSize.y, 1);
-            tilemap.SetTilesBlock(area, rotated);
+            BoundsInt area = new BoundsInt(origin.x, origin.y, origin.z, size.x, size.y, 1);
+            tilemap.SetTilesBlock(area, flat);
         }
 
-        private static TileBase[] RotateTiles(TileBase[] flat, Vector2Int size, int steps)
+        /// <summary>Elimina los tiles de una región rectangular (los pone a null).</summary>
+        public static void ClearCells(Tilemap tilemap, Vector3Int min, Vector3Int size)
         {
-            int w = size.x;
-            int h = size.y;
-            int rw = (steps % 2 == 0) ? w : h;
-            int rh = (steps % 2 == 0) ? h : w;
-            TileBase[] result = new TileBase[rw * rh];
-
-            for (int dy = 0; dy < rh; dy++)
+            if (tilemap == null)
             {
-                for (int dx = 0; dx < rw; dx++)
-                {
-                    int sx, sy;
-                    switch (steps)
-                    {
-                        case 1: sx = dy; sy = h - 1 - dx; break;
-                        case 2: sx = w - 1 - dx; sy = h - 1 - dy; break;
-                        case 3: sx = w - 1 - dy; sy = dx; break;
-                        default: sx = dx; sy = dy; break;
-                    }
-
-                    result[dy * rw + dx] = flat[sy * w + sx];
-                }
+                return;
             }
 
-            return result;
+            for (int y = 0; y < size.y; y++)
+            {
+                for (int x = 0; x < size.x; x++)
+                {
+                    tilemap.SetTile(new Vector3Int(min.x + x, min.y + y, min.z), null);
+                }
+            }
         }
     }
 }

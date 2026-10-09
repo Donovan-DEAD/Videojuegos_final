@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Estadísticas base de un enemigo: movimiento, salud, ataque y detección.
+    /// </summary>
     [CreateAssetMenu(fileName = "EnemyStats", menuName = "Madness Dreams/Enemy Stats")]
     public class EnemyStatsSO : ScriptableObject
     {

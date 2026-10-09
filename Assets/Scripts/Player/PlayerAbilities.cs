@@ -5,6 +5,10 @@ using UnityEngine.InputSystem;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Gestiona las habilidades del jugador (BossAbilitySO) en ranuras con enfriamiento,
+    /// permitiendo aprenderlas y lanzarlas con las teclas 1-4.
+    /// </summary>
     public class PlayerAbilities : MonoBehaviour
     {
         [SerializeField] private List<BossAbilitySO> startingAbilities = new List<BossAbilitySO>();
@@ -19,8 +23,10 @@ namespace MadnessDreams
         private Rigidbody2D rb;
         private PlayerController controller;
 
+        /// <summary>Número de ranuras de habilidad disponibles.</summary>
         public int SlotCount => slots != null ? slots.Length : 0;
 
+        /// <summary>Cachea Rigidbody2D/PlayerController e inicializa las ranuras con las habilidades iniciales.</summary>
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
@@ -55,6 +61,7 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>Coloca una habilidad en la primera ranura libre; false si ya la tiene o no hay espacio.</summary>
         public bool Learn(BossAbilitySO ability)
         {
             if (ability == null || slots == null)
@@ -82,6 +89,7 @@ namespace MadnessDreams
             return false;
         }
 
+        /// <summary>Devuelve la habilidad de la ranura indicada, o null si el índice es inválido.</summary>
         public BossAbilitySO GetSlot(int index)
         {
             if (slots == null || index < 0 || index >= slots.Length)
@@ -92,11 +100,13 @@ namespace MadnessDreams
             return slots[index];
         }
 
+        /// <summary>Indica si la ranura está bloqueada.</summary>
         public bool IsSlotLocked(int index)
         {
             return lockedSlots != null && index >= 0 && index < lockedSlots.Length && lockedSlots[index];
         }
 
+        /// <summary>Bloquea o desbloquea una ranura.</summary>
         public void SetSlotLocked(int index, bool locked)
         {
             if (lockedSlots != null && index >= 0 && index < lockedSlots.Length)
@@ -105,6 +115,7 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>Devuelve el progreso de enfriamiento (0-1) de la ranura.</summary>
         public float GetCooldownNormalized(int index)
         {
             if (slots == null || index < 0 || index >= slots.Length || slots[index] == null)
@@ -141,6 +152,7 @@ namespace MadnessDreams
             return false;
         }
 
+        /// <summary>Lanza la habilidad de la ranura si no está bloqueada ni en enfriamiento.</summary>
         public bool UseAbility(int index)
         {
             if (slots == null || index < 0 || index >= slots.Length || IsSlotLocked(index))

@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Barra de vida del jefe: se muestra/oculta y se suscribe a los eventos de Health para reflejar la vida actual y máxima.
+    /// </summary>
     public class BossHealthBarWidget : MonoBehaviour
     {
         [SerializeField] private GameObject root;
@@ -14,6 +17,9 @@ namespace MadnessDreams
 
         private Health health;
 
+        /// <summary>
+        /// Inicializa la raíz (por defecto este GameObject) y oculta la barra al arrancar.
+        /// </summary>
         private void Awake()
         {
             if (root == null)
@@ -24,6 +30,9 @@ namespace MadnessDreams
             Hide();
         }
 
+        /// <summary>
+        /// Muestra la barra para el jefe indicado y se suscribe a los cambios de vida de Health.
+        /// </summary>
         public void Show(string bossName, Health target)
         {
             if (health != null)
@@ -50,6 +59,9 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>
+        /// Deja de escuchar los cambios de vida y oculta la barra.
+        /// </summary>
         public void Hide()
         {
             if (health != null)
@@ -64,6 +76,9 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>
+        /// Deja de escuchar los cambios de vida del jefe al destruirse.
+        /// </summary>
         private void OnDestroy()
         {
             if (health != null)

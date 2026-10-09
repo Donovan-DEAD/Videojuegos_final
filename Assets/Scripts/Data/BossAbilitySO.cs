@@ -2,14 +2,25 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Identifica cada habilidad de jefe para elegir su comportamiento y efectos asociados.
+    /// </summary>
     public enum BossAbilityType
     {
+        /// <summary>Garra de lobo: ataque cuerpo a cuerpo de Caperucita.</summary>
         WolfClaw,
+        /// <summary>Disparo de espinas: proyectil a distancia.</summary>
         ThornShot,
+        /// <summary>Daga de Peter Pan: proyectil lanzado en abanico.</summary>
         PeterDagger,
+        /// <summary>Polvo de hadas: efecto asociado a las hadas.</summary>
         FairyDust
     }
 
+    /// <summary>
+    /// Datos configurables de una habilidad de jefe: identidad, tiempos, daño, proyectil,
+    /// ralentización y desplazamiento.
+    /// </summary>
     [CreateAssetMenu(fileName = "Ability", menuName = "Madness Dreams/Boss Ability")]
     public class BossAbilitySO : ScriptableObject
     {

@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Estadísticas de un jefe: hereda las de <see cref="EnemyStatsSO"/> y añade los umbrales
+    /// de salud por fase y los patrones de ataque de cada fase.
+    /// </summary>
     [CreateAssetMenu(fileName = "BossStats", menuName = "Madness Dreams/Boss Stats")]
     public class BossStatsSO : EnemyStatsSO
     {

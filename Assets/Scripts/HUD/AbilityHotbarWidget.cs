@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Widget de la barra de habilidades: refleja el icono, el enfriamiento y el estado de bloqueo de cada ranura de PlayerAbilities.
+    /// </summary>
     public class AbilityHotbarWidget : MonoBehaviour
     {
         [SerializeField] private Image[] slotIcons;
@@ -35,6 +38,9 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>
+        /// Actualiza la apariencia de la ranura indicada: icono, barra de enfriamiento normalizada y estado de bloqueo.
+        /// </summary>
         public void SetSlot(int index, Sprite icon, float cooldownNormalized, bool locked)
         {
             if (slotIcons == null || index < 0 || index >= slotIcons.Length)

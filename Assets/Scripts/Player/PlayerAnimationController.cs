@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Traduce el estado de PlayerController, PlayerCombat y Health al parámetro entero "State" del Animator.
+    /// </summary>
     public class PlayerAnimationController : MonoBehaviour
     {
         [SerializeField] private Animator animator;
@@ -10,6 +13,7 @@ namespace MadnessDreams
         [SerializeField] private PlayerCombat combat;
         [SerializeField] private Health health;
 
+        /// <summary>Resuelve referencias a PlayerController, PlayerCombat y Health si no están asignadas.</summary>
         private void Awake()
         {
             if (controller == null) controller = GetComponent<PlayerController>();
@@ -17,6 +21,7 @@ namespace MadnessDreams
             if (health == null) health = GetComponent<Health>();
         }
 
+        /// <summary>Estado de animación calculado en el último Update.</summary>
         public AnimationState CurrentState { get; private set; } = AnimationState.Idle;
 
         private void Update()

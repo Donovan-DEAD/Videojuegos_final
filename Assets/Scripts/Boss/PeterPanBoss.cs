@@ -2,10 +2,17 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Jefe "Peter Pan": enemigo volador que mantiene distancia, dispara andanadas de dagas,
+    /// se reposiciona con vuelos e invoca esbirros al cambiar de fase.
+    /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(Health))]
     public class PeterPanBoss : MonoBehaviour, IBossController
     {
+        /// <summary>
+        /// Estados de la máquina de comportamiento del jefe Peter Pan.
+        /// </summary>
         private enum PeterPanState
         {
             Kite,
@@ -83,6 +90,9 @@ namespace MadnessDreams
         private float DashCooldown => dashCooldown * (IsEnraged ? enrageDashCooldownMultiplier : 1f);
         private float CurrentSpreadAngle => spreadAngle * (IsEnraged ? enrageSpreadMultiplier : 1f);
 
+        /// <summary>
+        /// Almacena referencias al <see cref="Rigidbody2D"/>, la <see cref="Health"/> y el collider del cuerpo.
+        /// </summary>
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
@@ -90,6 +100,9 @@ namespace MadnessDreams
             bodyCollider = GetComponent<Collider2D>();
         }
 
+        /// <summary>
+        /// Suscribe los manejadores a los eventos de la salud y localiza al jugador si falta.
+        /// </summary>
         private void Start()
         {
             health.Died += OnDied;
@@ -105,6 +118,9 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>
+        /// Se desuscribe de los eventos de la salud al destruirse el objeto.
+        /// </summary>
         private void OnDestroy()
         {
             if (health == null)
@@ -116,6 +132,9 @@ namespace MadnessDreams
             health.HealthChanged -= OnHealthChanged;
         }
 
+        /// <summary>
+        /// Inyecta las estadísticas del jefe y el objetivo, reinicia fase y estado y aplica la salud máxima.
+        /// </summary>
         public void ConfigureBoss(BossStatsSO bossStats, Transform target)
         {
             if (bossStats != null)

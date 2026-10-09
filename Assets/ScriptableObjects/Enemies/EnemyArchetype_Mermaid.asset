@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.EnemyArchetypeSO
   prefab: {fileID: 5069023367285854496, guid: de34fe9e4ae66dc4fa6c711106c7f858, type: 3}
   stats: {fileID: 11400000, guid: 808073fa66f5c4f4fb65c5d12ca9a69a, type: 2}
+  tier: 3
+  weight: 1

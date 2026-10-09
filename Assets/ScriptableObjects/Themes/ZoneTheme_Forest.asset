@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dca694848d23bdf478b17f31e49125cb, type: 3}
+  m_Name: ZoneTheme_Forest
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.ZoneThemeSO
+  tag: 1
+  enemyBank:
+  - archetype: {fileID: 11400000, guid: 8eb25e91f354d284a837b2c8262fa026, type: 2}
+    weight: 3
+  - archetype: {fileID: 11400000, guid: 04054d06320881e4e886f5dc95fc2e2c, type: 2}
+    weight: 3
+  - archetype: {fileID: 11400000, guid: e742e63ccd489fe408966615b970dac5, type: 2}
+    weight: 2
+  - archetype: {fileID: 11400000, guid: 95fbc7f3c9bd3e8418684d84cb46b3a0, type: 2}
+    weight: 2
+  propBank:
+  - prop: {fileID: 11400000, guid: ecf23f880b8595c4d88736ef09ae4194, type: 2}
+    weight: 3
+  - prop: {fileID: 11400000, guid: 94cbce27b1158f84db1e47d4e8870fe1, type: 2}
+    weight: 3
+  - prop: {fileID: 11400000, guid: 48f6143b064dbbc42b442fe258311995, type: 2}
+    weight: 2
+  barrierBank:
+  - prop: {fileID: 11400000, guid: d9dcfdaaa50c28442854c3df226288da, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: 61c2b5e4bd00c6a4886c38ecbffafd17, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: acb61d8bede7b2741a6a83ab066f4136, type: 2}
+    weight: 1
+  enemiesMin: 1
+  enemiesMax: 3
+  propsMin: 3
+  propsMax: 7
+  barriersMin: 1
+  barriersMax: 3

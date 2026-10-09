@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 namespace MadnessDreams
 {
+    /// <summary>
+    /// Menú principal: permite elegir protagonista y arranca la partida, abre ajustes o cierra el juego.
+    /// </summary>
     public class MainMenuController : MonoBehaviour
     {
         [SerializeField] private Button playButton;
@@ -13,6 +16,9 @@ namespace MadnessDreams
 
         private CharacterId selectedCharacter = CharacterId.Hansel;
 
+        /// <summary>
+        /// Enlaza los botones de jugar, ajustes, salir y alternar personaje.
+        /// </summary>
         private void Awake()
         {
             if (playButton != null)
@@ -36,6 +42,9 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>
+        /// Recupera el personaje seleccionado desde GameFlowManager y actualiza la etiqueta.
+        /// </summary>
         private void Start()
         {
             if (GameFlowManager.Instance != null)

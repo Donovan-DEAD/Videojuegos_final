@@ -14,10 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.WorldConfigSO
   seed: 111
   bank: {fileID: 11400000, guid: 34cc49b0065bd574cb0dda69b847c847, type: 2}
-  width: 5
-  height: 5
+  width: 14
+  height: 14
   chunkSize: 16
   bossRegionSize: 1
+  sizeWeights: 04000000030000000100000001000000
+  openingWidth: 4
+  fillRatio: 1
+  themes:
+  - tag: 1
+    theme: {fileID: 11400000, guid: 9d583cef6a7947c49848d8b492cc600b, type: 2}
+  difficulty: {fileID: 11400000, guid: a979387f7821c7d409e467ee5ee29fd8, type: 2}
   enemyPool:
   - {fileID: 11400000, guid: 8eb25e91f354d284a837b2c8262fa026, type: 2}
   - {fileID: 11400000, guid: 04054d06320881e4e886f5dc95fc2e2c, type: 2}
