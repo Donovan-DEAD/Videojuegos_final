@@ -1,0 +1,477 @@
+using UnityEngine;
+
+namespace MadnessDreams
+{
+    [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(Health))]
+    public class PeterPanBoss : MonoBehaviour, IBossController
+    {
+        private enum PeterPanState
+        {
+            Kite,
+            VolleyWindup,
+            Reposition,
+            Recover,
+            Summon,
+            Dead
+        }
+
+        [Header("Stats")]
+        [SerializeField] private BossStatsSO stats;
+
+        [Header("Volley")]
+        [SerializeField] private GameObject projectilePrefab;
+        [SerializeField] private Transform firePoint;
+        [SerializeField] private LayerMask playerMask = ~0;
+        [SerializeField] private int[] daggersPerPhase = new int[] { 1, 3, 5 };
+        [SerializeField] private float spreadAngle = 30f;
+
+        [Header("Kiting")]
+        [SerializeField] private float preferredDistance = 6f;
+        [SerializeField] private float closeRange = 3f;
+        [SerializeField] private float strafeSpeed = 3f;
+        [SerializeField] private float orbitFlipInterval = 1.2f;
+
+        [Header("Reposition (flight)")]
+        [SerializeField] private float dashSpeed = 16f;
+        [SerializeField] private float dashDuration = 0.18f;
+        [SerializeField] private float dashCooldown = 4f;
+
+        [Header("Timing")]
+        [SerializeField] private float recoverTime = 0.4f;
+        [SerializeField] private float summonWindup = 0.7f;
+
+        [Header("Summon")]
+        [SerializeField] private GameObject[] minionPrefabs;
+        [SerializeField] private int minionsPerSummon = 2;
+        [SerializeField] private int extraMinionsOnEnrage = 2;
+        [SerializeField] private float minionSpread = 2.5f;
+
+        [Header("Enrage (last phase)")]
+        [SerializeField] private float enrageSpeedMultiplier = 1.25f;
+        [SerializeField] private float enrageCooldownMultiplier = 0.65f;
+        [SerializeField] private float enrageDashCooldownMultiplier = 0.55f;
+        [SerializeField] private float enrageSpreadMultiplier = 1.35f;
+
+        [Header("Loot")]
+        [SerializeField] private GameObject lootPrefab;
+
+        [Header("Animation")]
+        [SerializeField] private Animator animator;
+        [SerializeField] private string stateParameter = "State";
+
+        private Rigidbody2D rb;
+        private Health health;
+        private Collider2D bodyCollider;
+        private Transform player;
+
+        private PeterPanState state = PeterPanState.Kite;
+        private int currentPhase;
+        private float attackCooldownRemaining;
+        private float dashCooldownRemaining;
+        private float stateTimer;
+        private float orbitTimer;
+        private float orbitSign = 1f;
+        private Vector2 dashDirection;
+
+        public int CurrentPhase => currentPhase;
+
+        private bool IsEnraged => currentPhase >= 2;
+
+        private float ApproachSpeed => stats.ChaseSpeed * (IsEnraged ? enrageSpeedMultiplier : 1f);
+        private float AttackCooldown => stats.AttackCooldown * (IsEnraged ? enrageCooldownMultiplier : 1f);
+        private float DashCooldown => dashCooldown * (IsEnraged ? enrageDashCooldownMultiplier : 1f);
+        private float CurrentSpreadAngle => spreadAngle * (IsEnraged ? enrageSpreadMultiplier : 1f);
+
+        private void Awake()
+        {
+            rb = GetComponent<Rigidbody2D>();
+            health = GetComponent<Health>();
+            bodyCollider = GetComponent<Collider2D>();
+        }
+
+        private void Start()
+        {
+            health.Died += OnDied;
+            health.HealthChanged += OnHealthChanged;
+
+            if (player == null)
+            {
+                GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+                if (playerObject != null)
+                {
+                    player = playerObject.transform;
+                }
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (health == null)
+            {
+                return;
+            }
+
+            health.Died -= OnDied;
+            health.HealthChanged -= OnHealthChanged;
+        }
+
+        public void ConfigureBoss(BossStatsSO bossStats, Transform target)
+        {
+            if (bossStats != null)
+            {
+                stats = bossStats;
+            }
+
+            if (target != null)
+            {
+                player = target;
+            }
+
+            currentPhase = 0;
+            state = PeterPanState.Kite;
+            ApplyStats();
+        }
+
+        private void ApplyStats()
+        {
+            if (stats == null)
+            {
+                Debug.LogWarning("PeterPanBoss: no BossStatsSO assigned.", this);
+                return;
+            }
+
+            health.SetMaxHealth(stats.MaxHealth);
+        }
+
+        private void Update()
+        {
+            if (state == PeterPanState.Dead || stats == null)
+            {
+                return;
+            }
+
+            if (attackCooldownRemaining > 0f)
+            {
+                attackCooldownRemaining -= Time.deltaTime;
+            }
+
+            if (dashCooldownRemaining > 0f)
+            {
+                dashCooldownRemaining -= Time.deltaTime;
+            }
+
+            switch (state)
+            {
+                case PeterPanState.Kite: UpdateKite(); break;
+                case PeterPanState.VolleyWindup: UpdateVolleyWindup(); break;
+                case PeterPanState.Reposition: UpdateReposition(); break;
+                case PeterPanState.Recover: UpdateRecover(); break;
+                case PeterPanState.Summon: UpdateSummon(); break;
+            }
+
+            UpdateAnimation();
+        }
+
+        private void UpdateKite()
+        {
+            if (player == null)
+            {
+                StopMoving();
+                return;
+            }
+
+            float distance = Vector3.Distance(transform.position, player.position);
+            Vector2 toPlayer = ((Vector2)(player.position - transform.position)).normalized;
+
+            if (distance < closeRange && dashCooldownRemaining <= 0f)
+            {
+                StartReposition(-toPlayer);
+                return;
+            }
+
+            if (distance < closeRange)
+            {
+                rb.linearVelocity = -toPlayer * strafeSpeed;
+            }
+            else if (distance > preferredDistance)
+            {
+                rb.linearVelocity = toPlayer * ApproachSpeed;
+            }
+            else
+            {
+                orbitTimer -= Time.deltaTime;
+                if (orbitTimer <= 0f)
+                {
+                    orbitTimer = orbitFlipInterval;
+                    orbitSign = -orbitSign;
+                }
+
+                Vector2 tangent = new Vector2(-toPlayer.y, toPlayer.x) * orbitSign;
+                rb.linearVelocity = tangent * strafeSpeed;
+            }
+
+            if (distance <= stats.AttackRange && attackCooldownRemaining <= 0f)
+            {
+                StopMoving();
+                EnterState(PeterPanState.VolleyWindup);
+                stateTimer = stats.WindupTime;
+            }
+        }
+
+        private void UpdateVolleyWindup()
+        {
+            StopMoving();
+            stateTimer -= Time.deltaTime;
+
+            if (stateTimer <= 0f)
+            {
+                FireVolley();
+            }
+        }
+
+        private void StartReposition(Vector2 direction)
+        {
+            if (direction.sqrMagnitude < 0.0001f)
+            {
+                direction = Random.insideUnitCircle.normalized;
+            }
+
+            dashDirection = direction.normalized;
+            dashCooldownRemaining = DashCooldown;
+            stateTimer = dashDuration;
+            EnterState(PeterPanState.Reposition);
+        }
+
+        private void UpdateReposition()
+        {
+            rb.linearVelocity = dashDirection * dashSpeed;
+            stateTimer -= Time.deltaTime;
+
+            if (stateTimer <= 0f)
+            {
+                StopMoving();
+                EnterState(PeterPanState.Kite);
+            }
+        }
+
+        private void UpdateRecover()
+        {
+            StopMoving();
+            stateTimer -= Time.deltaTime;
+
+            if (stateTimer <= 0f)
+            {
+                EnterState(PeterPanState.Kite);
+            }
+        }
+
+        private void UpdateSummon()
+        {
+            StopMoving();
+            stateTimer -= Time.deltaTime;
+
+            if (stateTimer <= 0f)
+            {
+                SpawnMinions();
+                EnterState(PeterPanState.Kite);
+            }
+        }
+
+        private void FireVolley()
+        {
+            GameObject prefab = ResolveProjectilePrefab();
+            Vector3 origin = firePoint != null ? firePoint.position : transform.position;
+
+            if (prefab != null && player != null)
+            {
+                Vector2 baseDirection = ((Vector2)(player.position - origin)).normalized;
+                int count = DaggersForPhase(currentPhase);
+                float spread = CurrentSpreadAngle;
+                float step = count > 1 ? spread / (count - 1) : 0f;
+                float start = -spread * 0.5f;
+
+                for (int i = 0; i < count; i++)
+                {
+                    float angle = count > 1 ? start + step * i : 0f;
+                    Vector2 direction = Rotate(baseDirection, angle);
+
+                    GameObject instance = Instantiate(prefab, origin, Quaternion.identity);
+                    Projectile projectile = instance.GetComponent<Projectile>();
+                    if (projectile != null)
+                    {
+                        projectile.Launch(direction, stats.Damage, stats.ProjectileSpeed, playerMask);
+                    }
+                }
+            }
+
+            attackCooldownRemaining = AttackCooldown;
+            EnterState(PeterPanState.Recover);
+            stateTimer = recoverTime;
+        }
+
+        private GameObject ResolveProjectilePrefab()
+        {
+            return projectilePrefab != null ? projectilePrefab : stats.ProjectilePrefab;
+        }
+
+        private int DaggersForPhase(int phase)
+        {
+            if (daggersPerPhase == null || daggersPerPhase.Length == 0)
+            {
+                return 1;
+            }
+
+            return Mathf.Max(1, daggersPerPhase[Mathf.Clamp(phase, 0, daggersPerPhase.Length - 1)]);
+        }
+
+        private static Vector2 Rotate(Vector2 vector, float degrees)
+        {
+            float radians = degrees * Mathf.Deg2Rad;
+            float cos = Mathf.Cos(radians);
+            float sin = Mathf.Sin(radians);
+            return new Vector2(vector.x * cos - vector.y * sin, vector.x * sin + vector.y * cos);
+        }
+
+        private void OnHealthChanged(int current, int max)
+        {
+            int newPhase = CalculatePhase(current, max);
+            if (newPhase == currentPhase)
+            {
+                return;
+            }
+
+            currentPhase = newPhase;
+            OnPhaseChanged(currentPhase);
+        }
+
+        private int CalculatePhase(int currentHealth, int maxHealth)
+        {
+            if (stats == null || stats.PhaseHealthThresholds == null)
+            {
+                return 0;
+            }
+
+            float ratio = (float)currentHealth / Mathf.Max(1, maxHealth);
+            float[] thresholds = stats.PhaseHealthThresholds;
+
+            int phase = 0;
+            for (int i = 0; i < thresholds.Length; i++)
+            {
+                if (ratio <= thresholds[i])
+                {
+                    phase = i + 1;
+                }
+            }
+
+            return phase;
+        }
+
+        private void OnPhaseChanged(int phase)
+        {
+            Debug.Log($"{name} (Peter Pan) entered phase {phase + 1}.", this);
+
+            if (phase < 1)
+            {
+                return;
+            }
+
+            EnterState(PeterPanState.Summon);
+            stateTimer = summonWindup;
+        }
+
+        private void SpawnMinions()
+        {
+            if (minionPrefabs == null || minionPrefabs.Length == 0)
+            {
+                return;
+            }
+
+            int count = minionsPerSummon + (IsEnraged ? extraMinionsOnEnrage : 0);
+
+            for (int i = 0; i < count; i++)
+            {
+                GameObject prefab = minionPrefabs[Random.Range(0, minionPrefabs.Length)];
+                if (prefab == null)
+                {
+                    continue;
+                }
+
+                Vector2 offset = Random.insideUnitCircle.normalized * Random.Range(minionSpread * 0.5f, minionSpread);
+                Instantiate(prefab, transform.position + (Vector3)offset, Quaternion.identity);
+            }
+        }
+
+        private void StopMoving()
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        private void EnterState(PeterPanState newState)
+        {
+            state = newState;
+        }
+
+        private void OnDied()
+        {
+            state = PeterPanState.Dead;
+            StopMoving();
+
+            if (bodyCollider != null)
+            {
+                bodyCollider.enabled = false;
+            }
+
+            if (lootPrefab != null)
+            {
+                Instantiate(lootPrefab, transform.position, Quaternion.identity);
+            }
+
+            UpdateAnimation();
+        }
+
+        private void UpdateAnimation()
+        {
+            if (animator == null)
+            {
+                return;
+            }
+
+            animator.SetInteger(stateParameter, (int)DetermineAnimationState());
+        }
+
+        private AnimationState DetermineAnimationState()
+        {
+            switch (state)
+            {
+                case PeterPanState.Dead:
+                    return AnimationState.Death;
+
+                case PeterPanState.VolleyWindup:
+                    return AnimationState.RangedAttack;
+
+                case PeterPanState.Kite:
+                case PeterPanState.Reposition:
+                    return rb.linearVelocity.sqrMagnitude > 0.01f ? AnimationState.Move : AnimationState.Idle;
+
+                default:
+                    return AnimationState.Idle;
+            }
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = new Color(0.2f, 0.8f, 1f, 0.6f);
+            Gizmos.DrawWireSphere(transform.position, preferredDistance);
+
+            Gizmos.color = new Color(1f, 0.4f, 0.4f, 0.6f);
+            Gizmos.DrawWireSphere(transform.position, closeRange);
+
+            if (stats != null)
+            {
+                Gizmos.color = new Color(1f, 0.9f, 0.2f, 0.4f);
+                Gizmos.DrawWireSphere(transform.position, stats.AttackRange);
+            }
+        }
+    }
+}

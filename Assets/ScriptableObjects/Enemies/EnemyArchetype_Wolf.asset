@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e525ae72cae201041a4b60b2fbebfc6a, type: 3}
+  m_Name: EnemyArchetype_Wolf
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.EnemyArchetypeSO
+  prefab: {fileID: 2100142994497809069, guid: 037f64edabfba8149b5d053241f3072f, type: 3}
+  stats: {fileID: 11400000, guid: c8b0d7e78163b2146932a3c91ec0e098, type: 2}

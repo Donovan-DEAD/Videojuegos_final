@@ -1,0 +1,167 @@
+﻿One sheet doc
+Target audience: 13+
+Target rating: Teen (ESRB)
+PC/Console (XBOX, PlayStation, Nintendo Switch)
+November - 2026
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+THEBESTGAMEDEVELOPMENTSTUDIO
+Angel Jose Muñoz Silva - +52 1 33 3403 7389
+Donovan Eliam Aguilar Diaz - +52 1 33 2417 0475
+Santiago Andres Bonilla Ospina - +52 624-315-6416
+
+
+
+
+________________
+
+
+Story and Gameplay
+Beginning: Hansel and Gretel get lost in the forest. While searching for the way back, a cold light drags them into a broken dream: a superior being (the Puppeteer) kidnaps one of the siblings and leaves the other inside a realm of distorted fairy tales. The player chooses whether to control Hansel or Gretel; while the other sibling is held captive.
+Middle: Each world is a corrupted version of a classic tale, ruled by a protagonist the Puppeteer keeps under its control. To advance, the player must cross the world, survive its thematic enemies, and defeat the guardian (boss). Each victory frees a fragment of the sibling's memory and tears away a piece of the guardian's power, which the player keeps permanently. The full game continues this pattern across many fairy-tale worlds; the demo covers the first two.
+Ending (full game). After traveling through the remaining corrupted worlds, the surviving sibling finally reaches the Puppeteer. Having recovered the stolen power and the memories of the other sibling, the protagonist faces the superior being and defeats it, breaking the control over the fairy-tale heroes and rescuing the family. They return to their own world.
+Demo ending / cliffhanger. For the class demo, the journey stops after defeating Red Riding Hood and Peter Pan: the sibling is still captive and the trail points deeper into new tales, leaving the defeat of the Puppeteer as the goal of the complete game.
+Flow in stages:
+1. Choose a protagonist and start in Red Riding Hood's Forest.
+2. Explore seed-generated rooms (the map changes every run).
+3. Fight enemies whose appearance and mechanics change depending on the world.
+4. Defeat the world's boss to unlock the exit.
+5. Obtain a persistent weapon or ability upgrade from the boss.
+6. The seed changes; progress carries over between worlds.
+7. Advance to Neverland Sea (end of the demo). In the full game, keep advancing through more fairy-tale worlds.
+8. Rescue the sibling and defeat the Puppeteer.
+________________
+Game Flow
+The player grows by defeating bosses, not by leveling up from accumulated experience. Each defeated guardian grants an upgrade that is saved for the rest of the run. This ties progression to the story: each upgrade is a fragment of the sibling's memory that is recovered and, at the same time, a tool to go further. This progression chain continues across every world in the full game, not only the two demo worlds.
+Possible bonuses:
+After Red Riding Hood (Forest): Wolf's Claw (improved melee attack: more damage and a short dash) or Thorn Basket (projectile that slows enemies).
+After Peter Pan (Sea): Peter's Dagger (projectile with bounce or higher speed) or Fairy Dust (evasion ability / short dash).
+In later worlds: new weapons, abilities, and mobility tied to each fairy-tale guardian.
+In general: more health, more damage, new projectile patterns and mobility.
+Proposed Systems:
+Tale fragments: progression resource dropped by bosses. They work as "memory currency."
+Boss loot: a unique weapon or ability upgrade per world (persistent).
+Hearts / health: base player health, expandable with upgrades.
+Melee and ranged weapons: the player already has Space (melee) and K (ranged); upgrades modify damage, range, projectile, or add mobility.
+Procedural seed: changes when a boss is defeated; progress is kept between worlds.
+
+
+Character(s) and Controls
+The player controls one of the siblings (which they choose at the start of the game) . The unique aspect to this game is that the character can grab power ups depending on the world that they’re located in. For example, if the player is currently in Rapunzel’s world, than they can grab powerups and/or weapons from characters such as Flynn Rider.
+Keyboard Layout:
+W/A/S/D: Movement
+Arrows: Camera movement
+1/2/3/4: Quick Item Equip
+5: Open items menu
+U: Attack
+I: Heavy attack
+LShift: Sprint
+LCtrl: Crouch
+J: Use Item
+Controller Layout:
+  
+
+
+
+
+
+________________
+
+
+Main Gameplay Concepts and Platform Specific Features
+Gameplay centers on exploring procedurally generated maps, defeating enemies whose mechanics/appearances adapt per world, and fighting bosses to earn ability and weapon upgrades. And the sequence consists of different fairy-tale-like worlds, named chapters. Their order might differ, but do not take away from the gameplay, similar to Cortazar’s Rayuela. 
+Unique Selling Points (USPs)
+
+
+* Twisted Fairy-Tale Universe: A dark reimagining of Hansel and Gretel where fairy-tale protagonists are controlled by a supreme being.
+* Procedurally Changing Fairy-Tale Worlds: Level layouts alter via new seeds with each iteration of the game.
+* Fairy-Tale Characters Forced to Fight: Protagonists are forced into combat under the control of a superior entity.
+* Persistent Progression Across Runs: Player progress and acquired upgrades are kept even after dying.
+
+
+Game World
+1. Red Riding Hood's Forest (world 1 — demo)
+Description: dark forest, twisted trees, paths of dead leaves, and ruined cabins. Visual theme: red, black, and gray.
+Mood: fairy tale turned nightmare; the feeling of being watched.
+Story connection: it is the first tale the Puppeteer distorts; here the player understands that fairy-tale heroes are being used as puppets.
+Thematic enemies:
+- Guard wolf: melee, fast chase, large detection radius.
+- Living bramble: melee, slow, high health.
+- Possessed woodcutter: melee, high damage, medium range.
+- Cursed firefly: ranged, pollen projectile.
+Boss: Corrupted Red Riding Hood.
+
+
+2. Neverland Sea (world 2 — demo)
+Description: twilight ocean with floating islets, shipwrecked pirate ships, bioluminescent waters, and remnants of a starry night sky. Visual theme: night blue, cyan, and gold.
+Mood: childhood wonder broken by abandonment; melancholy and twisted adventure.
+Story connection: it contrasts with the closed forest through the openness of the sea; here the player learns not to trust the figure of the "hero who never grows up."
+Thematic enemies:
+- Cabin boy / lost boy: melee, medium damage.
+- Mermaid: ranged, water projectile, high detection radius.
+- Tick-Tock crocodile: melee, fast chase, high health.
+- Dust fairy: ranged, small and fast.
+Boss: Corrupted Peter Pan.
+
+
+FUTURE WORLDS (FULL GAME)
+Additional fairy-tale worlds planned beyond the demo, each with its own mood, thematic enemies, and corrupted guardian (e.g., an ice world, a castle, and others). They follow the same structure and reinforce the same progression.
+
+
+CONNECTION BETWEEN WORLDS
+Linear navigation for now (list of WorldConfigSO in RunManager), with a possible hub of tales later. The first two worlds reinforce the contrast: closed, oppressive forest followed by open, desolate sea, and later worlds continue the sequence in the full game.
+
+
+________________
+
+
+Interface
+The player is able to see any equipment and buff or debuff it may have from the hud, as well as its life without needing to do anything.
+If the player pressed the pause button, he would have a clear view of the character he is playing, the buffs and debuffs where you can go over to them for descriptions, and its weapons. 
+If he swipes right he could see the map of the current level as long as it is already discovered and some special marks around it that refer to special locations or items left behind.
+With another swipe he would get to the menu, where que can go to options and change configurations, save and leave the game, resume, or go to achievements where it can be seen the achievements already achieved and the ones to achieved, if its locked as a secret or what can you do to achieve it.
+________________
+
+
+Mechanics and Power- ups
+The base mechanics:
+* Move 
+* jump (still debating)
+* attack
+* special attack
+* collections points used as a currency in game to upgrade the run, and another currency at the end of each run to unlock special things.
+* Currency obtainable by killing groups of enemies and special ones. Special currency defeating bosses and discovering secrets.
+* He could parry if having the weapons to do so (melee weapons).
+Special mechanics:
+* The “villain” of the original story would sell buffs or weapons so the current realm is easier to get through
+* Upgraded weapons or armor.
+* Enchantments with special abilities or passives.
+*  Buffs on base stats or permanent power-ups with special quests or missions you may do “help” the “villain”.
+* Collectibles around the realms that explain what happened to that realm specific and other ones more unique and hard to get that explains what happened in the general context of all realms.
+________________
+
+
+Enemies and Bosses
+Each realm will have a set of enemies with modified difficulty depending on how deep on the run you get to enter that realm. 
+Earlier realms (1-2):
+Most of the enemies will be two hits on enemies, with slow attacks and damage according to the average health to that point.Hordes being the main threat as well the surprise chambers or attacks.
+Medium realms (3-5):
+The enemies will have two sizes: small and medium will have a faster speed when moving, projectiles being harder to dodge or melee attacks being short ranged and harder to react to. If getting hit by a small enemy you could get a debuff that could nerf you a bit so you get more careful next time. Bigger enemies would deal double damage or deal special debuffs that can significantly alter the following seconds of your run.
+Occasionally, a group of a few big enemies and a bunch of smaller ones could appear as a new type of horde, more difficult but more rewarding.
+Latest realms (6-8):
+Smaller enemies will now be faster, being even harder to react when ranged attacks and having weird pathing of projectiles so it's harder to predict. When melee, the smaller enemies will try and do combos of attacks, that may shred to armor or deal several debuffs. Bigger enemies can't be parried any more, forcing the player to dodge to survive. They will also have some special resistance to special kinds of attacks depending on which realm and which enemy it is. It may (may not) be traps or difficulties on the terrain depending on the realm.
+Either way, each realm will have mechanics depending on the ambient of it, for example, Peter Pan having slowness when touching water and having to deal with parkour and flying enemies, or Little Red Riding Hood having animals that may disguise themselves with the environment and sneaky attacks being one thing to have in mind.

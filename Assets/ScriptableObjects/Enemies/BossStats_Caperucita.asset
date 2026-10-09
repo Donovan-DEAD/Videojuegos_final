@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cd77ccc152d6f44aaba45d4abbc90a3, type: 3}
+  m_Name: BossStats_Caperucita
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.BossStatsSO
+  moveSpeed: 2
+  chaseSpeed: 3.5
+  maxHealth: 300
+  damage: 12
+  attackRange: 1.8
+  attackCooldown: 1.2
+  windupTime: 0.35
+  attackType: 0
+  projectilePrefab: {fileID: 0}
+  projectileSpeed: 8
+  detectionRadius: 20
+  fovRadius: 20
+  fovAngle: 360
+  hearingRadius: 20
+  phaseHealthThresholds:
+  - 0.66
+  - 0.33
+  phaseAttacks: []

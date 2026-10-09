@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e81cd25bcf43b947abe4404d0f858d3, type: 3}
+  m_Name: World_Sample_A
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.WorldConfigSO
+  seed: 111
+  bank: {fileID: 11400000, guid: 34cc49b0065bd574cb0dda69b847c847, type: 2}
+  width: 5
+  height: 5
+  chunkSize: 16
+  bossRegionSize: 1
+  enemyPool:
+  - {fileID: 11400000, guid: 8eb25e91f354d284a837b2c8262fa026, type: 2}
+  - {fileID: 11400000, guid: 04054d06320881e4e886f5dc95fc2e2c, type: 2}
+  - {fileID: 11400000, guid: e742e63ccd489fe408966615b970dac5, type: 2}
+  - {fileID: 11400000, guid: 95fbc7f3c9bd3e8418684d84cb46b3a0, type: 2}
+  enemiesPerChunk: 2
+  bossPrefab: {fileID: 8271593292620891112, guid: c21b4da14beac78429e46e16890637eb, type: 3}
+  boss: {fileID: 11400000, guid: a098def03f07e614b89eda2b94957a8c, type: 2}

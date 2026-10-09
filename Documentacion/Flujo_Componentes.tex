@@ -1,0 +1,317 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{enumitem}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{array}
+
+\geometry{margin=2.5cm}
+
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+\title{Flujo completo de componentes --- Madness Dreams}
+\author{Donovan Eliam Aguilar Diaz}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Visión general}
+
+El proyecto se organiza en capas:
+
+\begin{enumerate}
+    \item \textbf{Datos (ScriptableObjects)}: configuración editable sin lógica de frame.
+    \item \textbf{Generación procedural}: construye el mapa con semilla.
+    \item \textbf{Enemigos}: FSM, movimiento, ataque y visión.
+    \item \textbf{Jefes}: FSM con fases y arena.
+    \item \textbf{Núcleo}: vida, proyectiles, flujo de mundos y enumeraciones.
+    \item \textbf{Jugador}: movimiento, combate y animación.
+\end{enumerate}
+
+\subsection{Flujo general}
+
+\texttt{RunManager} carga \texttt{WorldConfigSO}. Luego \texttt{MapGenerator} estampa los chunks con \texttt{TilemapStamper}. Después \texttt{ChunkContent} y \texttt{Spawner} colocan enemigos. El jugador explora y combate. Al entrar en la arena, \texttt{BossArenaController} spawnea al jefe. Al morir, \texttt{RunManager} pasa al siguiente mundo.
+
+\section{Capa de datos (ScriptableObjects)}
+
+\subsection{BlockBankSO}
+
+\begin{itemize}
+    \item \textbf{Propósito}: banco de chunks disponibles por nivel y la arena del jefe.
+    \item \textbf{Campos}: \texttt{normalChunks} (lista de \texttt{MapChunkSO}), \texttt{bossArena}.
+    \item \textbf{Métodos}: \texttt{GetRandomChunk(System.Random)}, \texttt{GetChunk(int)}.
+    \item \textbf{Flujo}: \texttt{MapGenerator} pide un chunk aleatorio por celda del grid.
+\end{itemize}
+
+\subsection{MapChunkSO}
+
+\begin{itemize}
+    \item \textbf{Propósito}: plantilla de un bloque o room (tiles, puertas y puntos de spawn).
+    \item \textbf{Campos}: \texttt{size}, \texttt{tiles} (aplanado fila a fila), \texttt{doorPositions}, \texttt{enemySpawns}, \texttt{role}.
+    \item \textbf{Helpers}: \texttt{GetTile(x, y)}, \texttt{LocalArea}, \texttt{SetSize}, \texttt{SetTileData}.
+    \item \textbf{Flujo}: el editor captura un \texttt{Tilemap} pintado con \texttt{GetTilesBlock} y \texttt{TilemapStamper} lo estampa con \texttt{SetTilesBlock}.
+\end{itemize}
+
+\subsection{EnemyStatsSO}
+
+\begin{itemize}
+    \item \textbf{Propósito}: plantilla de propiedades comunes de un enemigo.
+    \item \textbf{Campos}: \texttt{moveSpeed}, \texttt{chaseSpeed}, \texttt{maxHealth}, \texttt{damage}, \texttt{attackRange}, \texttt{attackCooldown}, \texttt{windupTime}, \texttt{attackType}, \texttt{projectilePrefab}, \texttt{projectileSpeed}, \texttt{detectionRadius}, \texttt{fovRadius}, \texttt{fovAngle}, \texttt{hearingRadius}.
+    \item \textbf{Flujo}: \texttt{EnemyAI} inyecta estos stats en \texttt{EnemyMovement}, \texttt{EnemyAttack}, \texttt{EnemyFOV} y \texttt{Health}.
+\end{itemize}
+
+\subsection{BossStatsSO}
+
+\begin{itemize}
+    \item \textbf{Hereda de}: \texttt{EnemyStatsSO}.
+    \item \textbf{Campos extra}: \texttt{phaseHealthThresholds}, \texttt{phaseAttacks}.
+    \item \textbf{Flujo}: \texttt{BossAI} usa los umbrales para detectar cambios de fase.
+\end{itemize}
+
+\subsection{EnemyArchetypeSO}
+
+\begin{itemize}
+    \item \textbf{Propósito}: vincula un prefab con sus stats.
+    \item \textbf{Campos}: \texttt{prefab}, \texttt{stats}.
+\end{itemize}
+
+\subsection{WorldConfigSO}
+
+\begin{itemize}
+    \item \textbf{Propósito}: configuración de un mundo.
+    \item \textbf{Campos}: \texttt{seed}, \texttt{bank}, \texttt{width}, \texttt{height}, \texttt{chunkSize}, \texttt{bossRegionSize}, \texttt{enemyPool}, \texttt{enemiesPerChunk}, \texttt{bossPrefab}, \texttt{boss}.
+\end{itemize}
+
+\subsection{MapChunkCaptureEditor (editor)}
+
+\begin{itemize}
+    \item \textbf{Propósito}: capturar un room pintado a un \texttt{MapChunkSO}.
+    \item \textbf{Flujo}: \texttt{Tools > Madness Dreams > Map Chunk Capture}, asignar Tilemap y target, clic en \texttt{Capture}.
+\end{itemize}
+
+\section{Generación procedural}
+
+\subsection{CellRole}
+
+Enumeración: \texttt{Empty}, \texttt{Start}, \texttt{Normal}, \texttt{Boss}. Marca el rol de cada celda del grid.
+
+\subsection{TilemapStamper}
+
+\begin{itemize}
+    \item \textbf{Propósito}: estampar un \texttt{MapChunkSO} en un Tilemap global.
+    \item \textbf{Flujo}: \texttt{Stamp(tilemap, chunk, origin, rotationSteps)} rota el layout si es necesario y llama a \texttt{SetTilesBlock}.
+\end{itemize}
+
+\subsection{MapGenerator}
+
+\textbf{Propósito}: orquestar toda la generación.
+
+\textbf{Flujo}:
+
+\begin{enumerate}
+    \item Valida \texttt{config}, \texttt{bank} y \texttt{targetTilemap}; limpia el tilemap.
+    \item Crea \texttt{System.Random(seed)}.
+    \item \texttt{BuildRoles}: \texttt{Start} al centro, \texttt{Boss} en la celda más lejana (región \texttt{bossRegionSize}), resto \texttt{Normal}.
+    \item \texttt{StampNormalChunks}: por celda \texttt{Normal} o \texttt{Start}, pide un chunk al banco, rota y estampa.
+    \item \texttt{StampBossArena}: estampa la arena en la región del jefe.
+    \item \texttt{SpawnEnemies}: delega en \texttt{ChunkContent}.
+\end{enumerate}
+
+\subsection{Spawner}
+
+\begin{itemize}
+    \item \textbf{Propósito}: instanciar con chequeo de colisión.
+    \item \textbf{Flujo}: \texttt{TrySpawn(prefab, position, rng)} genera candidatos con jitter, usa \texttt{Physics2D.OverlapCircle} e instancia si no hay solapamiento (hasta \texttt{maxTries}).
+\end{itemize}
+
+\subsection{ChunkContent}
+
+\begin{itemize}
+    \item \textbf{Propósito}: poblar un chunk con enemigos.
+    \item \textbf{Flujo}: lee \texttt{enemySpawns}, elige enemigos del \texttt{enemyPool}, convierte celda a mundo con \texttt{GetCellCenterWorld} y usa el \texttt{Spawner}.
+\end{itemize}
+
+\section{Enemigos}
+
+\subsection{EnemyAI (FSM central)}
+
+\textbf{Estados}: \texttt{Patrol}, \texttt{Alert}, \texttt{Chase}, \texttt{Attack}, \texttt{Return}, \texttt{Dead}.
+
+\textbf{Por frame}: \texttt{attack.Tick}, \texttt{UpdatePerception} (FOV con intervalo), switch de estado y \texttt{UpdateAnimation}.
+
+\textbf{Transiciones}:
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{De a} & \textbf{Condición} \\
+\hline
+\texttt{Patrol} $\to$ \texttt{Alert} & Jugador visto u oído \\
+\hline
+\texttt{Alert} $\to$ \texttt{Chase} & Terminó el tiempo de alerta \\
+\hline
+\texttt{Chase} $\to$ \texttt{Attack} & Distancia $\leq$ \texttt{attackRange} \\
+\hline
+\texttt{Attack} $\to$ \texttt{Chase} & Jugador salió de \texttt{attackRange} \\
+\hline
+\texttt{Chase} $\to$ \texttt{Return} & Jugador fuera de \texttt{detectionRadius} por un tiempo \\
+\hline
+\texttt{Return} $\to$ \texttt{Patrol} & Llegó al punto de origen \\
+\hline
+Cualquiera $\to$ \texttt{Dead} & Vida $\leq$ 0 \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{EnemyMovement}
+
+\texttt{MoveDirection}, \texttt{MoveTowards} y \texttt{Stop} setean la velocidad del \texttt{Rigidbody2D}.
+
+\subsection{EnemyAttack}
+
+Según \texttt{stats.attackType}:
+
+\begin{itemize}
+    \item \texttt{Melee}: corrutina con \texttt{windupTime} y luego aplica daño en rango.
+    \item \texttt{Ranged}: corrutina con \texttt{windupTime} y luego instancia \texttt{stats.projectilePrefab} y lo lanza.
+\end{itemize}
+
+\subsection{EnemyFOV}
+
+\texttt{CanHearPlayer} (radio) y \texttt{CanSeePlayer} (radio, cono y línea de visión con raycast contra \texttt{obstacleMask}).
+
+\subsection{Projectile}
+
+\texttt{Launch} setea dirección y velocidad, vuela con \texttt{Rigidbody2D}, y en \texttt{OnTriggerEnter2D} daña si el collider está en \texttt{targetMask}; se autodestruye por \texttt{lifetime}.
+
+\section{Jefes}
+
+\subsection{BossAI}
+
+\begin{itemize}
+    \item \textbf{Hereda de}: \texttt{EnemyAI}.
+    \item \textbf{Flujo}: calcula la fase según la vida restante (\texttt{phaseHealthThresholds}) y, en fase 2 o superior, invoca esbirros con el \texttt{Spawner}.
+\end{itemize}
+
+\subsection{BossSpawnPoint}
+
+Marcador de posición del jefe (con gizmo).
+
+\subsection{BossArenaController}
+
+\texttt{OnTriggerEnter2D} (capa \texttt{BossTrigger}) bloquea las puertas, spawnea al jefe y, al morir, desbloquea y dispara \texttt{BossDefeated}.
+
+\subsection{BossManager}
+
+Configura la arena desde \texttt{WorldConfigSO} (\texttt{Setup}) y escucha \texttt{BossDefeated} para avisar a \texttt{RunManager}.
+
+\section{Núcleo}
+
+\subsection{Health / IDamageable}
+
+\texttt{TakeDamage} reduce la vida, dispara \texttt{HealthChanged} y, al llegar a 0, \texttt{Died}.
+
+\subsection{RunManager}
+
+En \texttt{Start} suscribe \texttt{BossDefeated} y genera el mundo 0; al derrotar al jefe, avanza al siguiente mundo.
+
+\subsection{AnimationState}
+
+Enumeración: \texttt{Idle}, \texttt{Move}, \texttt{MeleeAttack}, \texttt{RangedAttack}, \texttt{Death}.
+
+\subsection{AttackType}
+
+Enumeración: \texttt{Melee}, \texttt{Ranged}.
+
+\section{Jugador}
+
+\subsection{PlayerController}
+
+Lee el input en \texttt{Update} y setea la velocidad en \texttt{FixedUpdate}; expone \texttt{IsMoving}.
+
+\subsection{PlayerCombat}
+
+\begin{itemize}
+    \item \texttt{Melee} (tecla Space): \texttt{OverlapCircleAll} contra \texttt{enemyMask} y daño a cada \texttt{IDamageable}.
+    \item \texttt{Ranged} (tecla K): instancia \texttt{projectilePrefab} hacia el ratón y lo lanza.
+    \item Expone \texttt{IsMeleeAttacking} e \texttt{IsRangedAttacking}.
+\end{itemize}
+
+\subsection{PlayerAnimationController}
+
+Cada frame determina \texttt{AnimationState} (muerte, ataque, movimiento o idle) y setea el parámetro \texttt{State} del Animator.
+
+\section{Flujo end-to-end}
+
+\begin{enumerate}
+    \item \texttt{RunManager} carga el mundo 0.
+    \item \texttt{MapGenerator} genera tiles y reserva la región del jefe.
+    \item \texttt{ChunkContent} y \texttt{Spawner} spawnean esbirros.
+    \item El jugador explora; los enemigos detectan, persiguen y atacan.
+    \item Al entrar en la arena, \texttt{BossArenaController} sella las puertas y spawnea al jefe.
+    \item \texttt{BossAI} pelea cambiando de fase.
+    \item El jefe muere y \texttt{BossManager}/\texttt{RunManager} avanzan al siguiente mundo con nueva semilla.
+\end{enumerate}
+
+\section{Resumen de estados de animación}
+
+Parámetro entero \texttt{State} del Animator:
+
+\begin{center}
+\begin{tabular}{|c|l|}
+\hline
+\textbf{Valor} & \textbf{Estado} \\
+\hline
+0 & \texttt{Idle} \\
+1 & \texttt{Move} \\
+2 & \texttt{MeleeAttack} \\
+3 & \texttt{RangedAttack} \\
+4 & \texttt{Death} \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Mapeo enemigo (FSM a animación)}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Estado FSM} & \textbf{Animación} \\
+\hline
+\texttt{Patrol} (quieto) & \texttt{Idle} \\
+\texttt{Patrol} (moviendo) & \texttt{Move} \\
+\texttt{Alert} & \texttt{Idle} \\
+\texttt{Chase} & \texttt{Move} \\
+\texttt{Return} & \texttt{Move} \\
+\texttt{Attack} (melee) & \texttt{MeleeAttack} \\
+\texttt{Attack} (ranged) & \texttt{RangedAttack} \\
+\texttt{Dead} & \texttt{Death} \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Mapeo jugador}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Condición} & \textbf{Animación} \\
+\hline
+Vida $\leq$ 0 & \texttt{Death} \\
+\texttt{IsMeleeAttacking} & \texttt{MeleeAttack} \\
+\texttt{IsRangedAttacking} & \texttt{RangedAttack} \\
+\texttt{IsMoving} & \texttt{Move} \\
+resto & \texttt{Idle} \\
+\hline
+\end{tabular}
+\end{center}
+
+\end{document}

@@ -1,0 +1,1485 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{enumitem}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{array}
+\usepackage{amssymb}
+\usepackage{longtable}
+
+\geometry{margin=2.5cm}
+
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{1em}{}
+
+\newcommand{\code}[1]{\texttt{#1}}
+
+\title{Manual de montaje completo --- Madness Dreams}
+\author{Donovan Eliam Aguilar Diaz}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section*{Alcance y estado}
+\addcontentsline{toc}{section}{Alcance y estado}
+
+Guía paso a paso para armar el juego desde cero en Unity: configuración de la escena,
+generación procedural, jugador, enemigos, jefes (Caperucita y Peter Pan) y el sistema de
+objetos y habilidades.
+
+\textbf{Alcance del demo.} El juego completo tiene muchos mundos de cuentos. Para la entrega de
+clase solo se montan \textbf{dos mundos}: el \emph{Bosque de Caperucita} y el \emph{Mar de Nunca
+Jamás}. El resto es visión del juego ideal, no parte del demo.
+
+\textbf{Estado.} Todos los scripts de \code{Assets/Scripts/} están implementados. El
+\textbf{Lote 2} (objetos y habilidades) se marca con la etiqueta \code{[LOTE 2]} y todavía no
+está en el código.
+
+\subsection*{Índice de fases}
+
+\begin{center}
+\begin{longtable}{|c|p{7.2cm}|l|}
+\hline
+\textbf{Fase} & \textbf{Qué hace} & \textbf{Se hace en} \\
+\hline
+\endhead
+0 & Preparar el proyecto y las carpetas & Editor \\
+\hline
+1 & Layers y Tags & Editor \\
+\hline
+2 & Animator Controller compartido & Editor \\
+\hline
+3 & ScriptableObjects base (stats, arquetipos, mundos) & Editor \\
+\hline
+4 & Rooms / chunks (\code{MapChunkSO}) & Editor \\
+\hline
+5 & Escena base (Grid, Tilemap, cámara) & Editor \\
+\hline
+6 & Generación del mundo & Editor \\
+\hline
+7 & Jugador & Editor \\
+\hline
+8 & Proyectiles & Editor \\
+\hline
+9 & Enemigos & Editor \\
+\hline
+10 & Jefes: Caperucita y Peter Pan & Editor \\
+\hline
+11 & \code{[LOTE 2]} Objetos y habilidades & Editor \\
+\hline
+12 & Flujo de mundos y cierre de partida & Editor \\
+\hline
+13 & Checklist de prueba end-to-end & Play Mode \\
+\hline
+14 & Problemas comunes & --- \\
+\hline
+\end{longtable}
+\end{center}
+
+\textbf{Orden de dependencias (importante).} No se puede crear un \code{WorldConfigSO} antes que
+su \code{BlockBankSO}, ni este antes de sus \code{MapChunkSO}, ni un \code{EnemyArchetypeSO}
+antes de su \code{EnemyStatsSO}. Respetá el orden de las fases.
+
+\section{Fase 0 --- Preparar el proyecto}
+
+\begin{enumerate}
+    \item Creá un proyecto \textbf{Unity 2D} (Unity 2021.3 LTS o superior; el demo se prueba en 2D).
+    \item Copiá la carpeta \code{Assets/Scripts/} completa dentro de \code{Assets/} del proyecto.
+    \item Verificá que queden estas subcarpetas.
+\end{enumerate}
+
+\begin{verbatim}
+Assets/Scripts/
+|-- Core/         Health, Projectile, RunManager, AnimationState, AttackType
+|-- Data/         ScriptableObjects (configuracion y plantillas)
+|-- Editor/       MapChunkCaptureEditor (herramienta de editor)
+|-- Enemies/      EnemyAI, EnemyMovement, EnemyAttack, EnemyFOV
+|-- Boss/         IBossController, CaperucitaBoss, PeterPanBoss, BossAI,
+|                 BossArenaController, BossManager, BossSpawnPoint
+|-- Generation/   MapGenerator, TilemapStamper, ChunkContent, Spawner, CellRole
+`-- Player/       PlayerController, PlayerCombat, PlayerAnimationController
+\end{verbatim}
+
+\begin{enumerate}[resume]
+    \item Si Unity marca errores de compilación, revisá que \code{Assets/Scripts/Editor/} esté
+    dentro de una carpeta llamada exactamente \code{Editor} (si no, \code{UnityEditor} no está
+    disponible en builds).
+    \item Creá la carpeta \code{Assets/Prefabs/} para los prefabs y
+    \code{Assets/ScriptableObjects/} para los assets.
+\end{enumerate}
+
+\textbf{Nota:} los \code{.cs} se editan en un IDE, pero \textbf{todos los \code{.asset} y los
+prefabs se crean en el editor de Unity}, no por código. Cada paso de este manual indica qué se
+hace en cada lado.
+
+\section{Fase 1 --- Layers y Tags}
+
+\subsection{Crear las Physics Layers}
+
+\code{Edit > Project Settings > Tags and Layers} $\to$ sección \textbf{Layers}. En índices libres
+(a partir del 6) creá, con estos nombres exactos:
+
+\begin{center}
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Layer} & \textbf{Para qué} \\
+\hline
+\code{Ground} & Piso transitable \\
+\hline
+\code{Walls} & Colisiones del tilemap (muros) \\
+\hline
+\code{Player} & El jugador \\
+\hline
+\code{Enemies} & Enemigos y jefes \\
+\hline
+\code{PlayerAttack} & Proyectiles del jugador \\
+\hline
+\code{EnemyAttack} & Proyectiles de enemigos y jefes \\
+\hline
+\code{Pickups} & Objetos recogibles \\
+\hline
+\code{Hazards} & Trampas y daño ambiental \\
+\hline
+\code{BossTrigger} & Trigger que arranca la pelea del jefe \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Crear el Tag}
+
+\code{Edit > Project Settings > Tags and Layers} $\to$ \textbf{Tags} $\to$ confirmá que exista
+\code{Player} (es un tag por defecto; si lo borraste, recreálo con ese nombre exacto). Todo el
+código busca al jugador con \code{GameObject.FindGameObjectWithTag("Player")} y con
+\code{CompareTag("Player")}.
+
+\subsection{Configurar la matriz de colisión}
+
+\code{Edit > Project Settings > Physics 2D > Layer Collision Matrix}. Marcá como mínimo:
+
+\begin{center}
+\begin{longtable}{|l|l|c|p{5.4cm}|}
+\hline
+\textbf{A} & \textbf{B} & \textbf{¿Colisionan?} & \textbf{Por qué} \\
+\hline
+\endhead
+\code{Player} & \code{Ground} & Sí & Caminar \\
+\hline
+\code{Player} & \code{Walls} & Sí & No atravesar muros \\
+\hline
+\code{Player} & \code{Enemies} & Sí & Contacto con enemigos \\
+\hline
+\code{Player} & \code{EnemyAttack} & Sí & Recibir proyectiles \\
+\hline
+\code{Player} & \code{Pickups} & Sí & Recoger objetos \\
+\hline
+\code{Player} & \code{BossTrigger} & Sí & Disparar la pelea del jefe \\
+\hline
+\code{Enemies} & \code{Ground} / \code{Walls} & Sí & Navegación \\
+\hline
+\code{Enemies} & \code{PlayerAttack} & Sí & Recibir daño melee y ranged del jugador \\
+\hline
+\code{Enemies} & \code{EnemyAttack} & \textbf{No} & Los proyectiles enemigos no se pegan entre ellos \\
+\hline
+\code{EnemyAttack} & \code{Player} & Sí & Único objetivo de los proyectiles enemigos \\
+\hline
+\code{PlayerAttack} & \code{Enemies} & Sí & Único objetivo de los proyectiles del jugador \\
+\hline
+\code{PlayerAttack} & \code{Player} & \textbf{No} & El jugador no se dispara a sí mismo \\
+\hline
+\code{Walls} & \code{PlayerAttack} / \code{EnemyAttack} & \textbf{No} & Los proyectiles atraviesan muros (el daño ya se filtra por \code{targetMask}) \\
+\hline
+\end{longtable}
+\end{center}
+
+\textbf{Regla mental:} los proyectiles solo chocan contra su objetivo. El daño se filtra una
+segunda vez por \code{targetMask} en \code{Projectile} y \code{EnemyAttack}, así que la matriz
+es la primera barrera y el \code{LayerMask} la segunda.
+
+\section{Fase 2 --- Animator Controller compartido}
+
+Enemigos, jefes y jugador usan \textbf{el mismo esquema}: un \textbf{único parámetro \code{int}
+llamado \code{State}}. Los estados lógicos (FSM) no son estados del Animator: el código traduce
+FSM a animación.
+
+\begin{enumerate}
+    \item En \code{Assets/Animations/} creá un \code{Animator Controller}.
+    \item Añadí un parámetro \textbf{int} llamado exactamente \code{State} (respetá mayúscula).
+    \item Creá 5 estados y asignales los clips \textbf{en este orden de valor}.
+\end{enumerate}
+
+\begin{center}
+\begin{tabular}{|c|l|l|}
+\hline
+\textbf{Valor \code{State}} & \textbf{Nombre del estado} & \textbf{Cuándo se usa} \\
+\hline
+0 & \code{Idle} & quieto \\
+\hline
+1 & \code{Move} & moviéndose \\
+\hline
+2 & \code{MeleeAttack} & ataque cuerpo a cuerpo \\
+\hline
+3 & \code{RangedAttack} & ataque a distancia \\
+\hline
+4 & \code{Death} & muriendo \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{enumerate}[resume]
+    \item \textbf{No hace falta ningún parámetro booleano ni trigger.} El código solo llama a
+    \code{animator.SetInteger("State", valor)}.
+\end{enumerate}
+
+En \code{EnemyAI} y en los jefes el nombre del parámetro es un campo serializado
+(\code{stateParameter}, por defecto \code{"State"}), así que podés renombrarlo si querés, pero
+entonces cambialo también en el Inspector.
+
+\section{Fase 3 --- ScriptableObjects base}
+
+Todo se crea desde el menú \code{Assets > Create > Madness Dreams > ...} (click derecho en la
+ventana Project $\to$ \code{Create > Madness Dreams}).
+
+Creá \textbf{en este orden}, porque cada uno referencia al anterior.
+
+\subsection{Enemy Stats (\code{EnemyStatsSO})}
+
+Plantilla de propiedades de un enemigo. Campos y valores por defecto:
+
+\begin{center}
+\begin{longtable}{|l|c|p{6.4cm}|}
+\hline
+\textbf{Campo} & \textbf{Default} & \textbf{Qué controla} \\
+\hline
+\endhead
+\code{moveSpeed} & 2 & Velocidad de patrulla y regreso \\
+\hline
+\code{chaseSpeed} & 3.5 & Velocidad al perseguir \\
+\hline
+\code{maxHealth} & 100 & Vida máxima \\
+\hline
+\code{damage} & 10 & Daño por golpe o por proyectil \\
+\hline
+\code{attackRange} & 1.5 & Distancia a la que ataca \\
+\hline
+\code{attackCooldown} & 1.5 & Segundos entre ataques \\
+\hline
+\code{windupTime} & 0.3 & Anticipación antes de golpear (telegraph) \\
+\hline
+\code{attackType} & \code{Melee} & \code{Melee} o \code{Ranged} \\
+\hline
+\code{projectilePrefab} & --- & \textbf{Solo Ranged}: qué proyectil dispara \\
+\hline
+\code{projectileSpeed} & 8 & \textbf{Solo Ranged}: velocidad del proyectil \\
+\hline
+\code{detectionRadius} & 8 & Radio máximo de persecución (leash) \\
+\hline
+\code{fovRadius} & 6 & Alcance de la visión \\
+\hline
+\code{fovAngle} & 120 & Cono de visión en grados (360 = omnidireccional) \\
+\hline
+\code{hearingRadius} & 4 & Radio en el que te ``escucha'' aunque no te vea \\
+\hline
+\end{longtable}
+\end{center}
+
+\textbf{Truco:} \code{fovAngle = 360} hace que el enemigo vea en todas direcciones (útil para
+jefes).
+
+\subsection{Boss Stats (\code{BossStatsSO})}
+
+Hereda de \code{EnemyStatsSO} (todos los campos de arriba) y añade:
+
+\begin{center}
+\begin{tabular}{|l|c|p{6.6cm}|}
+\hline
+\textbf{Campo extra} & \textbf{Default} & \textbf{Qué controla} \\
+\hline
+\code{phaseHealthThresholds} & \code{[0.66, 0.33]} & Ratios de vida (0..1, \textbf{ascendentes}) que disparan un cambio de fase \\
+\hline
+\code{phaseAttacks} & vacío & \textbf{Sin uso en el código actual} (reservado; podés dejarlo vacío) \\
+\hline
+\end{tabular}
+\end{center}
+
+Cómo funcionan los umbrales: con \code{[0.66, 0.33]} $\to$ \textbf{fase 1} de 100\% a 66\%,
+\textbf{fase 2} de 66\% a 33\%, \textbf{fase 3} por debajo de 33\%.
+
+\subsection{Enemy Archetype (\code{EnemyArchetypeSO})}
+
+Vincula un \textbf{prefab} con sus \textbf{stats}.
+
+\begin{center}
+\begin{tabular}{|l|p{9cm}|}
+\hline
+\textbf{Campo} & \textbf{Qué poner} \\
+\hline
+\code{prefab} & El prefab del enemigo (ver Fase 9) \\
+\hline
+\code{stats} & Su \code{EnemyStatsSO} \\
+\hline
+\end{tabular}
+\end{center}
+
+Se usan en la \code{enemyPool} del mundo. \textbf{Cada enemigo distinto necesita su propio
+arquetipo.}
+
+\subsection{Map Chunk (\code{MapChunkSO})}
+
+Ver \textbf{Fase 4} (se crea mejor después de tener un room pintado).
+
+\subsection{Block Bank (\code{BlockBankSO})}
+
+\begin{center}
+\begin{tabular}{|l|p{9cm}|}
+\hline
+\textbf{Campo} & \textbf{Qué poner} \\
+\hline
+\code{normalChunks} & Lista de \code{MapChunkSO} \textbf{normales} (rooms) \\
+\hline
+\code{bossArena} & Un único \code{MapChunkSO} con la arena del jefe \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{World Config (\code{WorldConfigSO})}
+
+\begin{center}
+\begin{longtable}{|l|c|p{6.2cm}|}
+\hline
+\textbf{Campo} & \textbf{Default} & \textbf{Qué controla} \\
+\hline
+\endhead
+\code{seed} & 0 & Semilla del mapa (mismo número = mismo mapa) \\
+\hline
+\code{bank} & --- & Su \code{BlockBankSO} \\
+\hline
+\code{width} & 8 & Ancho del grid, \textbf{en chunks} \\
+\hline
+\code{height} & 8 & Alto del grid, en chunks \\
+\hline
+\code{chunkSize} & 16 & Lado del chunk \textbf{en tiles} (debe coincidir con el \code{size} del \code{MapChunkSO}) \\
+\hline
+\code{bossRegionSize} & 3 & Lado de la región del jefe, en chunks \\
+\hline
+\code{enemyPool} & vacío & Lista de \code{EnemyArchetypeSO} que pueden aparecer \\
+\hline
+\code{enemiesPerChunk} & 3 & Cuántos enemigos por room \\
+\hline
+\code{bossPrefab} & --- & Prefab del jefe del mundo \\
+\hline
+\code{boss} & --- & Su \code{BossStatsSO} \\
+\hline
+\end{longtable}
+\end{center}
+
+\subsection{\code{[LOTE 2]} Boss Ability (\code{BossAbilitySO})}
+
+Ver Fase 11.
+
+\section{Fase 4 --- Rooms / chunks (\code{MapChunkSO})}
+
+Un \emph{chunk} es una plantilla de room (16$\times$16 tiles por defecto): sus tiles, sus
+puertas y sus puntos de spawn de enemigos.
+
+\subsection{Pintar el room en un Tilemap de trabajo}
+
+\begin{enumerate}
+    \item En la escena, creá un \code{Grid} temporal con un \code{Tilemap} hijo (tu ``tilemap de
+    trabajo'').
+    \item Pintá el room que quieras (muros, piso, decoración) \textbf{en un rectángulo limpio},
+    sin huecos si podés.
+    \item Dejá el tilemap de trabajo \textbf{separado} del tilemap de juego: se usa solo para
+    capturar.
+\end{enumerate}
+
+\subsection{Capturar el room}
+
+\begin{enumerate}
+    \item \code{Tools > Madness Dreams > Map Chunk Capture}.
+    \item \textbf{Source Tilemap} $\to$ tu tilemap de trabajo.
+    \item \textbf{Target MapChunkSO} $\to$ creá un \code{Map Chunk} y arrastralo acá.
+    \item Clic en \textbf{Capture}.
+\end{enumerate}
+
+La herramienta lee \code{source.cellBounds}, aplana los tiles fila a fila y guarda \code{size} y
+\code{tiles} en el asset.
+
+\textbf{Atención con el borrador:} la captura usa el \emph{bounds} del tilemap, no el bounding box
+de los tiles pintados. Si borraste tiles en los bordes, el chunk puede quedar con espacio vacío.
+Solución: pintá y capturá en un tilemap limpio.
+
+\textbf{Atención: la captura SOLO guarda \code{size} y \code{tiles}.} Los campos
+\code{doorPositions}, \code{enemySpawns} y \code{role} \textbf{se llenan a mano} en el Inspector
+(paso siguiente).
+
+\subsection{Completar el \code{MapChunkSO} a mano}
+
+Seleccioná el asset y completá en el Inspector:
+
+\begin{center}
+\begin{longtable}{|l|p{7.4cm}|}
+\hline
+\textbf{Campo} & \textbf{Qué poner} \\
+\hline
+\endhead
+\code{size} & Se llenó solo con la captura \\
+\hline
+\code{tiles} & Se llenó solo (aplanado, índice = \code{y * size.x + x}) \\
+\hline
+\code{doorPositions} & Posiciones \textbf{locales} (en tiles) de las puertas. Ej: \code{(0,8)}, \code{(15,8)} \\
+\hline
+\code{enemySpawns} & Lista de \code{\{localPosition, weight\}} en tiles locales. \code{weight} es informativo \\
+\hline
+\code{role} & \code{Normal} para rooms, \code{Boss} para la arena \\
+\hline
+\end{longtable}
+\end{center}
+
+\subsection{Chunks que necesitás como mínimo}
+
+\begin{itemize}
+    \item \textbf{3 a 5 chunks normales} (rooms) para el pool de cada mundo.
+    \item \textbf{1 chunk de arena} (\code{role = Boss}): una sala amplia, despejada, sin enemigos
+    en \code{enemySpawns}. Acá va la pelea del jefe.
+\end{itemize}
+
+El \code{ChunkContent} coloca como máximo \code{enemiesPerChunk} enemigos, y como máximo tantos
+como \code{enemySpawns} tenga el chunk. Si un chunk tiene 0 \code{enemySpawns}, queda vacío.
+
+\section{Fase 5 --- Escena base}
+
+\begin{enumerate}
+    \item En la escena, creá un \textbf{\code{Grid}} (\code{GameObject > 2D Object > Tilemap > Rectangular}).
+    \item Renombrá su hijo a \code{Tilemap\_Walls}.
+    \item En \code{Tilemap\_Walls} añadí un \textbf{\code{Tilemap Collider 2D}} y poné
+    \textbf{\code{Collider Type = Grid}} (importante: con \code{Sprite} genera un collider por
+    tile y es mucho más caro).
+    \item Poné \code{Tilemap\_Walls} en la \textbf{layer \code{Walls}}.
+    \item Añadí un \textbf{\code{Rigidbody 2D}} al \code{Grid} con \textbf{\code{Body Type = Static}}
+    para que el tilemap colisione correctamente.
+    \item Añadí la \textbf{cámara}: \code{Main Camera} con \code{Projection = Orthographic}. El
+    código usa \code{Camera.main} para apuntar los ataques a distancia del jugador.
+    \textbf{Debe existir una cámara con el tag \code{MainCamera}} o los disparos del jugador
+    usarán \code{transform.up}.
+\end{enumerate}
+
+\section{Fase 6 --- Generación del mundo}
+
+\subsection{Objeto \code{Spawner}}
+
+\begin{enumerate}
+    \item Creá un GameObject vacío llamado \code{Spawner}.
+    \item Añadí el componente \textbf{\code{Spawner}}.
+\end{enumerate}
+
+\begin{center}
+\begin{tabular}{|l|c|p{6.8cm}|}
+\hline
+\textbf{Campo} & \textbf{Default} & \textbf{Qué poner} \\
+\hline
+\code{maxTries} & 8 & Intentos de colocación antes de abortar \\
+\hline
+\code{clearanceRadius} & 0.5 & Radio libre que necesita cada spawn \\
+\hline
+\code{obstacleMask} & $\sim$0 & Marcá \code{Walls} (y \code{Enemies} si no querés solapamientos) \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Objeto \code{World}}
+
+\begin{enumerate}
+    \item Creá un GameObject vacío llamado \code{World}.
+    \item Añadí \textbf{\code{MapGenerator}} y \textbf{\code{ChunkContent}}.
+\end{enumerate}
+
+\textbf{\code{MapGenerator}}
+
+\begin{center}
+\begin{tabular}{|l|p{8.4cm}|}
+\hline
+\textbf{Campo} & \textbf{Qué poner} \\
+\hline
+\code{config} & Se sobreescribe desde \code{RunManager}; podés dejarlo vacío \\
+\hline
+\code{targetTilemap} & Arrastrá \code{Tilemap\_Walls} \\
+\hline
+\code{chunkContent} & Arrastrá el mismo GameObject \code{World} (tiene el \code{ChunkContent}) \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{\code{ChunkContent}}
+
+\begin{center}
+\begin{tabular}{|l|p{8.4cm}|}
+\hline
+\textbf{Campo} & \textbf{Qué poner} \\
+\hline
+\code{config} & Se sobreescribe desde \code{RunManager}; podés dejarlo vacío \\
+\hline
+\code{spawner} & Arrastrá el GameObject \code{Spawner} \\
+\hline
+\code{tilemap} & Arrastrá \code{Tilemap\_Walls} (se usa para convertir celda a mundo) \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Probar sin jugar:} \code{MapGenerator} tiene \code{[ContextMenu("Generate")]}, así que
+desde el menú de tres puntos del componente podés hacer clic en \textbf{Generate} y ver el mapa
+armado sin entrar en Play. Necesita \code{config}, \code{bank} y \code{targetTilemap} asignados.
+
+\subsection{Cómo se genera (para entender qué estás configurando)}
+
+\begin{enumerate}
+    \item \code{RunManager} carga el \code{WorldConfigSO} del mundo 0, luego llama a
+    \code{MapGenerator.Configure()} y \code{Generate()}.
+    \item \code{Generate()} limpia el tilemap y crea \code{System.Random(seed)}.
+    \item \textbf{\code{BuildRoles}}: pone \code{Start} en el chunk central, \code{Boss} en la
+    celda más lejana (una región de \code{bossRegionSize} $\times$ \code{bossRegionSize}) y
+    \code{Normal} en el resto.
+    \item \textbf{\code{StampNormalChunks}}: por cada celda \code{Start} o \code{Normal} pide un
+    chunk aleatorio al \code{BlockBankSO}, le aplica una rotación aleatoria (0 a 3) y lo estampa
+    con \code{TilemapStamper}.
+    \item \textbf{\code{StampBossArena}}: estampa el \code{bossArena} en la región del jefe.
+    \item \textbf{\code{SpawnEnemies}} $\to$ \code{ChunkContent.SpawnEnemies()}: por cada room
+    normal lee sus \code{enemySpawns}, elige un arquetipo del \code{enemyPool} y lo coloca con el
+    \code{Spawner}.
+\end{enumerate}
+
+\textbf{El tamaño importa:} \code{chunkSize} del mundo debe coincidir con el \code{size} del
+\code{MapChunkSO}, si no los rooms se solapan o quedan con huecos. Si capturaste un room de
+16$\times$16, poné \code{chunkSize = 16}.
+
+\section{Fase 7 --- Jugador}
+
+\subsection{Estructura del GameObject \code{Player}}
+
+\begin{enumerate}
+    \item \code{GameObject > 2D Object > Sprites > Capsule} (o tu sprite) $\to$ renombralo \code{Player}.
+    \item \textbf{Tag} = \code{Player}. \textbf{Layer} = \code{Player}.
+    \item Añadí \textbf{\code{Rigidbody 2D}}: \code{Gravity Scale = 0},
+    \code{Collision Detection = Continuous}, \code{Interpolate = Interpolate},
+    \code{Freeze Rotation Z} activado.
+    \item Añadí un \textbf{\code{Circle Collider 2D}} (o \code{Capsule}) del tamaño del sprite.
+\end{enumerate}
+
+\subsection{Componentes}
+
+\begin{center}
+\begin{longtable}{|l|p{8.6cm}|}
+\hline
+\textbf{Componente} & \textbf{Campos a configurar} \\
+\hline
+\endhead
+\code{PlayerController} & \code{moveSpeed} = 5. Usa los ejes \code{Horizontal} y \code{Vertical} (WASD y flechas por defecto) \\
+\hline
+\code{Health} & \code{maxHealth} = 6 (poné la vida en ``corazones'') \\
+\hline
+\code{PlayerCombat} & ver más abajo \\
+\hline
+\code{PlayerAnimationController} & \code{animator}, \code{controller}, \code{combat}, \code{health} (si los dejás vacíos se auto-resuelven con \code{GetComponent}) \\
+\hline
+\code{Animator} & Controller de la Fase 2 \\
+\hline
+\end{longtable}
+\end{center}
+
+\subsection{\code{PlayerCombat}}
+
+Creá dos GameObjects vacíos hijos del Player y usalos como puntos de origen: \code{MeleePoint} a
+un tile delante del jugador, y \code{FirePoint} en el centro del jugador.
+
+\begin{center}
+\begin{longtable}{|l|c|p{6.2cm}|}
+\hline
+\textbf{Campo} & \textbf{Default} & \textbf{Qué poner} \\
+\hline
+\endhead
+\code{meleeDamage} & 10 & Daño del ataque melee \\
+\hline
+\code{meleeRange} & 1.5 & Radio del \code{OverlapCircle} del melee \\
+\hline
+\code{meleeCooldown} & 0.5 & Segundos entre melees \\
+\hline
+\code{meleeAttackDuration} & 0.3 & Cuánto dura la animación de melee \\
+\hline
+\code{meleeKey} & \code{Space} & Tecla de melee \\
+\hline
+\code{meleePoint} & --- & Arrastrá \code{MeleePoint} \\
+\hline
+\code{rangedDamage} & 5 & Daño del proyectil \\
+\hline
+\code{rangedCooldown} & 0.8 & Segundos entre disparos \\
+\hline
+\code{rangedAttackDuration} & 0.3 & Duración de la animación de disparo \\
+\hline
+\code{rangedKey} & \code{K} & Tecla de ataque a distancia \\
+\hline
+\code{projectilePrefab} & --- & Prefab del proyectil del jugador (Fase 8) \\
+\hline
+\code{projectileSpeed} & 8 & Velocidad del proyectil \\
+\hline
+\code{firePoint} & --- & Arrastrá \code{FirePoint} \\
+\hline
+\code{enemyMask} & $\sim$0 & Marcá \code{Enemies} \\
+\hline
+\end{longtable}
+\end{center}
+
+\textbf{Comportamiento.}
+
+\begin{itemize}
+    \item \textbf{Melee (\code{Space})}: \code{Physics2D.OverlapCircleAll(meleePoint, meleeRange, enemyMask)} y aplica \code{meleeDamage} a cada \code{IDamageable} encontrado.
+    \item \textbf{Ranged (\code{K})}: instancia el proyectil hacia \textbf{la posición del mouse} (\code{Camera.main.ScreenToWorldPoint}).
+\end{itemize}
+
+\textbf{Ataque del jugador no es ataque del jefe:} el jugador usa \code{Space} y \code{K} fijos.
+Los jefes tienen sus propias mecánicas (Fase 10).
+
+\section{Fase 8 --- Proyectiles}
+
+El mismo script \code{Projectile} sirve para jugador, enemigos y jefes; lo que cambia es el
+prefab, la layer y el \code{targetMask}.
+
+\begin{enumerate}
+    \item Creá un \code{GameObject > 2D Object > Sprites > Circle} pequeño $\to$ \code{Projectile\_Player}.
+    \item \textbf{Layer} = \code{PlayerAttack} (para el jugador) o \code{EnemyAttack} (para enemigos y jefes).
+    \item Añadí \textbf{\code{Rigidbody 2D}}: \code{Gravity Scale = 0}.
+    \item Añadí un \textbf{\code{Circle Collider 2D}} con \textbf{\code{Is Trigger}} activado.
+    \item Añadí el componente \textbf{\code{Projectile}}.
+\end{enumerate}
+
+\begin{center}
+\begin{tabular}{|l|c|p{7.6cm}|}
+\hline
+\textbf{Campo} & \textbf{Default} & \textbf{Qué poner} \\
+\hline
+\code{lifetime} & 5 & Segundos antes de autodestruirse \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Nada más se configura acá.} \code{Projectile} recibe daño, velocidad y \code{targetMask}
+por código desde quien lo dispara (\code{PlayerCombat}, \code{EnemyAttack} o \code{PeterPanBoss}).
+
+\textbf{Requisito de la matriz de colisión:} el proyectil solo debe chocar contra su objetivo.
+Para el del jugador, \code{PlayerAttack} $\times$ \code{Enemies}. Para el de enemigos,
+\code{EnemyAttack} $\times$ \code{Player}.
+
+\section{Fase 9 --- Enemigos}
+
+\subsection{Estructura del prefab}
+
+\begin{enumerate}
+    \item Creá el sprite $\to$ \code{Enemy\_Wolf} (o el que sea).
+    \item \textbf{Layer} = \code{Enemies}.
+    \item Añadí \textbf{\code{Rigidbody 2D}}: \code{Gravity Scale = 0}, \code{Freeze Rotation Z} activado.
+    \item Añadí un \textbf{\code{Circle Collider 2D}}.
+    \item Añadí \code{Health}, \code{EnemyMovement}, \code{EnemyAttack}, \code{EnemyFOV},
+    \code{EnemyAI} y un \code{Animator} con el controller de la Fase 2.
+\end{enumerate}
+
+\code{EnemyAI} tiene \code{[RequireComponent]} de \code{EnemyMovement}, \code{EnemyAttack},
+\code{EnemyFOV} y \code{Health}: si te falta alguno, Unity te lo agrega solo.
+
+\subsection{Configurar \code{EnemyAI}}
+
+\begin{center}
+\begin{tabular}{|l|c|p{6.4cm}|}
+\hline
+\textbf{Campo} & \textbf{Default} & \textbf{Qué poner} \\
+\hline
+\code{stats} & --- & Su \code{EnemyStatsSO} \\
+\hline
+\code{animator} & --- & El \code{Animator} del prefab \\
+\hline
+\code{stateParameter} & \code{State} & Nombre del parámetro int \\
+\hline
+\code{fovCheckInterval} & 0.1 & Cada cuánto recalcula si te ve (rendimiento) \\
+\hline
+\code{alertTime} & 0.3 & Pausa de ``te vi'' antes de perseguir \\
+\hline
+\code{lostPlayerTimeout} & 3 & Segundos fuera de rango antes de volver a casa \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{La vida del prefab la pisa el código:} \code{EnemyAI.ApplyStats()} llama a
+\code{health.SetMaxHealth(stats.MaxHealth)}. O sea, el \code{maxHealth} que manda es el del
+\code{EnemyStatsSO}, no el del componente \code{Health} del prefab.
+
+\subsection{Configurar \code{EnemyAttack} y \code{EnemyFOV}}
+
+\textbf{\code{EnemyAttack}}
+
+\begin{center}
+\begin{tabular}{|l|p{8.4cm}|}
+\hline
+\textbf{Campo} & \textbf{Qué poner} \\
+\hline
+\code{firePoint} & Un hijo vacío en la boca o arma del enemigo (origen del proyectil) \\
+\hline
+\code{targetMask} & Marcá \code{Player} \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{\code{EnemyFOV}}
+
+\begin{center}
+\begin{tabular}{|l|p{8.4cm}|}
+\hline
+\textbf{Campo} & \textbf{Qué poner} \\
+\hline
+\code{obstacleMask} & Marcá \code{Walls} (para que los muros corten la línea de visión) \\
+\hline
+\code{eyes} & Un hijo vacío a la altura de los ojos (opcional; si está vacío usa \code{transform.position}) \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Atención: la visión usa \code{transform.up} como ``adelante''.} Si tu enemigo debe mirar
+hacia el jugador para verte, rotá el sprite: el cono de visión (\code{fovAngle}) se calcula contra
+el eje \textbf{Y verde} del objeto. Para enemigos que ven en todas direcciones, poné
+\code{fovAngle = 360}.
+
+\subsection{Enemigos melee vs ranged}
+
+Solo cambia el \code{EnemyStatsSO}:
+
+\begin{itemize}
+    \item \textbf{Melee}: \code{attackType = Melee}, \code{projectilePrefab} vacío. Golpea en \code{attackRange} con \code{windupTime} de anticipación.
+    \item \textbf{Ranged}: \code{attackType = Ranged}, \code{projectilePrefab} asignado y \code{projectileSpeed}. Instancia el proyectil y lo lanza hacia el jugador.
+\end{itemize}
+
+\subsection{Crear los \code{EnemyArchetypeSO}}
+
+Uno por enemigo: \code{prefab} y \code{stats}. Después van en la \code{enemyPool} del
+\code{WorldConfigSO}.
+
+\subsection{Enemigos del demo (valores sugeridos)}
+
+\textbf{Bosque de Caperucita}
+
+\begin{center}
+\begin{longtable}{|l|l|c|c|c|c|c|}
+\hline
+\textbf{Enemigo} & \textbf{Tipo} & \textbf{Vida} & \textbf{Vel.} & \textbf{Daño} & \textbf{Rango} & \textbf{Detección} \\
+\hline
+\endhead
+Lobo de la guardia & Melee & 30 & 4.5 & 8 & 1.4 & 9 \\
+\hline
+Zarza viviente & Melee & 70 & 1.5 & 12 & 1.6 & 5 \\
+\hline
+Leñador poseído & Melee & 45 & 2.8 & 16 & 2.2 & 7 \\
+\hline
+Luciérnaga maldita & Ranged & 25 & 2.5 & 6 & 6 & 7 \\
+\hline
+\end{longtable}
+\end{center}
+
+\textbf{Mar de Nunca Jamás}
+
+\begin{center}
+\begin{longtable}{|l|l|c|c|c|c|c|}
+\hline
+\textbf{Enemigo} & \textbf{Tipo} & \textbf{Vida} & \textbf{Vel.} & \textbf{Daño} & \textbf{Rango} & \textbf{Detección} \\
+\hline
+\endhead
+Grumete o niño perdido & Melee & 35 & 3.5 & 10 & 1.5 & 8 \\
+\hline
+Sirena & Ranged & 30 & 2.8 & 7 & 7 & 10 \\
+\hline
+Cocodrilo Tic-Tac & Melee & 80 & 5 & 14 & 1.8 & 9 \\
+\hline
+Hada de polvo & Ranged & 20 & 5.5 & 5 & 5 & 8 \\
+\hline
+\end{longtable}
+\end{center}
+
+\section{Fase 10 --- Jefes: Caperucita y Peter Pan}
+
+\textbf{Regla de oro:} Caperucita y Peter Pan \textbf{no comparten IA ni movimiento}. Cada uno
+tiene su propio script con su propia máquina de estados. \textbf{No les pongas \code{EnemyAI} ni
+\code{BossAI}}: serían dos controladores peleando por el mismo \code{Rigidbody2D}.
+
+Lo único que comparten es: el \code{BossStatsSO} (datos), el esquema de animación (Fase 2) y la
+interfaz \code{IBossController} (contrato para que la arena los spawnee sin saber cuál es cuál).
+
+\subsection{Armar la arena en el chunk del jefe}
+
+En el \code{MapChunkSO} con \code{role = Boss} (o en una copia en escena), dentro de la escena:
+
+\begin{enumerate}
+    \item En el room de la arena, creá un GameObject \code{BossArena}.
+    \item Añadí un \textbf{\code{Box Collider 2D}} con \textbf{\code{Is Trigger}} activado que
+    cubra la entrada o el piso de la arena. Ponele la \textbf{layer \code{BossTrigger}}.
+    \item Añadí el componente \textbf{\code{BossArenaController}}.
+    \item Creá un hijo vacío \code{BossSpawnPoint} en el centro de la arena y añadile
+    \textbf{\code{BossSpawnPoint}} (dibuja un gizmo rojo; sirve para ver dónde aparece el jefe).
+    \item Creá los \textbf{colliders de las puertas de salida}: GameObjects con
+    \code{Box Collider 2D} (no trigger) en cada salida, en la layer \code{Walls}.
+    \textbf{Dejalos deshabilitados por defecto}.
+\end{enumerate}
+
+\textbf{\code{BossArenaController}}
+
+\begin{center}
+\begin{tabular}{|l|p{8.4cm}|}
+\hline
+\textbf{Campo} & \textbf{Qué poner} \\
+\hline
+\code{exitBlockers} & Arrastrá los colliders de las puertas (empezando \textbf{deshabilitados}) \\
+\hline
+\code{bossSpawnPoint} & El \code{BossSpawnPoint} de la arena \\
+\hline
+\code{bossPrefab} / \code{bossStats} & Se sobreescriben desde el \code{WorldConfigSO}; se pueden dejar vacíos \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Cómo funciona:} cuando el jugador entra al trigger (\code{OnTriggerEnter2D} más
+\code{CompareTag("Player")}), el script \textbf{activa} los \code{exitBlockers} (te encierra),
+instancia el jefe en el spawn point, le llama \code{ConfigureBoss(stats, player)} vía
+\code{IBossController} y se suscribe a su \code{Health.Died}. Al morir: apaga los blockers, dispara
+\code{BossDefeated} y avisa al \code{BossManager}.
+
+\subsection{Prefab de Caperucita (melee puro)}
+
+\begin{enumerate}
+    \item Sprite de Caperucita $\to$ nombre \code{Boss\_Caperucita}.
+    \item \textbf{Layer} = \code{Enemies}.
+    \item \textbf{\code{Rigidbody 2D}}: \code{Gravity Scale = 0}, \code{Freeze Rotation Z} activado.
+    \item \textbf{\code{Circle Collider 2D}}.
+    \item \textbf{\code{Health}} (la vida real la pone el \code{BossStatsSO}).
+    \item \textbf{\code{CaperucitaBoss}} (el único controlador).
+    \item \textbf{\code{Animator}} con el controller de la Fase 2.
+    \item Hijo vacío \code{SlashPoint} a un tile delante (origen del corte).
+\end{enumerate}
+
+\textbf{Campos de \code{CaperucitaBoss}}
+
+\begin{center}
+\begin{longtable}{|l|c|p{6.2cm}|}
+\hline
+\textbf{Campo} & \textbf{Default} & \textbf{Qué controla} \\
+\hline
+\endhead
+\code{stats} & --- & Su \code{BossStatsSO} \\
+\hline
+\code{slashPoint} & --- & Origen del \code{OverlapCircle} del corte \\
+\hline
+\code{playerMask} & $\sim$0 & Marcá \code{Player} \\
+\hline
+\code{lungeSpeed} & 14 & Velocidad de la embestida \\
+\hline
+\code{lungeDuration} & 0.22 & Duración de la embestida (segundos) \\
+\hline
+\code{lungeCooldown} & 3.5 & Segundos entre embestidas \\
+\hline
+\code{lungeDamageMultiplier} & 1.5 & Daño de la embestida = \code{damage} $\times$ esto \\
+\hline
+\code{lungeHitRadius} & 1 & Radio de contacto durante la embestida \\
+\hline
+\code{lungeMinDistance} & 2.5 & No embiste si estás más cerca que esto \\
+\hline
+\code{lungeMaxDistance} & 7 & No embiste si estás más lejos que esto \\
+\hline
+\code{recoverTime} & 0.35 & Pausa después de atacar \\
+\hline
+\code{summonWindup} & 0.7 & Anticipación antes de invocar (el ``aullido'') \\
+\hline
+\code{minionPrefabs} & vacío & Prefabs de los lobos \\
+\hline
+\code{minionsPerSummon} & 2 & Lobos por invocación \\
+\hline
+\code{extraWolvesOnEnrage} & 2 & Lobos extra en la fase 3 \\
+\hline
+\code{minionSpread} & 2.5 & Radio alrededor del jefe donde aparecen \\
+\hline
+\code{enrageSpeedMultiplier} & 1.35 & Multiplicador de velocidad en fase 3 \\
+\hline
+\code{enrageCooldownMultiplier} & 0.6 & Multiplicador de cooldown de ataque en fase 3 \\
+\hline
+\code{enrageLungeCooldownMultiplier} & 0.5 & Multiplicador de cooldown de embestida en fase 3 \\
+\hline
+\code{lootPrefab} & --- & \code{[LOTE 2]} Objeto que suelta al morir \\
+\hline
+\code{animator} & --- & El \code{Animator} \\
+\hline
+\code{stateParameter} & \code{State} & Nombre del parámetro int \\
+\hline
+\end{longtable}
+\end{center}
+
+\textbf{Comportamiento (FSM propia)}
+
+\begin{center}
+\begin{longtable}{|l|p{8.8cm}|}
+\hline
+\textbf{Estado} & \textbf{Qué hace} \\
+\hline
+\endhead
+\code{Stalk} & Persigue al jugador; si está en rango y sin cooldown, pasa a \code{Windup}; si hay distancia de embestida, pasa a \code{Lunge} \\
+\hline
+\code{Windup} & Se queda quieto \code{windupTime} (telegraph) \\
+\hline
+\code{Slash} & Aplica \code{damage} en \code{attackRange} alrededor de \code{slashPoint} y pasa a \code{Recover} \\
+\hline
+\code{Lunge} & Se lanza en línea recta \code{lungeDuration}; \textbf{un solo golpe} a \code{damage} $\times$ \code{lungeDamageMultiplier}, luego \code{Recover} \\
+\hline
+\code{Recover} & Quieto \code{recoverTime}, vuelve a \code{Stalk} \\
+\hline
+\code{Summon} & Quieto \code{summonWindup} y luego instancia los lobos \\
+\hline
+\code{Dead} & Deshabilita su collider, suelta el \code{lootPrefab} y pone la animación \code{Death} \\
+\hline
+\end{longtable}
+\end{center}
+
+\textbf{Fases:} 1 $\to$ solo melee (corte y embestida). 2 $\to$ invoca lobos. 3 $\to$ enrage
+(más rápido, menos cooldown, más lobos).
+
+\subsection{Prefab de Peter Pan (ranged puro, nunca melee)}
+
+Mismo armado que Caperucita, pero con \textbf{\code{PeterPanBoss}} y un hijo \code{FirePoint} en
+el centro. \textbf{No lleva \code{SlashPoint}.}
+
+\textbf{Campos de \code{PeterPanBoss}}
+
+\begin{center}
+\begin{longtable}{|l|c|p{6.2cm}|}
+\hline
+\textbf{Campo} & \textbf{Default} & \textbf{Qué controla} \\
+\hline
+\endhead
+\code{stats} & --- & Su \code{BossStatsSO} \\
+\hline
+\code{projectilePrefab} & --- & Prefab de la daga (si está vacío usa \code{stats.projectilePrefab}) \\
+\hline
+\code{firePoint} & --- & Origen de las dagas \\
+\hline
+\code{playerMask} & $\sim$0 & Marcá \code{Player} \\
+\hline
+\code{daggersPerPhase} & \code{[1, 3, 5]} & Dagas por abanico según la fase \\
+\hline
+\code{spreadAngle} & 30 & Apertura total del abanico, en grados \\
+\hline
+\code{preferredDistance} & 6 & Distancia que intenta mantener \\
+\hline
+\code{closeRange} & 3 & Si te acercás más que esto, hace \code{Reposition} \\
+\hline
+\code{strafeSpeed} & 3 & Velocidad al orbitar \\
+\hline
+\code{orbitFlipInterval} & 1.2 & Cada cuánto invierte el sentido de la órbita \\
+\hline
+\code{dashSpeed} & 16 & Velocidad del dash de reposición (el ``vuelo'') \\
+\hline
+\code{dashDuration} & 0.18 & Duración del dash \\
+\hline
+\code{dashCooldown} & 4 & Segundos entre dashes \\
+\hline
+\code{recoverTime} & 0.4 & Pausa después del abanico \\
+\hline
+\code{summonWindup} & 0.7 & Anticipación antes de invocar \\
+\hline
+\code{minionPrefabs} & vacío & Perdidos y hadas \\
+\hline
+\code{minionsPerSummon} & 2 & Esbirros por invocación \\
+\hline
+\code{extraMinionsOnEnrage} & 2 & Esbirros extra en fase 3 \\
+\hline
+\code{minionSpread} & 2.5 & Radio de aparición \\
+\hline
+\code{enrageSpeedMultiplier} & 1.25 & Velocidad en fase 3 \\
+\hline
+\code{enrageCooldownMultiplier} & 0.65 & Cooldown del abanico en fase 3 \\
+\hline
+\code{enrageDashCooldownMultiplier} & 0.55 & Cooldown del dash en fase 3 \\
+\hline
+\code{enrageSpreadMultiplier} & 1.35 & Apertura del abanico en fase 3 \\
+\hline
+\code{lootPrefab} & --- & \code{[LOTE 2]} Objeto que suelta al morir \\
+\hline
+\code{animator} / \code{stateParameter} & --- / \code{State} & Igual que Caperucita \\
+\hline
+\end{longtable}
+\end{center}
+
+\textbf{Comportamiento (FSM propia, distinta a la de Caperucita)}
+
+\begin{center}
+\begin{longtable}{|l|p{8.8cm}|}
+\hline
+\textbf{Estado} & \textbf{Qué hace} \\
+\hline
+\endhead
+\code{Kite} & Si estás muy cerca $\to$ \code{Reposition}. Si estás lejos $\to$ se acerca. Si estás en rango $\to$ \textbf{orbita} en tangente. Si estás dentro de \code{attackRange} y sin cooldown $\to$ \code{VolleyWindup} \\
+\hline
+\code{VolleyWindup} & Quieto \code{windupTime}, luego \code{FireVolley} y pasa a \code{Recover} \\
+\hline
+\code{Reposition} & Dash en línea recta \code{dashDuration} a \code{dashSpeed}, luego vuelve a \code{Kite} \\
+\hline
+\code{Recover} & Quieto \code{recoverTime}, vuelve a \code{Kite} \\
+\hline
+\code{Summon} & Quieto \code{summonWindup} y luego instancia esbirros \\
+\hline
+\code{Dead} & Igual que Caperucita \\
+\hline
+\end{longtable}
+\end{center}
+
+\textbf{El ``vuelo'':} al ser un top-down no hay eje de altura real. La sensación de flotar se
+logra con \code{chaseSpeed} alto, \code{Reposition} frecuente y el sprite flotando.
+
+\subsection{Stats sugeridos para los dos jefes}
+
+\textbf{Caperucita (Bosque)} --- \code{BossStatsSO}
+
+\begin{center}
+\begin{longtable}{|l|c|p{6.6cm}|}
+\hline
+\textbf{Campo} & \textbf{Valor} & \textbf{Por qué} \\
+\hline
+\endhead
+\code{maxHealth} & 300 & Pelea larga con 3 fases \\
+\hline
+\code{moveSpeed} & 2 & Lenta de lejos \\
+\hline
+\code{chaseSpeed} & 3.5 & Cazadora \\
+\hline
+\code{damage} & 12 & Corte; la embestida pega 18 \\
+\hline
+\code{attackRange} & 1.8 & Melee corto \\
+\hline
+\code{attackCooldown} & 1.2 & Marca el ritmo \\
+\hline
+\code{windupTime} & 0.35 & Telegrafía clara \\
+\hline
+\code{attackType} & \code{Melee} & --- \\
+\hline
+\code{detectionRadius} & 20 & Pelea de arena: que no se escape \\
+\hline
+\code{fovRadius} & 20 & Te ve de lejos \\
+\hline
+\code{fovAngle} & 360 & Te ve en todas direcciones \\
+\hline
+\code{hearingRadius} & 20 & --- \\
+\hline
+\code{phaseHealthThresholds} & \code{[0.66, 0.33]} & 3 fases \\
+\hline
+\end{longtable}
+\end{center}
+
+\textbf{Peter Pan (Mar)} --- \code{BossStatsSO}
+
+\begin{center}
+\begin{longtable}{|l|c|p{6.6cm}|}
+\hline
+\textbf{Campo} & \textbf{Valor} & \textbf{Por qué} \\
+\hline
+\endhead
+\code{maxHealth} & 220 & Más frágil pero escurridizo \\
+\hline
+\code{moveSpeed} & 4 & Se reposiciona \\
+\hline
+\code{chaseSpeed} & 5 & ``Vuela'' \\
+\hline
+\code{damage} & 8 & Muchas dagas, poco daño cada una \\
+\hline
+\code{attackRange} & 9 & Ranged largo \\
+\hline
+\code{attackCooldown} & 1.6 & Ritmo del abanico \\
+\hline
+\code{windupTime} & 0.45 & Telegrafía antes del abanico \\
+\hline
+\code{attackType} & \code{Ranged} & --- \\
+\hline
+\code{projectilePrefab} & \code{Projectile\_Dagger} & Ver Fase 8, layer \code{EnemyAttack} \\
+\hline
+\code{projectileSpeed} & 12 & Dagas rápidas \\
+\hline
+\code{detectionRadius} & 20 & Pelea de arena \\
+\hline
+\code{fovRadius} & 20 & Te ve de lejos \\
+\hline
+\code{fovAngle} & 360 & Te ve en todas direcciones \\
+\hline
+\code{phaseHealthThresholds} & \code{[0.66, 0.33]} & 3 fases \\
+\hline
+\end{longtable}
+\end{center}
+
+\subsection{Conectar los jefes al flujo de mundos}
+
+En la escena, creá un GameObject \code{GameManager} con:
+
+\begin{enumerate}
+    \item \textbf{\code{BossManager}}: \code{config} (se sobreescribe desde \code{RunManager};
+    se puede dejar vacío) y \code{arena} (arrastrá el GameObject \code{BossArena}, el que tiene
+    \code{BossArenaController}).
+    \item \textbf{\code{RunManager}}: \code{worlds} (lista \textbf{ordenada}:
+    \code{[World0\_BosqueCaperucita, World1\_MarPeterPan]}), \code{mapGenerator} (el GameObject
+    \code{World}) y \code{bossManager} (el GameObject \code{GameManager}).
+\end{enumerate}
+
+Cada \textbf{\code{WorldConfigSO}} debe apuntar a su \code{bossPrefab} y su \code{boss}:
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Mundo} & \textbf{\code{bossPrefab}} & \textbf{\code{boss}} \\
+\hline
+Bosque & \code{Boss\_Caperucita} & \code{CaperucitaStats} \\
+\hline
+Mar & \code{Boss\_PeterPan} & \code{PeterPanStats} \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Flujo:} \code{RunManager.Start()} $\to$ \code{GenerateWorld(0)} $\to$ genera el mapa y
+llama a \code{bossManager.SetupBossFight()} $\to$ la arena queda lista. Al morir el jefe:
+\code{BossArenaController} $\to$ \code{BossManager} $\to$ \code{RunManager.OnBossDefeated()} $\to$
+\code{GenerateWorld(1)} con el siguiente mundo.
+
+\section{Fase 11 --- \code{[LOTE 2]} Objetos y habilidades}
+
+Esta fase \textbf{todavía no está implementada en el código}. Se incluye acá para que el manual
+quede completo cuando se implemente el Lote 2.
+
+\subsection{Crear los 4 \code{BossAbilitySO}}
+
+\code{Create > Madness Dreams > Boss Ability}. Campos:
+
+\begin{center}
+\begin{longtable}{|l|l|p{6.2cm}|}
+\hline
+\textbf{Bloque} & \textbf{Campo} & \textbf{Qué controla} \\
+\hline
+\endhead
+Identidad & \code{type} & \code{WolfClaw}, \code{ThornShot}, \code{PeterDagger} o \code{FairyDust} \\
+\hline
+ & \code{displayName} / \code{description} / \code{icon} & UI \\
+\hline
+Tiempos & \code{cooldown} & Segundos entre usos \\
+\hline
+ & \code{animationDuration} & Duración de la animación \\
+\hline
+Daño & \code{damage} / \code{range} & Daño y radio (melee) \\
+\hline
+Proyectil & \code{projectilePrefab} / \code{projectileSpeed} & Proyectil \\
+\hline
+ & \code{projectileCount} / \code{spreadAngle} & Abanico \\
+\hline
+Ralentización & \code{slowMultiplier} / \code{slowDuration} & Solo \code{ThornShot} \\
+\hline
+Dash & \code{dashDistance} / \code{dashDuration} & Solo \code{WolfClaw} y \code{FairyDust} \\
+\hline
+\end{longtable}
+\end{center}
+
+\textbf{Assets a crear (recompensa de cada jefe):}
+
+\begin{center}
+\begin{longtable}{|l|l|l|p{4.4cm}|}
+\hline
+\textbf{Asset} & \textbf{\code{type}} & \textbf{Origen} & \textbf{Efecto} \\
+\hline
+\endhead
+\code{Ability\_WolfClaw} & \code{WolfClaw} & Caperucita & Embestida corta y golpe melee con más daño y alcance \\
+\hline
+\code{Ability\_ThornShot} & \code{ThornShot} & Caperucita & Proyectil de espinas que \textbf{ralentiza} al enemigo \\
+\hline
+\code{Ability\_PeterDagger} & \code{PeterDagger} & Peter Pan & Abanico de dagas rápidas \\
+\hline
+\code{Ability\_FairyDust} & \code{FairyDust} & Peter Pan & Dash de evasión (polvo de hada) \\
+\hline
+\end{longtable}
+\end{center}
+
+\subsection{Prefab \code{AbilityPickup}}
+
+\begin{enumerate}
+    \item Sprite del objeto $\to$ \code{Pickup\_WolfClaw}, etc.
+    \item \textbf{Layer} = \code{Pickups}.
+    \item \textbf{\code{Circle Collider 2D}} con \textbf{\code{Is Trigger}} activado.
+    \item Componente \textbf{\code{AbilityPickup}}.
+\end{enumerate}
+
+\begin{center}
+\begin{tabular}{|l|p{8.4cm}|}
+\hline
+\textbf{Campo} & \textbf{Qué poner} \\
+\hline
+\code{ability} & El \code{BossAbilitySO} que otorga \\
+\hline
+\code{destroyOnPickup} & Activado \\
+\hline
+\code{bobAmplitude} / \code{bobSpeed} & Flotación visual \\
+\hline
+\end{tabular}
+\end{center}
+
+El pickup solo se destruye si \code{PlayerAbilities.Learn()} devolvió \code{true}: si ya tenías
+esa habilidad, el objeto queda en el piso.
+
+\subsection{Asignar el drop a cada jefe}
+
+En el prefab del jefe, campo \textbf{\code{lootPrefab}}:
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Jefe} & \textbf{\code{lootPrefab}} \\
+\hline
+\code{Boss\_Caperucita} & \code{Pickup\_WolfClaw} (o \code{Pickup\_ThornShot} si querés la variante ranged) \\
+\hline
+\code{Boss\_PeterPan} & \code{Pickup\_PeterDagger} (o \code{Pickup\_FairyDust}) \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Añadir \code{PlayerAbilities} al jugador}
+
+En el GameObject \code{Player}, añadí el componente \textbf{\code{PlayerAbilities}}:
+
+\begin{center}
+\begin{tabular}{|l|p{8.4cm}|}
+\hline
+\textbf{Campo} & \textbf{Qué poner} \\
+\hline
+\code{startingAbilities} & Dejalo vacío para probar el flujo de recogida (o cargá una para testear) \\
+\hline
+\code{maxAbilities} & 4 \\
+\hline
+\code{abilityKeys} & \code{Alpha1}, \code{Alpha2}, \code{Alpha3}, \code{Alpha4} \\
+\hline
+\code{enemyMask} & Marcá \code{Enemies} \\
+\hline
+\code{castPoint} / \code{meleePoint} & Hijos vacíos del Player \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Teclas:} \code{1} a \code{4} ejecutan la habilidad aprendida en ese slot, en el orden en
+que las recogiste. Cada slot tiene su propio cooldown.
+
+Las habilidades las ejecuta el jugador apuntando \textbf{hacia el mouse}, igual que el ataque a
+distancia con \code{K}.
+
+\section{Fase 12 --- Flujo de mundos y cierre de partida}
+
+\begin{enumerate}
+    \item En \code{RunManager.worlds}, cargá los dos mundos \textbf{en orden}.
+    \item Al morir el jefe del último mundo, \code{RunManager} loguea
+    \code{"All worlds cleared. Victory!"}. Ahí enganchás el final del demo.
+    \item \code{[LOTE 3]} \code{delayBeforeNextWorld} (default \code{0}): segundos de espera antes
+    de pasar al siguiente mundo, para que al jugador le dé tiempo de recoger el drop del jefe.
+    \textbf{Con \code{0} el mapa cambia de inmediato y el drop se pierde.}
+    \item \textbf{La semilla no cambia sola.} Cada \code{WorldConfigSO} tiene su \code{seed} fijo:
+    el mapa del Bosque es siempre el mismo. Si querés que cambie entre partidas, usá semillas
+    distintas por mundo (o aleatorizá el \code{seed} del \code{WorldConfigSO} antes de generar).
+\end{enumerate}
+
+\section{Fase 13 --- Checklist de prueba end-to-end}
+
+Antes de dar el demo por bueno, corré esto \textbf{en Play Mode}.
+
+\textbf{Generación}
+
+\begin{itemize}[label=$\square$]
+    \item Al dar Play, aparece un mapa completo con rooms y muros sólidos.
+    \item El jugador colisiona con los muros y no los atraviesa.
+    \item El room del jefe es visible, distinto y está en la zona más lejana al spawn.
+    \item Los enemigos aparecen en los rooms y \textbf{no} atraviesan muros.
+    \item Cambiando el \code{seed} del \code{WorldConfigSO} y volviendo a generar, el mapa cambia.
+\end{itemize}
+
+\textbf{Enemigos}
+
+\begin{itemize}[label=$\square$]
+    \item Un enemigo te ve, se alerta unos 0.3 s y te persigue.
+    \item Los muros \textbf{cortan} la línea de visión (no te ve a través de ellos).
+    \item El enemigo melee se detiene en \code{attackRange}, telegrafía y te pega.
+    \item El enemigo ranged te dispara y su proyectil te hace daño.
+    \item Un proyectil de enemigo \textbf{no} daña a otros enemigos.
+    \item El proyectil del jugador (\code{K}) daña al enemigo al que apuntás.
+    \item El melee del jugador (\code{Space}) daña a los enemigos en el radio.
+    \item Al morir un enemigo, su animación cambia a \code{Death}.
+    \item El HUD o la consola muestra \code{HealthChanged} bajando.
+\end{itemize}
+
+\textbf{Arena y Caperucita}
+
+\begin{itemize}[label=$\square$]
+    \item Al entrar a la arena, las puertas \textbf{se bloquean} y aparece Caperucita.
+    \item Caperucita te persigue y te corta de cerca.
+    \item Caperucita \textbf{embiste} de vez en cuando (y no pega dos veces en la misma embestida).
+    \item Al bajar del 66\% aparece la anticipación de invocación y aparecen los lobos.
+    \item Al bajar del 33\% se la nota más rápida y con más lobos (enrage).
+    \item Al morir: suelta el \code{lootPrefab}, se desbloquean las puertas y \code{RunManager} pasa al mundo 2.
+\end{itemize}
+
+\textbf{Peter Pan}
+
+\begin{itemize}[label=$\square$]
+    \item Aparece en el Mar y \textbf{mantiene la distancia}: si te acercás, se aleja.
+    \item Lanza \textbf{abanicos} de dagas (varias en distintas direcciones).
+    \item Cuando lo acorralás, hace el \textbf{dash} de reposición (no se queda pegado).
+    \item Al 66\% invoca esbirros; al 33\% el abanico se abre más y el dash es más seguido.
+    \item \textbf{Nunca} hace un ataque melee.
+\end{itemize}
+
+\textbf{Habilidades \code{[LOTE 2]}}
+
+\begin{itemize}[label=$\square$]
+    \item Al morir Caperucita, el pickup aparece en el piso.
+    \item Si lo recogés, la tecla \code{1} ejecuta la habilidad de Caperucita.
+    \item \code{ThornShot} \textbf{ralentiza} al enemigo alcanzado.
+    \item \code{FairyDust} te da un dash y no te deja atrapado en muros.
+    \item Si ya tenías la habilidad, el pickup \textbf{no} se consume.
+\end{itemize}
+
+\textbf{Independencia de jefes (requisito del proyecto)}
+
+\begin{itemize}[label=$\square$]
+    \item Caperucita \textbf{nunca} dispara proyectiles.
+    \item Peter Pan \textbf{nunca} ataca melee.
+    \item Ninguno de los dos usa \code{EnemyAI} como controlador.
+\end{itemize}
+
+\section{Fase 14 --- Problemas comunes}
+
+\begin{center}
+\begin{longtable}{|p{4.2cm}|p{4.6cm}|p{5.4cm}|}
+\hline
+\textbf{Síntoma} & \textbf{Causa probable} & \textbf{Solución} \\
+\hline
+\endhead
+El mapa sale vacío & \code{MapGenerator} sin \code{targetTilemap}, o el banco sin \code{normalChunks}, o \code{chunkSize} no coincide con el \code{size} del chunk & Revisá los tres en el Inspector \\
+\hline
+NullReference al dar Play & \code{RunManager} sin \code{mapGenerator} o sin \code{bossManager}, o \code{BossArenaController} sin \code{arena} & Completá las referencias de la Fase 10.5 \\
+\hline
+\code{"RunManager: no worlds configured"} & Lista \code{worlds} vacía & Cargá los \code{WorldConfigSO} \\
+\hline
+Los rooms se solapan o quedan con huecos & \code{chunkSize} del mundo distinto al \code{size} del \code{MapChunkSO} & Igualalos (por ejemplo 16) \\
+\hline
+El chunk tiene una franja vacía al final & Se capturó un tilemap con tiles borrados en el borde (\code{cellBounds}) & Capturá desde un tilemap limpio \\
+\hline
+El \code{MapChunkSO} no tiene puertas ni spawns & La captura solo guarda \code{size} y \code{tiles} & Llená \code{doorPositions}, \code{enemySpawns} y \code{role} a mano \\
+\hline
+Los enemigos no aparecen & \code{enemySpawns} vacío, \code{enemyPool} vacío o \code{enemiesPerChunk = 0} & Revisá la Fase 4.3 y el \code{WorldConfigSO} \\
+\hline
+Los enemigos no te ven & \code{fovAngle} angosto y el sprite no mira hacia el jugador (la visión usa \code{transform.up}) & Poné \code{fovAngle = 360}, o rotá el sprite \\
+\hline
+Los proyectiles atraviesan o no dañan & Layer o matriz de colisión mal, o \code{targetMask} sin el layer correcto & Revisá Fase 1.3 y el \code{targetMask} / \code{enemyMask} \\
+\hline
+Los disparos del jugador salen en dirección rara & No hay \code{Camera.main} (falta el tag \code{MainCamera}) & Etiquetá la cámara \\
+\hline
+El jefe no aparece al entrar a la arena & Trigger sin layer \code{BossTrigger}, sin \code{Is Trigger}, o el jugador sin tag \code{Player}, o \code{bossPrefab} vacío en el \code{WorldConfigSO} & Revisá las Fases 10.1 y 10.5 \\
+\hline
+El jefe no se mueve ni ataca & Falta el \code{BossStatsSO} en \code{WorldConfigSO.boss} (el script avisa con un warning) & Asignalo \\
+\hline
+El jefe tiene la vida del prefab y no la del SO & Es lo esperado: \code{ConfigureBoss} llama a \code{SetMaxHealth(stats.MaxHealth)} y pisa el prefab & Editá el \code{BossStatsSO} \\
+\hline
+El jefe nunca cambia de fase & \code{phaseHealthThresholds} mal ordenados (deben ser \textbf{ascendentes}) o \code{maxHealth} en 0 & Revisá el \code{BossStatsSO} \\
+\hline
+Caperucita se daña a sí misma & \code{playerMask} incluye la layer \code{Enemies} & Marcá solo \code{Player} \\
+\hline
+El jefe queda atrapado en las puertas & Los \code{exitBlockers} están \textbf{habilitados desde el arranque} & Dejalos deshabilitados por defecto \\
+\hline
+El jefe se queda pegado al jugador sin pelear & Pusiste \code{EnemyAI} o \code{BossAI} \textbf{además} de \code{CaperucitaBoss} o \code{PeterPanBoss} & Dejá \textbf{un solo} controlador \\
+\hline
+Al ganar el mundo 2 el juego salta de mundo & \code{BossManager.SetupBossFight()} se vuelve a suscribir a \code{BossDefeated} en cada llamada, así que con \textbf{3 o más} mundos el evento se dispara varias veces & Limitación conocida del código actual; con los 2 mundos del demo no afecta \\
+\hline
+El drop del jefe desaparece apenas muere & \code{RunManager} pasa de mundo de inmediato & Subí \code{delayBeforeNextWorld} \code{[LOTE 3]}, o colocá el pickup en el piso de la arena \\
+\hline
+El jugador muerto sigue caminando & No hay lógica de muerte del jugador implementada & Fuera del alcance del demo; solo cambia la animación a \code{Death} \\
+\hline
+\end{longtable}
+\end{center}
+
+\section{Apéndice A --- Orden de ejecución}
+
+\begin{verbatim}
+RunManager.Start()
+   `- GenerateWorld(0)
+        |-- mapGenerator.Configure(world) + mapGenerator.Generate()
+        |     |-- targetTilemap.ClearAllTiles()
+        |     |-- BuildRoles()          -> Start / Normal / Boss
+        |     |-- StampNormalChunks()   -> TilemapStamper.Stamp()
+        |     |-- StampBossArena()
+        |     `-- ChunkContent.SpawnEnemies() -> Spawner.TrySpawn()
+        `- bossManager.Configure(world) + SetupBossFight() -> arena.Setup(prefab, stats)
+
+[el jugador explora y pelea]
+
+BossArenaController.OnTriggerEnter2D(tag "Player")
+   |-- SetExitsBlocked(true)
+   |-- Instantiate(bossPrefab)
+   |-- boss.GetComponent<IBossController>().ConfigureBoss(stats, player)
+   `-- bossHealth.Died += OnBossDefeated
+
+[pelea del jefe, con sus fases]
+
+Health.Died -> BossArenaController.OnBossDefeated()
+   |-- SetExitsBlocked(false)
+   `-- BossDefeated -> BossManager -> RunManager.OnBossDefeated()
+        `- GenerateWorld(index + 1)   [o "Victory!" si era el ultimo]
+\end{verbatim}
+
+\section{Apéndice B --- Resumen de teclas del jugador}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Tecla} & \textbf{Acción} \\
+\hline
+\code{WASD} o flechas & Mover \\
+\hline
+\code{Space} & Ataque melee \\
+\hline
+\code{K} & Ataque a distancia (hacia el mouse) \\
+\hline
+\code{1} a \code{4} & \code{[LOTE 2]} Habilidades aprendidas de los jefes \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Apéndice C --- Referencia rápida de enums}
+
+\textbf{\code{AnimationState}} (parámetro int \code{State} del Animator):
+
+\begin{center}
+\begin{tabular}{|c|l|}
+\hline
+\textbf{Valor} & \textbf{Estado} \\
+\hline
+0 & \code{Idle} \\
+\hline
+1 & \code{Move} \\
+\hline
+2 & \code{MeleeAttack} \\
+\hline
+3 & \code{RangedAttack} \\
+\hline
+4 & \code{Death} \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{\code{AttackType}}: \code{Melee = 0}, \code{Ranged = 1}.
+
+\textbf{\code{CellRole}}: \code{Empty = 0}, \code{Start = 1}, \code{Normal = 2}, \code{Boss = 3}.
+
+\end{document}

@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e525ae72cae201041a4b60b2fbebfc6a, type: 3}
+  m_Name: EnemyArchetype_Bramble
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.EnemyArchetypeSO
+  prefab: {fileID: 1441464458427298309, guid: 6c72ff79171769741a104871010c5ba8, type: 3}
+  stats: {fileID: 11400000, guid: 72a66d69c0776684c98d8603144c73b5, type: 2}

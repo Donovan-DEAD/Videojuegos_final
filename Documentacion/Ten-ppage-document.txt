@@ -1,0 +1,23 @@
+Page 2: Story and Gameplay
+
+
+Page 2 should include a few short paragraphs about the story (beginning,
+middle, and ending … or at least a cliffhanger) mentioning the setting, the
+characters, and the conflict. Gameplay description should give a brief idea
+of the flow of the game— break it into stages or bullet points if its easier to
+convey info that way.
+
+
+Page 3: Game Flow
+How does the player grow as the challenges increase? How does this tie
+into the story? Briefly describe how these systems will work (experience
+points, money, score, collectibles) and what the player gains as they grow
+(new abilities, weapons, additional moves, unlockables).
+
+
+Page 6: Game World
+Where does the gameplay take place? List the environments the player will
+visit with short descriptions. How do they tie into the story? What mood is
+being evoked in each world? How are they connected? (Linear or hub- style
+navigation?) Include a simple flow diagram of how the player would navigate
+the world.
