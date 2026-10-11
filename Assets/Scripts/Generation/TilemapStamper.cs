@@ -27,10 +27,13 @@ namespace MadnessDreams
             tilemap.SetTilesBlock(area, flat);
         }
 
-        /// <summary>Elimina los tiles de una región rectangular (los pone a null).</summary>
-        public static void ClearCells(Tilemap tilemap, Vector3Int min, Vector3Int size)
+        /// <summary>
+        /// Rellena un rectángulo de celdas con un tile (se usa para abrir los pasos: se reemplaza el
+        /// muro por piso).
+        /// </summary>
+        public static void FillCells(Tilemap tilemap, Vector3Int min, Vector3Int size, TileBase tile)
         {
-            if (tilemap == null)
+            if (tilemap == null || tile == null)
             {
                 return;
             }
@@ -39,7 +42,7 @@ namespace MadnessDreams
             {
                 for (int x = 0; x < size.x; x++)
                 {
-                    tilemap.SetTile(new Vector3Int(min.x + x, min.y + y, min.z), null);
+                    tilemap.SetTile(new Vector3Int(min.x + x, min.y + y, min.z), tile);
                 }
             }
         }

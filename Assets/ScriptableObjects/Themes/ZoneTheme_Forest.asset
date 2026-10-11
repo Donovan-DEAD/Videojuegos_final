@@ -23,19 +23,35 @@ MonoBehaviour:
   - archetype: {fileID: 11400000, guid: 95fbc7f3c9bd3e8418684d84cb46b3a0, type: 2}
     weight: 2
   propBank:
-  - prop: {fileID: 11400000, guid: ecf23f880b8595c4d88736ef09ae4194, type: 2}
-    weight: 3
-  - prop: {fileID: 11400000, guid: 94cbce27b1158f84db1e47d4e8870fe1, type: 2}
-    weight: 3
-  - prop: {fileID: 11400000, guid: 48f6143b064dbbc42b442fe258311995, type: 2}
+  - prop: {fileID: 11400000, guid: df6ddda72f8013942838504213bc9ba6, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: 0673b392bc43e0a448cbf8368e34cd3c, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: bafb95e8c90574740a2d61cff7c7f6fe, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: 1b7a1dbfff2f16d48b7766f34408e5d4, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: cd35b88ab7ef40d49b51b514cefb5602, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: 14d3901bfab13624bbaf79bf01b1b8da, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: 52af69e4d70c2354c9f8f2b80fbb7542, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: 9ae1e49f4a5a705408b8ba4fe9f10f66, type: 2}
     weight: 2
   barrierBank:
-  - prop: {fileID: 11400000, guid: d9dcfdaaa50c28442854c3df226288da, type: 2}
+  - prop: {fileID: 11400000, guid: 66a1d0c5c7285bc4ebf0ad0570360e9e, type: 2}
     weight: 2
-  - prop: {fileID: 11400000, guid: 61c2b5e4bd00c6a4886c38ecbffafd17, type: 2}
+  - prop: {fileID: 11400000, guid: 01669e4882f1578429302f6cdc7b6850, type: 2}
     weight: 2
-  - prop: {fileID: 11400000, guid: acb61d8bede7b2741a6a83ab066f4136, type: 2}
-    weight: 1
+  - prop: {fileID: 11400000, guid: d8c156e53d2067741ad526cd61865768, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: be43a15abe2d8c04f94755f89018d4bd, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: ed27c5e01ff6ade4abd7dc8a02282aac, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: d066ebf1a223ecb44994c84fd586e5a6, type: 2}
+    weight: 2
   enemiesMin: 1
   enemiesMax: 3
   propsMin: 3

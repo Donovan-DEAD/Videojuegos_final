@@ -13,15 +13,10 @@ MonoBehaviour:
   m_Name: Bank_Sample
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.BlockBankSO
   normalChunks:
-  - {fileID: 11400000, guid: d73c3f5ebb1d45241ad601feb19ca2d7, type: 2}
-  - {fileID: 11400000, guid: fe55aedaf5b06c649a1d958d5bdc37e8, type: 2}
-  - {fileID: 11400000, guid: 4761e61ed3e2abc41a0a0364afb03a1e, type: 2}
-  - {fileID: 11400000, guid: db79b916b186ff04bbeed701246195a5, type: 2}
-  - {fileID: 11400000, guid: de547acb0017d214cb3fb97b4743a691, type: 2}
-  - {fileID: 11400000, guid: d0651024e6a50a74d9d47e79dab2d551, type: 2}
-  - {fileID: 11400000, guid: 63f8a455d85193241866109680b5bb4b, type: 2}
-  - {fileID: 11400000, guid: 987760134e5a4b8459fb8c419c7183bf, type: 2}
-  - {fileID: 11400000, guid: 590b9eaca8ef81a4b992f1ded419fd8f, type: 2}
-  - {fileID: 11400000, guid: 5d381494225076f4ebfd4f891accf2fb, type: 2}
-  startRoom: {fileID: 11400000, guid: d73c3f5ebb1d45241ad601feb19ca2d7, type: 2}
-  bossArena: {fileID: 11400000, guid: 3af0a540f9c6edb4090ad23413e9fb5c, type: 2}
+  - {fileID: 11400000, guid: 54ebae77d11519548ab6670ac1142c90, type: 2}
+  - {fileID: 11400000, guid: 54cfc91232100ee4ea9b17c5caf7b40a, type: 2}
+  - {fileID: 11400000, guid: b01ef09e42d8e6a4f9dceaa9b823ff24, type: 2}
+  - {fileID: 11400000, guid: a68c1a5a25946c0408537ece9f98503e, type: 2}
+  - {fileID: 11400000, guid: 6b783b3ee24654e4e9931f24af050389, type: 2}
+  startRoom: {fileID: 11400000, guid: c7ba6f24f45b5af4fbd8835ad99f1b1b, type: 2}
+  bossArena: {fileID: 11400000, guid: e63cf1c1633a5cd40b55b4852584a376, type: 2}

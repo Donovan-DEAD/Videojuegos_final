@@ -146,7 +146,7 @@ namespace MadnessDreams
                     }
 
                     RoomTag tag = PickTag(config, rng);
-                    MapChunkSO archetype = PickArchetype(bank, tag, cells, cellSize, rng);
+                    MapChunkSO archetype = PickArchetype(bank, cells, cellSize, rng);
                     if (archetype == null)
                     {
                         continue;
@@ -166,7 +166,7 @@ namespace MadnessDreams
                 if (Fits(index, width, height, cell, single))
                 {
                     RoomTag tag = PickTag(config, rng);
-                    MapChunkSO archetype = PickArchetype(bank, tag, single, cellSize, rng);
+                    MapChunkSO archetype = PickArchetype(bank, single, cellSize, rng);
                     AddRoom(rooms, index, width, height, archetype, single, cell, tag, CellRole.Normal);
                 }
             }
@@ -302,45 +302,53 @@ namespace MadnessDreams
                 return RoomTag.None;
             }
 
-            return config.Themes[rng.Next(config.Themes.Count)].tag;
+            int total = 0;
+            for (int i = 0; i < config.Themes.Count; i++)
+            {
+                total += config.TagWeight(i);
+            }
+
+            if (total <= 0)
+            {
+                return RoomTag.None;
+            }
+
+            int pick = rng.Next(total);
+            for (int i = 0; i < config.Themes.Count; i++)
+            {
+                pick -= config.TagWeight(i);
+                if (pick < 0)
+                {
+                    return config.Themes[i].tag;
+                }
+            }
+
+            return config.Themes[config.Themes.Count - 1].tag;
         }
 
-        private static MapChunkSO PickArchetype(BlockBankSO bank, RoomTag tag, Vector2Int cells, int cellSize, System.Random rng)
+        /// <summary>
+        /// Elige un arquetipo por <b>tamaño</b> únicamente: el tag NO filtra bloques (el tag del cuarto
+        /// se sortea aparte y sirve para resolver el TEMA).
+        /// </summary>
+        private static MapChunkSO PickArchetype(BlockBankSO bank, Vector2Int cells, int cellSize, System.Random rng)
         {
             if (bank == null || bank.NormalChunks == null || bank.NormalChunks.Count == 0)
             {
                 return null;
             }
 
-            List<MapChunkSO> bySizeAndTag = new List<MapChunkSO>();
             List<MapChunkSO> bySize = new List<MapChunkSO>();
 
             for (int i = 0; i < bank.NormalChunks.Count; i++)
             {
                 MapChunkSO chunk = bank.NormalChunks[i];
-                if (chunk == null || chunk.ResolveSizeInCells(cellSize) != cells)
+                if (chunk != null && chunk.ResolveSizeInCells(cellSize) == cells)
                 {
-                    continue;
-                }
-
-                bySize.Add(chunk);
-                if (chunk.Tag == tag)
-                {
-                    bySizeAndTag.Add(chunk);
+                    bySize.Add(chunk);
                 }
             }
 
-            if (bySizeAndTag.Count > 0)
-            {
-                return bySizeAndTag[rng.Next(bySizeAndTag.Count)];
-            }
-
-            if (bySize.Count > 0)
-            {
-                return bySize[rng.Next(bySize.Count)];
-            }
-
-            return null;
+            return bySize.Count > 0 ? bySize[rng.Next(bySize.Count)] : null;
         }
 
         private static bool Fits(int[,] index, int width, int height, Vector2Int origin, Vector2Int cells)

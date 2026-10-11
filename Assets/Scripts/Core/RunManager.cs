@@ -20,7 +20,7 @@ namespace MadnessDreams
         /// <summary>
         /// Se suscribe a la derrota del jefe y genera el mundo inicial indicado por <c>GameFlowManager</c>.
         /// </summary>
-        private void Start()
+        private void Awake()
         {
             if (bossManager != null)
             {
@@ -60,6 +60,10 @@ namespace MadnessDreams
             if (mapGenerator != null)
             {
                 mapGenerator.Configure(CurrentWorld);
+
+                // Semilla por run: la misma config produce un mapa distinto en cada partida.
+                int runSeed = GameFlowManager.Instance != null ? GameFlowManager.Instance.RunSeed : CurrentWorld.Seed;
+                mapGenerator.SetSeed(runSeed + CurrentWorldIndex * 7919);
                 mapGenerator.Generate();
             }
 
@@ -94,13 +98,14 @@ namespace MadnessDreams
                     GameFlowManager.Instance.SetPendingWorldIndex(next);
                     GameFlowManager.Instance.LoadSceneWithLoading(GameFlowManager.GameplayScene);
                 }
+
+                return;
             }
-            else
+
+            // Un solo mundo de ejemplo: reiniciar la run con una semilla nueva mantiene el portal con sentido.
+            if (GameFlowManager.Instance != null)
             {
-                if (GameFlowManager.Instance != null)
-                {
-                    GameFlowManager.Instance.NotifyRunCompleted();
-                }
+                GameFlowManager.Instance.Retry();
             }
         }
     }

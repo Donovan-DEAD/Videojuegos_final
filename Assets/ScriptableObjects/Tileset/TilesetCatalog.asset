@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 760567ad1dcb8cf4086827b7ab7d066e, type: 3}
+  m_Name: TilesetCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.TilesetCatalogSO
+  floorTiles:
+  - {fileID: 11400000, guid: e9124afd063e89f4e9cb5cd92bb5c62a, type: 2}
+  - {fileID: 11400000, guid: 1e1e2785b9fbbfe489cdacf5c442db73, type: 2}
+  - {fileID: 11400000, guid: 7f0f5020f0c61d44fbae5794cf6dc5a0, type: 2}
+  - {fileID: 11400000, guid: 3817623345d37854596f557921bd8e2b, type: 2}
+  - {fileID: 11400000, guid: a9b4876cd09411c4188b623061be27a8, type: 2}
+  - {fileID: 11400000, guid: 80f12e16d886dcd41af515605cceafe8, type: 2}
+  wallTiles:
+  - {fileID: 11400000, guid: acf6f112eaa36ff4b8ecd86e1e7d9a96, type: 2}
+  - {fileID: 11400000, guid: 29236d6148fdaae469854d1e4eab9964, type: 2}
+  - {fileID: 11400000, guid: bcdc68ffff13b9049934102653f0a8fc, type: 2}
+  - {fileID: 11400000, guid: dbcdd28c6d828f24a9bbc22f2fb72e2d, type: 2}
+  decorSprites:
+  - {fileID: 787343687616938081, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 5180886179756141835, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: -2556405625811549183, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: -7289344361853315823, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 1911187041581645875, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 5965678628465596531, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: -5146121825248766522, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: -3623080773388299499, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: -2261989390494754975, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: -4142047520639249507, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 10029771032989802, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 3539338522343785899, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 1054558017235491734, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 6374754689602363436, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: -2695353635638335296, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 1794360309044657119, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 4186451629427269235, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 8106704640815498543, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 4045047599512755936, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 7792078533192150675, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  barrierSprites:
+  - {fileID: 7004794334024688798, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 3007413668849448419, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 4436338609850702264, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: -3896445558442957760, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 2321568132100644978, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 5182504920480064722, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 5266410682953262554, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 8345230020102699922, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 5037873183262435539, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: -3481832647771094364, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 2604095929026732269, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 2753473851592715243, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: -1518092388367548832, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: -1403013687557857407, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: -3432154639358507038, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: -1533941753697608349, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  - {fileID: 1421664447860549378, guid: 2fa9887c0f24ca44ea518962132238b0, type: 3}
+  roomSheetPath: Assets/Art/Tilesets/walls_floor.png
+  roomSheetColumns: 13
+  floorIndices: 01000000000000000c0000000d0000000b0000000e000000
+  wallIndices: 80000000890000008a0000009a000000
+  objectSheetPath: Assets/Art/Tilesets/Objects.png
+  decorIndices: 
+  barrierIndices: 

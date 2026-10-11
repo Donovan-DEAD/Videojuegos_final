@@ -111,6 +111,16 @@ namespace MadnessDreams
         {
             tag = value;
         }
+
+        public void SetRole(CellRole value)
+        {
+            role = value;
+        }
+
+        public void SetEnemySpawns(EnemySpawnPoint[] value)
+        {
+            enemySpawns = value;
+        }
     }
 
     /// <summary>

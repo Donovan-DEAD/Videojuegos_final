@@ -437,7 +437,7 @@ MonoBehaviour:
     m_Value: 0
   OutputChannel: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 0
+  m_StreamingVersion: 20241001
   m_LegacyPriority: 0
   Target:
     TrackingTarget: {fileID: 1082663863}
@@ -604,9 +604,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
-  far clip plane: 1000
-  field of view: 60
+  near clip plane: 0.1
+  far clip plane: 5000
+  field of view: 40
   orthographic: 1
   orthographic size: 8
   m_Depth: 0
@@ -993,6 +993,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.MapGenerator
   config: {fileID: 0}
   targetTilemap: {fileID: 16130167}
+  randomSeed: -1
   contentSpawner: {fileID: 1372381224}
 --- !u!4 &1372381223
 Transform:
@@ -1147,8 +1148,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.RunManager
   worlds:
-  - {fileID: 11400000, guid: 81a892475b6b08947a746ce909684654, type: 2}
-  - {fileID: 11400000, guid: 0ed5bfe68f56c2d46921ddfa80eb3c0e, type: 2}
+  - {fileID: 11400000, guid: 1d20b7cda145cbe4399b9a612b260013, type: 2}
   mapGenerator: {fileID: 1372381221}
   bossManager: {fileID: 1753717342}
 --- !u!4 &1753717344

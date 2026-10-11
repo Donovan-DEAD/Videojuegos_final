@@ -11,6 +11,7 @@ namespace MadnessDreams
     {
         public RoomTag tag;
         public ZoneThemeSO theme;
+        public int weight;
     }
 
     /// <summary>
@@ -38,6 +39,9 @@ namespace MadnessDreams
         [Header("Themes")]
         [SerializeField] private List<ThemeEntry> themes = new List<ThemeEntry>();
 
+        [Header("Tileset")]
+        [SerializeField] private TilesetCatalogSO tileset;
+
         [Header("Difficulty")]
         [SerializeField] private DifficultyProfileSO difficulty;
 
@@ -59,6 +63,7 @@ namespace MadnessDreams
         public int OpeningWidth => openingWidth;
         public float FillRatio => fillRatio;
         public List<ThemeEntry> Themes => themes;
+        public TilesetCatalogSO Tileset => tileset;
         public DifficultyProfileSO Difficulty => difficulty;
         public List<EnemyArchetypeSO> EnemyPool => enemyPool;
         public int EnemiesPerChunk => enemiesPerChunk;
@@ -104,6 +109,17 @@ namespace MadnessDreams
             }
 
             return null;
+        }
+
+        /// <summary>Peso de un tema del mundo (mínimo 1, para que un peso en 0 no lo desactive por accidente).</summary>
+        public int TagWeight(int index)
+        {
+            if (themes == null || index < 0 || index >= themes.Count)
+            {
+                return 0;
+            }
+
+            return Mathf.Max(1, themes[index].weight);
         }
     }
 }

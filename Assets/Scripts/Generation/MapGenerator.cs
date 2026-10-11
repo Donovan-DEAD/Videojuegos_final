@@ -14,12 +14,28 @@ namespace MadnessDreams
         [Header("Configuration")]
         [SerializeField] private WorldConfigSO config;
         [SerializeField] private Tilemap targetTilemap;
+        [SerializeField] private int randomSeed = -1;
 
         [Header("Optional: content spawning")]
         [SerializeField] private RoomContentSpawner contentSpawner;
 
         public WorldConfigSO Config => config;
         public Tilemap TargetTilemap => targetTilemap;
+
+        /// <summary>Catálogo de tiles del mundo (vive en el <see cref="WorldConfigSO"/>): distingue piso de muro y aporta el tile para abrir los pasos.</summary>
+        public TilesetCatalogSO Tileset => config != null ? config.Tileset : null;
+
+        /// <summary>True si la celda contiene un tile de muro del catálogo (es decir, no es transitable).</summary>
+        public bool IsWall(Vector3Int cell)
+        {
+            TilesetCatalogSO catalog = Tileset;
+            if (targetTilemap == null || catalog == null)
+            {
+                return false;
+            }
+
+            return catalog.IsWall(targetTilemap.GetTile(cell));
+        }
 
         /// <summary>Cuartos colocados en la última generación.</summary>
         public List<RoomPlacement> Rooms { get; } = new List<RoomPlacement>();
@@ -55,6 +71,15 @@ namespace MadnessDreams
             config = worldConfig;
         }
 
+        /// <summary>
+        /// Fija la semilla del próximo <see cref="Generate"/> (una por run). Con -1 se usa la del
+        /// <see cref="WorldConfigSO"/>, de modo que el mapa se repite.
+        /// </summary>
+        public void SetSeed(int seed)
+        {
+            randomSeed = seed;
+        }
+
         /// <summary>Genera el mundo completo (limpia, dispone cuartos, estampa tiles, conecta y puebla contenido).</summary>
         [ContextMenu("Generate")]
         public void Generate()
@@ -69,7 +94,7 @@ namespace MadnessDreams
             Rooms.Clear();
             Connections.Clear();
 
-            System.Random rng = new System.Random(config.Seed);
+            System.Random rng = new System.Random(randomSeed >= 0 ? randomSeed : config.Seed);
             RoomLayout.Build(config, rng, Rooms, Connections);
 
             StampRooms();
@@ -102,6 +127,7 @@ namespace MadnessDreams
             int cellSize = Mathf.Max(1, config.ChunkSize);
             int opening = Mathf.Clamp(config.OpeningWidth, 1, Mathf.Max(1, cellSize - 2));
             int offset = (cellSize - opening) / 2;
+            TileBase floorTile = Tileset != null && Tileset.FloorTiles.Count > 0 ? Tileset.FloorTiles[0] : null;
 
             for (int i = 0; i < Connections.Count; i++)
             {
@@ -111,12 +137,12 @@ namespace MadnessDreams
                 if (connection.side == RoomSide.Right)
                 {
                     Vector3Int min = new Vector3Int(origin.x + cellSize - 1, origin.y + offset, origin.z);
-                    TilemapStamper.ClearCells(targetTilemap, min, new Vector3Int(2, opening, 1));
+                    TilemapStamper.FillCells(targetTilemap, min, new Vector3Int(2, opening, 1), floorTile);
                 }
                 else
                 {
                     Vector3Int min = new Vector3Int(origin.x + offset, origin.y + cellSize - 1, origin.z);
-                    TilemapStamper.ClearCells(targetTilemap, min, new Vector3Int(opening, 2, 1));
+                    TilemapStamper.FillCells(targetTilemap, min, new Vector3Int(opening, 2, 1), floorTile);
                 }
             }
         }

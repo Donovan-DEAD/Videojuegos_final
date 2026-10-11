@@ -17,6 +17,8 @@ namespace MadnessDreams
         private RoomTag tag = RoomTag.None;
         private bool captureSpawnPoints = true;
         private string spawnPrefix = "EnemySpawn";
+        private bool autoGenerateSpawns = true;
+        private int spawnGrid = 3;
 
         /// <summary>
         /// Abre la ventana de captura de cuartos del editor.
@@ -71,12 +73,18 @@ namespace MadnessDreams
                 spawnPrefix = EditorGUILayout.TextField("Spawn name prefix", spawnPrefix);
             }
 
+            autoGenerateSpawns = EditorGUILayout.Toggle("Generar spawns si quedan 0", autoGenerateSpawns);
+            using (new EditorGUI.DisabledScope(!autoGenerateSpawns))
+            {
+                spawnGrid = Mathf.Clamp(EditorGUILayout.IntField("Grilla de respaldo (NxN)", spawnGrid), 1, 8);
+            }
+
             bool canCapture = source != null && target != null;
             using (new EditorGUI.DisabledScope(!canCapture))
             {
                 if (GUILayout.Button("Capture"))
                 {
-                    Capture(source, target, cellSize, tag, captureSpawnPoints, spawnPrefix);
+                    Capture(source, target, cellSize, tag, captureSpawnPoints, spawnPrefix, autoGenerateSpawns, spawnGrid);
                 }
             }
         }
@@ -84,7 +92,7 @@ namespace MadnessDreams
         /// <summary>
         /// Captura el Tilemap origen en el MapChunkSO destino (tiles, tamaño en celdas, tag y puntos de spawn) y lanza las validaciones.
         /// </summary>
-        public static void Capture(Tilemap source, MapChunkSO target, int cellSize, RoomTag tag, bool captureSpawnPoints, string spawnPrefix)
+        public static void Capture(Tilemap source, MapChunkSO target, int cellSize, RoomTag tag, bool captureSpawnPoints, string spawnPrefix, bool autoGenerateSpawns, int spawnGrid)
         {
             if (source == null || target == null)
             {
@@ -120,6 +128,18 @@ namespace MadnessDreams
                 }
 
                 so.ApplyModifiedPropertiesWithoutUndo();
+            }
+
+            // Respaldo: si el bloque queda sin spawn points y su rol es Normal, se genera una grilla.
+            if (autoGenerateSpawns && target.Role != CellRole.Start && target.Role != CellRole.Boss)
+            {
+                EnemySpawnPoint[] current = target.EnemySpawns;
+                if (current == null || current.Length == 0)
+                {
+                    target.SetEnemySpawns(TilesetTools.BuildSpawnGrid(size, spawnGrid));
+                    spawnCount = target.EnemySpawns.Length;
+                    Debug.Log($"'{target.name}' no tenía spawn points: se generó una grilla {spawnGrid}x{spawnGrid}.", target);
+                }
             }
 
             EditorUtility.SetDirty(target);

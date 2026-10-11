@@ -1,0 +1,417 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- Paquetes (compatibles con Overleaf / pdfLaTeX) ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+
+% --- Estilo de código ---
+\definecolor{codebg}{RGB}{246,246,248}
+\definecolor{codekw}{RGB}{0,90,160}
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{gray!40},
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  keywordstyle=\color{codekw}\bfseries,
+  commentstyle=\color{green!45!black},
+  stringstyle=\color{orange!70!black},
+  captionpos=b
+}
+
+\newcommand{\asset}[1]{\texttt{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\title{\textbf{Madness Dreams}\\[2mm]
+\large Instructivo del mapa procedural: tileset, bloques y mundos}
+\author{Documentación técnica}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+Este instructivo describe \textbf{de principio a fin} cómo funciona la generación procedural del mapa de
+\emph{Madness Dreams} en Unity: qué piezas intervienen, \textbf{qué hace y qué no hace} el sistema,
+\textbf{quién llama a quién} en runtime, y el procedimiento completo para crear tiles, catálogo, bloques
+(cuartos), bancos, temas, dificultad y mundos. Está pensado para seguirse sin consultar a nadie más.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+% ==============================================================
+\section{Alcance: qué hace y qué no hace}
+
+\subsection*{Qué SÍ hace}
+\begin{itemize}[leftmargin=1.4em]
+  \item Genera un \textbf{mundo nuevo en cada partida} (semilla por run) con una rejilla de cuartos.
+  \item Garantiza \textbf{exactamente 1 cuarto de Spawn y 1 de Boss} por mundo, y un \textbf{grafo totalmente conexo}.
+  \item Empaqueta cuartos de \textbf{tamaño fijo por celdas} (1$\times$1, 2$\times$1, 1$\times$2, 2$\times$2, 3$\times$3).
+  \item \textbf{Abre los pasos automáticamente} (no se pintan puertas).
+  \item Puebla cada cuarto por \textbf{tag temático}: barreras (con colisión), props (decoración) y enemigos.
+  \item Escala la \textbf{densidad y el tier} de enemigos según el \textbf{nivel del jugador}.
+  \item Valida que las barreras \textbf{no sellen} un cuarto (flood-fill).
+  \item Dibuja el mapa en el HUD como \textbf{un rectángulo por cuarto}.
+\end{itemize}
+
+\subsection*{Qué NO hace}
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{No genera arte}: usa los tiles y sprites que le des en el catálogo.
+  \item \textbf{No decide el look artístico por vos}: el patrón de tiles de un bloque es el que pintaste (o el que mezcló el constructor automático); el generador lo \textbf{copia literal}.
+  \item \textbf{No varía los tiles del bloque por run}: cambia el \emph{layout}, los props y los enemigos; el piso del molde es estable.
+  \item \textbf{No crea caminos críticos, gating ni llaves}: el grafo es completamente conexo.
+  \item \textbf{No sincroniza la persistencia de cuartos} entre visitas (el mapa se regenera al cargar la escena).
+  \item \textbf{No anima tiles} (\code{AnimatedTile}): los sheets de animación se usan como frame estático.
+\end{itemize}
+
+% ==============================================================
+\section{Conceptos y unidades}
+
+\begin{center}
+\begin{tabular}{@{}p{3.2cm}p{11.2cm}@{}}
+\toprule
+\textbf{Unidad} & \textbf{Definición} \\
+\midrule
+\textbf{Tile} & 1 sprite de 16$\times$16 px con \code{Pixels Per Unit = 16} $\Rightarrow$ 1 unidad de mundo. \\
+\textbf{Celda} & Unidad de la rejilla = \code{WorldConfigSO.chunkSize} = \textbf{16 tiles}. \\
+\textbf{Cuarto / bloque} & \code{sizeInCells} $\in$ \{(1,1),(2,1),(1,2),(2,2),(3,3)\}. En tiles mide \code{sizeInCells * 16}. \\
+\textbf{Piso} & Tile con \code{Collider Type = None} (transitable, sin colisión). \\
+\textbf{Muro} & Tile con \code{Collider Type = Grid} (bloquea). \\
+\textbf{Paso / abertura} & Hueco en el borde compartido entre dos cuartos. \textbf{Lo talla el generador}, no se pinta. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Regla central.} Piso y muro viven en el \textbf{mismo Tilemap}; lo que los distingue es el
+\code{ColliderType} del asset \code{Tile} y la lista \code{wallTiles} del catálogo. El código pregunta
+``¿esta celda es muro?'' con \code{MapGenerator.IsWall} $\rightarrow$ \code{TilesetCatalogSO.IsWall}.
+
+\paragraph{Los dos niveles de pintado.}
+\begin{enumerate}[leftmargin=1.4em]
+  \item \textbf{Nivel A --- tilemap del bloque}: piso + muros del cuarto. Forma parte del \asset{MapChunkSO}.
+  \item \textbf{Nivel B --- props y barreras}: \textbf{prefabs} que se \emph{instancian} en runtime por cuarto
+        (no están en el tilemap). Decor = sin collider; barrera = con \code{BoxCollider2D} en capa \code{Walls}.
+\end{enumerate}
+
+\paragraph{Bloques por tamaño, tema por tag.} Los bloques del banco se eligen \textbf{solo por tamaño}
+(1$\times$1, 2$\times$1, \ldots): el \code{tag} de un bloque \textbf{no} filtra la selección. El \textbf{tag del
+cuarto} se sortea en runtime desde los \emph{temas} del \code{WorldConfigSO} y es el que decide el
+\textbf{tema} (\code{ZoneThemeSO}: enemigos, props y barreras). Un mundo puede tener \textbf{varios temas
+con peso} (p.\ ej.\ \emph{explanada}, \emph{bosque ligero}, \emph{bosque denso}), todos del mismo bioma.
+
+% ==============================================================
+\section{Arquitectura: quién llama a quién (runtime)}
+
+\subsection{Generación}
+
+\begin{lstlisting}
+RunManager.Awake()
+  -> GenerateWorld(PendingWorldIndex)
+       -> MapGenerator.Configure(WorldConfigSO)
+       -> MapGenerator.SetSeed(GameFlowManager.Instance.RunSeed + index * 7919)   // semilla POR RUN
+       -> MapGenerator.Generate()
+            -> RoomLayout.Build(config, rng, Rooms, Connections)
+                 |  reserva Spawn (centro) y Boss (el mas lejano)
+                 |  empaqueta por sizeWeights eligiendo arquetipo por TAMANO + TAG
+                 |  calcula adyacencia (celda vecina de cuarto distinto = 1 conexion)
+            -> StampRooms()          -> TilemapStamper.Stamp(...)      // SetTilesBlock
+            -> CarveConnections()    -> TilemapStamper.FillCells(...)  // muro -> piso
+            -> RoomContentSpawner.Configure(config)
+            -> RoomContentSpawner.SpawnAll(rng)
+                 -> SpawnRoom(room)
+                      -> PlaceBarriers(...)   // valida con flood-fill que no selle
+                      -> PlaceProps(...)      // decoracion
+                      -> SpawnEnemies(...)    // filtro por tier + densidad por nivel
+                           -> Spawner.TrySpawn(prefab, pos, rng, out _)
+            -> Generated?.Invoke()
+                 -> WorldLayout.OnGenerated()      // jugador al centro del Spawn, arena al centro del Boss
+                 -> MinimapWidget.Build() / MapOverlayWidget.Build()  -> MapGrid.BuildRooms(...)
+       -> BossManager.Configure(config) + SetupBossFight()
+            -> BossArenaController.Setup(bossPrefab, bossStats)
+\end{lstlisting}
+
+\subsection{Muerte del jefe $\rightarrow$ portal $\rightarrow$ mundo siguiente}
+
+\begin{lstlisting}
+CaperucitaBoss muere -> Health.Died
+  -> BossArenaController.OnBossDefeated -> event BossDefeated
+       -> BossManager.OnBossDefeated -> event BossDefeated
+            -> WorldPortalController.OnBossDefeated  -> portal.SetActive(true)
+Jugador toca el Portal -> Portal.OnTriggerEnter2D
+  -> RunManager.RequestAdvance()
+       -> si hay mundo siguiente: GameFlowManager.SetPendingWorldIndex(+1) + LoadSceneWithLoading(Gameplay)
+       -> si es el ultimo:       GameFlowManager.Retry()   // un solo mundo de ejemplo -> run nueva (semilla nueva)
+\end{lstlisting}
+
+\subsection{Muerte del jugador}
+
+\begin{lstlisting}
+Health.Died -> PlayerDeathHandler -> GameFlowManager.NotifyPlayerDied() -> escena 04_Defeat
+\end{lstlisting}
+
+% ==============================================================
+\section{Inventario de assets y quién los usa}
+
+\small
+\begin{longtable}{@{}p{4.4cm}p{3.6cm}p{6.4cm}@{}}
+\toprule
+\textbf{Asset} & \textbf{Quién lo escribe} & \textbf{Quién lo lee / para qué} \\
+\midrule
+\endhead
+\code{Tile} (\code{Assets/Tiles/Generated/}) & Tileset Builder & \code{RoomArchetypeBuilder} al pintar bloques; el Tilemap los renderiza y colisiona \\
+\code{TilesetCatalogSO} & Tileset Builder & constructor de bloques (\code{PickFloor}/\code{PickWall}), \code{MapGenerator.IsWall}, constructor de props \\
+\code{MapChunkSO} (bloque) & capturador / Tileset Builder & \code{RoomLayout} (tamaño + tag), \code{MapGenerator} (estampado), \code{RoomContentSpawner} (spawns) \\
+\code{BlockBankSO} (banco) & Tileset Builder (o a mano) & \code{RoomLayout}: \code{normalChunks}, \code{startRoom}, \code{bossArena} \\
+\code{ZoneThemeSO} & Tileset Builder (props) & \code{RoomContentSpawner}: \code{enemyBank}, \code{propBank}, \code{barrierBank}, densidades \\
+\code{PropDefinitionSO} & Tileset Builder (props) & \code{RoomContentSpawner}: prefab, \code{kind}, \code{footprint} \\
+\code{DifficultyProfileSO} & a mano & \code{RoomContentSpawner}: tier máximo y densidad según \code{PlayerStats.Level} \\
+\code{WorldConfigSO} & a mano & \code{RunManager}, \code{RoomLayout}, \code{MapGenerator}, HUD \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+% ==============================================================
+\section{Herramientas de editor}
+
+Todas viven en el menú \textbf{Tools $\rightarrow$ Madness Dreams}.
+
+\subsection{Ventana \emph{Tileset Builder} (\code{Tools > Madness Dreams > Tileset Builder})}
+
+Es la herramienta principal y \textbf{todo su output va a las carpetas que elijas}, de modo que puedas
+mantener varios mundos separados sin sobrescribir catálogos ni bancos.
+
+\begin{longtable}{@{}p{5.2cm}p{9.2cm}@{}}
+\toprule
+\textbf{Campo} & \textbf{Para qué} \\
+\midrule
+\endhead
+\code{Catálogo destino} & \code{TilesetCatalogSO} a crear/actualizar. Vacío $\Rightarrow$ lo crea en \emph{Carpeta del catálogo}. \\
+\code{Carpeta del catálogo} & Dónde crear \code{TilesetCatalog.asset}. \\
+\code{Carpeta de tiles} & Dónde crear los \code{Tile} de piso y muro. \\
+\code{Sheet de piso/muro} + \code{Columnas} & Sheet de entrada y su grilla (lo usa el selector). \\
+\code{Grilla de tiles} (pincel \emph{Piso}/\emph{Muro}/\emph{Ignorar}) & Qué sprite es piso y cuál muro; queda guardado en el catálogo. \\
+\code{Sheet de objetos} + \code{Grilla} (pincel \emph{Decor}/\emph{Barrera}/\emph{Ignorar}) & Qué objeto es decoración y cuál barrera. \\
+\code{Carpeta de bloques} & Dónde crear/actualizar los \code{MapChunkSO}. \\
+\code{Tamaños (1x1, 2x1, \ldots)} & Qué clases de tamaño se generan como bloques. \\
+\code{Banco a cablear} & \code{BlockBankSO} que recibirá \code{normalChunks} + \code{startRoom} + \code{bossArena}. Si lo dejás vacío, solo crea los assets. \\
+\code{Semilla de variedad} & Solo decide \textbf{qué tile va en cada celda dentro del bloque}. \textbf{No} afecta al mapa. \\
+\code{Carpeta de prefabs} / \code{Carpeta de definiciones} & Dónde crear los prefabs de props/barreras y sus \code{PropDefinitionSO}. \\
+\code{Tema a cablear} & \code{ZoneThemeSO} que recibirá \code{propBank} y \code{barrierBank}. \\
+\code{Props decorativos} / \code{Barreras} & Cuántos objetos tomar del catálogo. \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Botones.}
+\begin{enumerate}[leftmargin=1.4em]
+  \item \textbf{Construir / actualizar catálogo}: crea los \code{Tile} con su \code{ColliderType}
+        (piso \code{None}, muro \code{Grid}) y llena las cuatro listas del catálogo.
+  \item \textbf{Construir / actualizar bloques}: generan \code{Room\_1x1}, \code{Room\_2x1}, \code{Room\_1x2},
+        \code{Room\_2x2}, \code{Room\_3x3}, \code{Room\_Start} (1$\times$1, rol Start) y \code{Room\_Boss} (3$\times$3, rol Boss),
+        con anillo de muro + interior de piso y 9 \code{enemySpawns}.
+  \item \textbf{Construir / actualizar props}: crea los prefabs (barreras con \code{BoxCollider2D} en capa \code{Walls}) y sus definiciones.
+  \item \textbf{Validar mundos}: por cada \code{WorldConfigSO}, corre \code{RoomLayout} y verifica \textbf{1 Spawn + 1 Boss}.
+\end{enumerate}
+
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Qué sobrescribe y qué no}: los assets se \textbf{crean si no existen y se actualizan si existen,
+        siempre en la carpeta indicada} (mismos nombres). Nada fuera de esas carpetas se toca, y el banco/tema
+        solo se modifican si los asignás.
+  \item \textbf{Para varios mundos}: creá una carpeta por mundo (p. ej. \code{Assets/ScriptableObjects/Mundo\_Bosque/Rooms})
+        y corré la ventana apuntando ahí. Los bancos/temas se separan igual.
+\end{itemize}
+
+\subsection{Capturador de cuartos (\code{Tools > Madness Dreams > Map Chunk Capture})}
+
+Convierte un \code{Tilemap} pintado en un \code{MapChunkSO} (camino \textbf{manual}, control total del look).
+
+\begin{enumerate}[leftmargin=1.4em]
+  \item En la escena: \code{GameObject > 2D Object > Tilemap > Rectangular} (tilemap de trabajo, temporal).
+  \item Pintá el cuarto: \textbf{anillo de muro de 1 tile} en el borde del footprint + \textbf{todo el interior con piso}.
+        \textbf{No pintes los pasos}: los abre el generador.
+  \item Agregá hijos vacíos \code{EnemySpawn}, \code{EnemySpawn1}, \ldots{} en las posiciones de aparición.
+  \item Abrí la ventana, asigná \code{Source Tilemap}, \code{Target MapChunkSO}, \code{Cell size = 16} y \code{Tag} $\rightarrow$ \textbf{Capture}.
+\end{enumerate}
+
+\paragraph{Qué captura}: \code{size} (tiles), \code{tiles} (aplanado), \code{sizeInCells} (derivado),
+\code{tag} y \code{enemySpawns} (posiciones locales en tiles, peso 1).
+\paragraph{Validaciones (warnings)}: tamaño múltiplo de la celda; anillo de muro completo; presencia de spawn points.
+\paragraph{Nota técnica}: \code{Tilemap.cellBounds} incluye padding; la herramienta calcula los límites
+\textbf{reales} de los tiles pintados.
+
+% ==============================================================
+\section{Procedimiento completo (A $\rightarrow$ I)}
+
+\subsection*{A. Tileset importado}
+Los PNG están en \code{Assets/Art/Tilesets/}. Importación correcta de cada hoja:
+\code{Texture Type = Sprite (2D and UI)}, \code{Sprite Mode = Multiple}, \code{Pixels Per Unit = 16},
+\code{Filter Mode = Point}, \code{Compression = None}, \code{Mip Maps = off}, \code{Wrap = Clamp},
+\code{Alpha Is Transparency = true}, y \textbf{corte en rejilla de 16$\times$16}.
+Todas las hojas del pack son múltiplos exactos de 16 (verificado), por eso 16 es el tamaño correcto.
+
+\subsection*{B. Catálogo}
+Abrí \textbf{Tileset Builder} y usá \emph{Construir / actualizar catálogo}.
+Resultado: \code{Tile} de piso (\code{ColliderType = None}) y de muro (\code{ColliderType = Grid}) en la
+carpeta de tiles, y el catálogo con \code{floorTiles}, \code{wallTiles}, \code{decorSprites}, \code{barrierSprites}.
+\textbf{Si un tile no te gusta como piso o muro, cambialo en el catálogo (listas) o ajustá los índices
+en \code{TilesetTools.FloorIndices}/\code{WallIndices}.}
+
+\subsection*{C. Bloques (cuartos)}
+Dos caminos, combinables:
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Automático}: \emph{Construir / actualizar bloques} en la ventana (mezcla tiles con la semilla de variedad).
+  \item \textbf{Manual}: pintá cada bloque como quieras y capturá con \emph{Map Chunk Capture} (control total del look).
+\end{itemize}
+\textbf{Para que no se repita}: creá 2--4 variantes \emph{por tamaño} (con nombres distintos) y metelas todas en el banco.
+Los bloques son \textbf{agnósticos del tema}: el mismo bloque puede recibir cualquier tema; por eso conviene
+pintar bloques neutros y dejar la identidad visual/combate al \code{ZoneThemeSO}.
+
+\subsection*{D. Banco de bloques}
+En el \code{BlockBankSO}:
+\begin{itemize}[leftmargin=1.4em]
+  \item \code{normalChunks}: todos los bloques normales (los que saldrán al azar),
+  \item \code{startRoom}: el cuarto de Spawn (1$\times$1),
+  \item \code{bossArena}: la arena (3$\times$3).
+\end{itemize}
+
+\subsection*{E. Temas del mundo (qué se puebla)}
+El \code{WorldConfigSO} tiene una lista \code{themes} de entradas \code{\{tag, ZoneThemeSO, weight\}}:
+\code{RoomLayout} sortea un \textbf{tag} por cuarto (ponderado por \code{weight}) y \code{RoomContentSpawner}
+resuelve el \code{ZoneThemeSO} de ese tag. Así un mundo (p.\ ej.\ el bosque) puede tener \textbf{varios
+sub-temas} (explanada / bosque ligero / bosque denso), cada uno con su banco de enemigos, props y barreras.
+En cada \code{ZoneThemeSO}: \code{enemyBank} (arquetipos + peso), \code{propBank}, \code{barrierBank} y densidades.
+Los prefabs y definiciones los crea el botón \emph{Construir / actualizar props}.
+
+\subsection*{F. Dificultad}
+En el \code{DifficultyProfileSO}: filas \code{\{minLevel, maxTier, densityMultiplier, enemiesMin, enemiesMax\}}
+y los topes por tamaño de cuarto. \textbf{El nivel del jugador manda}: el tier se filtra contra \code{PlayerStats.Level}.
+Siempre puede salir el tier más bajo (piso garantizado).
+
+\subsection*{G. Mundo}
+En el \code{WorldConfigSO}:
+\code{bank}, \code{width}/\code{height} (rejilla en celdas; 14$\times$14 recomendado),
+\code{chunkSize = 16}, \code{sizeWeights} (peso por clase de tamaño),
+\code{openingWidth} (ancho del paso, 4 por defecto), \code{fillRatio},
+\code{themes} (lista \code{\{tag, ZoneThemeSO, weight\}}), \code{tileset} (el \code{TilesetCatalogSO} del mundo),
+\code{difficulty}, \code{bossPrefab}, \code{boss}.
+
+\subsection*{H. Escena}
+En la escena de gameplay (referencia: \code{03\_Gameplay}):
+\begin{itemize}[leftmargin=1.4em]
+  \item \code{Grid} con un \code{Tilemap} (capa \code{Walls}) + \code{TilemapCollider2D} (\code{Collider Type = Grid}).
+  \item \code{World}: \code{MapGenerator} (\code{config}, \code{targetTilemap}, \code{contentSpawner}) + \code{RoomContentSpawner} (\code{mapGenerator}, \code{spawner}).
+  \item \code{Spawner} (objeto aparte, con \code{obstacleMask} = \code{Walls}).
+  \item \code{GameManager}: \code{RunManager} (\code{worlds} = lista de \code{WorldConfigSO}, \code{mapGenerator}, \code{bossManager}) + \code{BossManager} (\code{arena}).
+  \item \code{BossArena} (\code{BossArenaController} + \code{BossSpawnPoint}), \code{WorldLayout}, \code{WorldPortalController} + \code{Portal}, \code{Player}, \code{HUD}.
+\end{itemize}
+
+\subsection*{I. Probar}
+Dar \textbf{Play} y verificar:
+\begin{enumerate}[leftmargin=1.4em]
+  \item el mapa aparece \textbf{ya construido} (no se ve armándose, ocurre durante el fundido);
+  \item \textbf{cada partida nueva da un mapa distinto} (semilla por run): iniciá 3 runs y compará;
+  \item el jugador camina por todo el mapa (sin quedar encerrado) y las paredes bloquean;
+  \item aparecen props, barreras y enemigos;
+  \item al morir el jefe se activa el portal y al tocarlo avanza (o reinicia la run con semilla nueva).
+\end{enumerate}
+
+% ==============================================================
+\section{Reglas obligatorias (checklist)}
+
+\begin{enumerate}[leftmargin=1.4em]
+  \item El bloque mide \textbf{\code{sizeInCells x 16}} tiles exactos.
+  \item \textbf{Anillo de muro de 1 tile} en el borde del footprint + \textbf{interior de piso}.
+  \item Tiles de \textbf{piso} con \code{ColliderType = None}; de \textbf{muro} con \code{Grid}.
+  \item El \code{TilesetCatalogSO} debe tener \code{wallTiles} cargado (de ello depende \code{IsWall}).
+  \item El banco necesita \code{startRoom} y \code{bossArena} (correr \emph{Validar mundos}).
+  \item Los \textbf{pasos no se pintan}: los talla el generador reemplazando muro por piso.
+  \item El \code{WorldConfigSO} debe tener asignado el \code{TilesetCatalogSO} (\code{tileset}): es de donde
+        \code{MapGenerator} saca \code{IsWall} y el piso para abrir los pasos.
+\end{enumerate}
+
+% ==============================================================
+\section{Problemas típicos}
+
+\small
+\begin{longtable}{@{}p{4.6cm}p{5.2cm}p{4.6cm}@{}}
+\toprule
+\textbf{Síntoma} & \textbf{Causa probable} & \textbf{Solución} \\
+\midrule
+\endhead
+Todo el mapa es ``muro'' / el jugador no se mueve & los tiles de piso tienen \code{ColliderType = Grid} (o los de muro \code{None}) & regenerá el catálogo; verificá \code{ColliderType} en los \code{Tile} \\
+El jugador atraviesa paredes & los tiles de muro tienen \code{ColliderType = None} & poné \code{Grid} en los muros \\
+El mapa sale vacío & \code{MapGenerator} sin \code{targetTilemap}, banco sin \code{normalChunks}, o falta Spawn/Boss & revisá el Inspector y corré \emph{Validar mundos} \\
+Los cuartos se solapan o quedan con huecos & el bloque no mide \code{sizeInCells x 16} & corregí \code{sizeInCells} / \code{chunkSize} \\
+Los pasos quedan bloqueados & el catálogo no tiene \code{floorTiles} (el tallado no tiene tile para poner) & cargá piso en el catálogo \\
+No aparecen enemigos & el bloque no tiene \code{enemySpawns}, o el tema no tiene \code{enemyBank}, o el tier permitido es 0 & revisá el bloque, el \code{ZoneThemeSO} y \code{PlayerStats.Level} \\
+No aparecen props ni barreras & el \code{ZoneThemeSO} no tiene \code{propBank}/\code{barrierBank}, o el mundo no tiene \code{themes} con ese tag & cableá el tema y \code{WorldConfigSO.themes} \\
+Las barreras no aparecen & la validación anti-sellado descarta las que encerrarían el cuarto & normal: usá footprints más chicos \\
+Mismo mapa siempre & estás jugando una escena directa (sin \code{StartRun}, \code{RunSeed} = 0) & probá entrando por el menú $\rightarrow$ Jugar \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+% ==============================================================
+\section{Semillas: cuál manda en cada cosa}
+
+\begin{center}
+\begin{tabular}{@{}p{4.6cm}p{11.4cm}@{}}
+\toprule
+\textbf{Semilla} & \textbf{Qué decide} \\
+\midrule
+\code{GameFlowManager.RunSeed} & \textbf{Todo el mapa de la partida}: qué cuartos, de qué tamaño y tag, dónde están, las conexiones, y dónde caen props y enemigos. Se sortea en \code{StartRun()}/\code{Retry()}. \\
+\code{MapGenerator} (\code{SetSeed}) & Recibe \code{RunSeed + index * 7919} desde \code{RunManager}. \\
+Semilla de variedad (ventana) & Solo el reparto de tiles \textbf{dentro} de un bloque al construirlo. No afecta al mapa. \\
+\code{WorldConfigSO.seed} & Semilla de respaldo (si no se llamó a \code{SetSeed}). \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ==============================================================
+\section{Apéndice: API de referencia}
+
+\begin{longtable}{@{}p{5.4cm}p{10.6cm}@{}}
+\toprule
+\textbf{Clase / método} & \textbf{Qué hace} \\
+\midrule
+\endhead
+\code{MapGenerator.Configure(config)} & Inyecta la configuración del mundo. \\
+\code{MapGenerator.SetSeed(seed)} & Fija la semilla del próximo \code{Generate}. \\
+\code{MapGenerator.Generate()} & Pipeline completo: layout $\rightarrow$ estampado $\rightarrow$ pasos $\rightarrow$ contenido $\rightarrow$ evento \code{Generated}. \\
+\code{MapGenerator.IsWall(cell)} & True si la celda tiene un tile de muro del catálogo. \\
+\code{MapGenerator.Rooms / Connections} & Resultado de la última generación. \\
+\code{MapGenerator.StartRoomCenterCell / BossRoomCenterCell} & Centros (en celdas de tile) usados por \code{WorldLayout}. \\
+\code{RoomLayout.Build(config, rng, rooms, connections)} & Reservas + empaquetado + adyacencia (estático y determinista). \\
+\code{TilemapStamper.Stamp(tilemap, chunk, origin)} & Copia el \code{tiles[]} del bloque. \\
+\code{TilemapStamper.FillCells(tilemap, min, size, tile)} & Rellena un rectángulo (abre pasos: muro $\rightarrow$ piso). \\
+\code{RoomContentSpawner.SpawnAll(rng)} & Puebla todos los cuartos por tag. \\
+\code{Spawner.TrySpawn(prefab, pos, rng, out inst)} & Instancia con jitter y chequeo de obstáculos. \\
+\code{TilesetCatalogSO.PickFloor / PickWall} & Elige un tile al azar de la lista. \\
+\code{TilesetCatalogSO.IsWall(tile)} & Pertenencia a \code{wallTiles}. \\
+\code{MapChunkSO.SetSize / SetTileData / SetSizeInCells / SetTag / SetRole / SetEnemySpawns} & Setters usados por el constructor de bloques. \\
+\code{MapChunkSO.ResolveSizeInCells(cellSize)} & Deriva las celdas desde \code{size} en tiles. \\
+\code{RunManager.GenerateWorld(index)} & Configura + siembra + genera el mundo \code{index}. \\
+\code{RunManager.RequestAdvance()} & Avanza de mundo (o reinicia la run si es el último). \\
+\bottomrule
+\end{longtable}
+
+\vfill
+\noindent\rule{\textwidth}{0.4pt}\\
+\textbf{Tip rápido}: si algo no se ve como esperás, el orden de sospecha es
+(1) \code{ColliderType} de los tiles, (2) \code{wallTiles} del catálogo,
+(3) tamaño del bloque vs \code{chunkSize}, (4) banco/tema cableados, (5) \code{tileset} asignado en \code{MapGenerator}.
+
+\end{document}

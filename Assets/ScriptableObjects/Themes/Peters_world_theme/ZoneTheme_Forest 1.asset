@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dca694848d23bdf478b17f31e49125cb, type: 3}
+  m_Name: ZoneTheme_Forest 1
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.ZoneThemeSO
+  tag: 1
+  enemyBank:
+  - archetype: {fileID: 11400000, guid: 8eb25e91f354d284a837b2c8262fa026, type: 2}
+    weight: 3
+  - archetype: {fileID: 11400000, guid: 04054d06320881e4e886f5dc95fc2e2c, type: 2}
+    weight: 3
+  - archetype: {fileID: 11400000, guid: e742e63ccd489fe408966615b970dac5, type: 2}
+    weight: 2
+  - archetype: {fileID: 11400000, guid: 95fbc7f3c9bd3e8418684d84cb46b3a0, type: 2}
+    weight: 2
+  propBank:
+  - prop: {fileID: 11400000, guid: 800680977e173d245967c3043e395d53, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: 92af812b1b7d2164aa7c3ef8f7ba30db, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: 0314f044ba53b2f46a848171dece1b3c, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: 9d8ee786c474a3a439599143065d774a, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: b5c03dab3f832f64abaac416164f94a2, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: 7c91d6bc80ef49e4fa60f162912518e4, type: 2}
+    weight: 2
+  barrierBank:
+  - prop: {fileID: 11400000, guid: b58bbd062591af34498e538c7466495b, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: 0214ca7ec5a08214b86f2c41ee0ed45a, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: 97bebda6c9a5ec84ca976ec5761268bf, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: 98b75ba8f48c16d4c9999290e81def2d, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: ee74da00e99121142b6c6db37e757bc7, type: 2}
+    weight: 2
+  - prop: {fileID: 11400000, guid: be8f22f53261e9345a4eac2c98b0e903, type: 2}
+    weight: 2
+  enemiesMin: 1
+  enemiesMax: 3
+  propsMin: 3
+  propsMax: 7
+  barriersMin: 1
+  barriersMax: 3

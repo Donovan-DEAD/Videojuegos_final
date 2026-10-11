@@ -107,14 +107,13 @@ namespace MadnessDreams
 
         private bool[,] BuildOccupied(RectInt area)
         {
-            Tilemap tilemap = mapGenerator.TargetTilemap;
             bool[,] occupied = new bool[area.width, area.height];
 
             for (int y = 0; y < area.height; y++)
             {
                 for (int x = 0; x < area.width; x++)
                 {
-                    occupied[x, y] = tilemap.HasTile(new Vector3Int(area.x + x, area.y + y, 0));
+                    occupied[x, y] = mapGenerator.IsWall(new Vector3Int(area.x + x, area.y + y, 0));
                 }
             }
 

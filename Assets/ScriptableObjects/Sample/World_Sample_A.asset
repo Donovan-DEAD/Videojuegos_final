@@ -24,6 +24,7 @@ MonoBehaviour:
   themes:
   - tag: 1
     theme: {fileID: 11400000, guid: 9d583cef6a7947c49848d8b492cc600b, type: 2}
+  tileset: {fileID: 11400000, guid: 331f08da6b3f30146b0e190141ccb59e, type: 2}
   difficulty: {fileID: 11400000, guid: a979387f7821c7d409e467ee5ee29fd8, type: 2}
   enemyPool:
   - {fileID: 11400000, guid: 8eb25e91f354d284a837b2c8262fa026, type: 2}
