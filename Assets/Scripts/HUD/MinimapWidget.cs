@@ -70,7 +70,7 @@ namespace MadnessDreams
 
             if (mapGenerator != null && mapGenerator.Rooms.Count > 0)
             {
-                roomImages = MapGrid.BuildRooms(container, mapGenerator.Rooms, cellSize, cellGap, startColor, normalColor, bossColor);
+                roomImages = MapGrid.BuildRooms(container, mapGenerator.Rooms, height, cellSize, cellGap, startColor, normalColor, bossColor);
             }
             else
             {

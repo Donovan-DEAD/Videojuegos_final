@@ -134,20 +134,20 @@ namespace MadnessDreams
             {
                 switch (index)
                 {
-                    case 0: return keyboard.digit1Key.wasPressedThisFrame;
-                    case 1: return keyboard.digit2Key.wasPressedThisFrame;
-                    case 2: return keyboard.digit3Key.wasPressedThisFrame;
-                    case 3: return keyboard.digit4Key.wasPressedThisFrame;
+                    case 0: return keyboard.qKey.wasPressedThisFrame;
+                    case 1: return keyboard.eKey.wasPressedThisFrame;
+                    case 2: return keyboard.rKey.wasPressedThisFrame;
+                    case 3: return keyboard.fKey.wasPressedThisFrame;
                 }
                 return false;
             }
 
             switch (index)
             {
-                case 0: return Input.GetKeyDown(KeyCode.Alpha1);
-                case 1: return Input.GetKeyDown(KeyCode.Alpha2);
-                case 2: return Input.GetKeyDown(KeyCode.Alpha3);
-                case 3: return Input.GetKeyDown(KeyCode.Alpha4);
+                case 0: return Input.GetKeyDown(KeyCode.Q);
+                case 1: return Input.GetKeyDown(KeyCode.E);
+                case 2: return Input.GetKeyDown(KeyCode.R);
+                case 3: return Input.GetKeyDown(KeyCode.F);
             }
             return false;
         }

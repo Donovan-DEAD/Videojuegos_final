@@ -70,7 +70,7 @@ namespace MadnessDreams
 
             if (slotKeys != null && index < slotKeys.Length && slotKeys[index] != null)
             {
-                slotKeys[index].color = locked ? lockedKeyColor : Color.white;
+                slotKeys[index].color = locked ? lockedKeyColor : Color.black;
             }
         }
     }

@@ -12,7 +12,7 @@ namespace MadnessDreams
         /// <summary>
         /// Dibuja un rectángulo por cuarto (admite cuartos de varias celdas) y devuelve las imágenes creadas.
         /// </summary>
-        public static Image[] BuildRooms(RectTransform container, List<RoomPlacement> rooms, float cellSize, float cellGap,
+        public static Image[] BuildRooms(RectTransform container, List<RoomPlacement> rooms, int gridHeight, float cellSize, float cellGap,
             Color startColor, Color normalColor, Color bossColor)
         {
             Image[] images = new Image[rooms.Count];
@@ -23,7 +23,8 @@ namespace MadnessDreams
                 float w = room.sizeInCells.x * cellSize + (room.sizeInCells.x - 1) * cellGap;
                 float h = room.sizeInCells.y * cellSize + (room.sizeInCells.y - 1) * cellGap;
                 float x = room.originCell.x * (cellSize + cellGap);
-                float y = room.originCell.y * (cellSize + cellGap);
+                // UI coordinates start at the top, while world/grid Y grows upward.
+                float y = (gridHeight - room.originCell.y - room.sizeInCells.y) * (cellSize + cellGap);
 
                 Color color = room.role == CellRole.Start ? startColor : (room.role == CellRole.Boss ? bossColor : normalColor);
                 images[i] = CreateRect(container, x, y, w, h, color);
@@ -45,7 +46,8 @@ namespace MadnessDreams
             {
                 for (int x = 0; x < width; x++)
                 {
-                    cells[x, y] = CreateRect(container, x * (cellSize + cellGap), y * (cellSize + cellGap), cellSize, cellSize,
+                    float uiY = (height - 1 - y) * (cellSize + cellGap);
+                    cells[x, y] = CreateRect(container, x * (cellSize + cellGap), uiY, cellSize, cellSize,
                         RoleColor(x, y, startChunk, bossChunk, bossRegion, startColor, normalColor, bossColor));
                 }
             }
@@ -83,7 +85,8 @@ namespace MadnessDreams
             cx = Mathf.Clamp(cx, 0f, width);
             cy = Mathf.Clamp(cy, 0f, height);
 
-            return new Vector2(cx * (cellSize + cellGap), -cy * (cellSize + cellGap));
+            float uiY = -(height - cy) * (cellSize + cellGap);
+            return new Vector2(cx * (cellSize + cellGap), uiY);
         }
 
         /// <summary>

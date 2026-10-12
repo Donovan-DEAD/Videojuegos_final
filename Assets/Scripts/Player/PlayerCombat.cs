@@ -18,7 +18,7 @@ namespace MadnessDreams
 
         [Header("Ranged")]
         [SerializeField] private int rangedDamage = 5;
-        [SerializeField] private float rangedCooldown = 0.8f;
+        [SerializeField] private float rangedCooldown = 0.5f;
         [SerializeField] private float rangedAttackDuration = 0.3f;
         [SerializeField] private GameObject projectilePrefab;
         [SerializeField] private float projectileSpeed = 8f;
@@ -60,15 +60,16 @@ namespace MadnessDreams
             if (rangedAttackTimer > 0f) rangedAttackTimer -= Time.deltaTime;
 
             Keyboard keyboard = Keyboard.current;
-            if (keyboard != null)
+            Mouse mouse = Mouse.current;
+            if (keyboard != null && mouse != null)
             {
                 if (keyboard.spaceKey.wasPressedThisFrame) TryMeleeAttack();
-                if (keyboard.kKey.wasPressedThisFrame) TryRangedAttack();
+                if (mouse.leftButton.wasPressedThisFrame) TryRangedAttack();
             }
             else
             {
                 if (Input.GetKeyDown(KeyCode.Space)) TryMeleeAttack();
-                if (Input.GetKeyDown(KeyCode.K)) TryRangedAttack();
+                if (Input.GetMouseButtonDown(0)) TryRangedAttack();
             }
         }
 
