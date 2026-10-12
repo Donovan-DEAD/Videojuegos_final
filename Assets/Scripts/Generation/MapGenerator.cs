@@ -94,11 +94,12 @@ namespace MadnessDreams
             Rooms.Clear();
             Connections.Clear();
 
-            System.Random rng = new System.Random(randomSeed >= 0 ? randomSeed : config.Seed);
+            //System.Random rng = new System.Random(randomSeed >= 0 ? randomSeed : config.Seed);
+            System.Random rng = new System.Random();
             RoomLayout.Build(config, rng, Rooms, Connections);
 
             StampRooms();
-            CarveConnections();
+            //CarveConnections();
 
             StartChunk = StartRoom.originCell;
             BossOriginChunk = BossRoom.originCell;

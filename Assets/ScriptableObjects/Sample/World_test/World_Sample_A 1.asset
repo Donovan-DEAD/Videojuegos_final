@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e81cd25bcf43b947abe4404d0f858d3, type: 3}
   m_Name: World_Sample_A 1
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.WorldConfigSO
-  seed: 111
+  seed: 200
   bank: {fileID: 11400000, guid: e275584334f7463429bc588b47fb6d1d, type: 2}
   width: 16
   height: 16
   chunkSize: 16
   bossRegionSize: 1
-  sizeWeights: 04000000030000000100000001000000
+  sizeWeights: 02000000020000000100000001000000
   openingWidth: 4
   fillRatio: 1
   themes:
