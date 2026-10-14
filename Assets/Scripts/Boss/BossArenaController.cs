@@ -14,6 +14,7 @@ namespace MadnessDreams
         [SerializeField] private BossStatsSO bossStats;
 
         public bool BossActive { get; private set; }
+        public bool BossDied { get; private set; }
         public GameObject BossInstance => bossInstance;
         /// <summary>
         /// Se dispara cuando el jefe invocado en la arena es derrotado.
@@ -67,7 +68,7 @@ namespace MadnessDreams
         /// </summary>
         public void StartBossFight()
         {
-            if (BossActive)
+            if (BossActive || BossDied)
             {
                 return;
             }
@@ -101,6 +102,7 @@ namespace MadnessDreams
         {
             SetExitsBlocked(false);
             BossActive = false;
+            BossDied = true;
 
             if (bossInstance != null)
             {
