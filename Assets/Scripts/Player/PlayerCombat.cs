@@ -15,6 +15,7 @@ namespace MadnessDreams
         [SerializeField] private float meleeCooldown = 0.5f;
         [SerializeField] private float meleeAttackDuration = 0.3f;
         [SerializeField] private Transform meleePoint;
+        [SerializeField] private MeleeRangeIndicator meleeIndicatorPrefab;
 
         [Header("Ranged")]
         [SerializeField] private int rangedDamage = 5;
@@ -46,6 +47,8 @@ namespace MadnessDreams
         private float rangedCooldownRemaining;
         private float meleeAttackTimer;
         private float rangedAttackTimer;
+
+        private MeleeRangeIndicator meleeIndicator;
 
         private void Update()
         {
@@ -85,6 +88,7 @@ namespace MadnessDreams
             meleeAttackTimer = meleeAttackDuration;
 
             Vector3 origin = meleePoint != null ? meleePoint.position : transform.position;
+            ShowMeleeIndicator(origin, meleeRange);
             Collider2D[] hits = Physics2D.OverlapCircleAll(origin, meleeRange, enemyMask);
 
             foreach (Collider2D hit in hits)
@@ -134,6 +138,24 @@ namespace MadnessDreams
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Muestra el círculo del área melee, creando una única instancia reutilizable.
+        /// </summary>
+        private void ShowMeleeIndicator(Vector3 origin, float radius)
+        {
+            if (meleeIndicatorPrefab == null)
+            {
+                return;
+            }
+
+            if (meleeIndicator == null)
+            {
+                meleeIndicator = Instantiate(meleeIndicatorPrefab);
+            }
+
+            meleeIndicator.Show(origin, radius, meleeAttackDuration);
         }
 
         private void OnDrawGizmosSelected()

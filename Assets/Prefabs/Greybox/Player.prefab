@@ -173,6 +173,7 @@ MonoBehaviour:
   meleeCooldown: 0.5
   meleeAttackDuration: 0.3
   meleePoint: {fileID: 4423902676772057316}
+  meleeIndicatorPrefab: {fileID: 8398354375807706324, guid: 77657faaa15b792bba7638441cac2a01, type: 3}
   rangedDamage: 5
   rangedCooldown: 0.8
   rangedAttackDuration: 0.3
@@ -292,6 +293,7 @@ MonoBehaviour:
     m_Bits: 512
   castPoint: {fileID: 7490607293366490479}
   meleePoint: {fileID: 4423902676772057316}
+  meleeIndicatorPrefab: {fileID: 8398354375807706324, guid: 77657faaa15b792bba7638441cac2a01, type: 3}
 --- !u!114 &6664231474420168605
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,7 +339,7 @@ Transform:
   m_GameObject: {fileID: 2855265012472593398}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

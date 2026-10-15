@@ -16,12 +16,14 @@ namespace MadnessDreams
         [SerializeField] private LayerMask enemyMask = ~0;
         [SerializeField] private Transform castPoint;
         [SerializeField] private Transform meleePoint;
+        [SerializeField] private MeleeRangeIndicator meleeIndicatorPrefab;
 
         private BossAbilitySO[] slots;
         private float[] cooldowns;
         private bool[] lockedSlots;
         private Rigidbody2D rb;
         private PlayerController controller;
+        private MeleeRangeIndicator meleeIndicator;
 
         /// <summary>Número de ranuras de habilidad disponibles.</summary>
         public int SlotCount => slots != null ? slots.Length : 0;
@@ -249,6 +251,7 @@ namespace MadnessDreams
         private void MeleeHit(BossAbilitySO ability)
         {
             Vector3 origin = meleePoint != null ? meleePoint.position : transform.position;
+            ShowMeleeIndicator(origin, ability.Range, ability.AnimationDuration);
             Collider2D[] hits = Physics2D.OverlapCircleAll(origin, ability.Range, enemyMask);
 
             foreach (Collider2D hit in hits)
@@ -264,6 +267,24 @@ namespace MadnessDreams
                     damageable.TakeDamage(ability.Damage);
                 }
             }
+        }
+
+        /// <summary>
+        /// Muestra el círculo del área melee de una habilidad, creando una única instancia reutilizable.
+        /// </summary>
+        private void ShowMeleeIndicator(Vector3 origin, float radius, float duration)
+        {
+            if (meleeIndicatorPrefab == null)
+            {
+                return;
+            }
+
+            if (meleeIndicator == null)
+            {
+                meleeIndicator = Instantiate(meleeIndicatorPrefab);
+            }
+
+            meleeIndicator.Show(origin, radius, duration);
         }
 
         private IEnumerator Dash(Vector2 direction, float distance, float duration)
