@@ -19,6 +19,10 @@ namespace MadnessDreams
         [Header("Optional: content spawning")]
         [SerializeField] private RoomContentSpawner contentSpawner;
 
+        [Header("Boundary")]
+        [Tooltip("Sella con muro el perímetro del mapa para que el jugador no pueda salir por las puertas que miran hacia afuera.")]
+        [SerializeField] private bool sealPerimeter = true;
+
         public WorldConfigSO Config => config;
         public Tilemap TargetTilemap => targetTilemap;
 
@@ -99,6 +103,7 @@ namespace MadnessDreams
             RoomLayout.Build(config, rng, Rooms, Connections);
 
             StampRooms();
+            SealPerimeter();
             //CarveConnections();
 
             StartChunk = StartRoom.originCell;
@@ -111,6 +116,10 @@ namespace MadnessDreams
 
         private void StampRooms()
         {
+            TilesetCatalogSO catalog = Tileset;
+            TileBase wall = catalog != null && catalog.WallTiles.Count > 0 ? catalog.WallTiles[0] : null;
+            int cellSize = config != null ? Mathf.Max(1, config.ChunkSize) : 0;
+
             for (int i = 0; i < Rooms.Count; i++)
             {
                 RoomPlacement room = Rooms[i];
@@ -119,8 +128,55 @@ namespace MadnessDreams
                     continue;
                 }
 
-                TilemapStamper.Stamp(targetTilemap, room.chunk, ChunkToCell(room.originCell));
+                Vector2Int footprint = new Vector2Int(
+                    room.sizeInCells.x * cellSize,
+                    room.sizeInCells.y * cellSize);
+
+                if (cellSize > 0 && (room.chunk.Size.x != footprint.x || room.chunk.Size.y != footprint.y))
+                {
+                    Debug.LogError($"MapGenerator: chunk '{room.chunk.name}' size {room.chunk.Size} != footprint {footprint}; padding with walls.", room.chunk);
+                }
+
+                TilemapStamper.StampFootprint(targetTilemap, room.chunk, ChunkToCell(room.originCell), footprint, wall);
             }
+        }
+
+        /// <summary>
+        /// Sella con muro el borde exterior del área ocupada por los cuartos. Cierra las puertas que dan
+        /// hacia afuera y las columnas/filas que un chunk corto deje vacías en el límite del mapa.
+        /// </summary>
+        private void SealPerimeter()
+        {
+            if (!sealPerimeter || targetTilemap == null || config == null || Rooms.Count == 0)
+            {
+                return;
+            }
+
+            TilesetCatalogSO catalog = Tileset;
+            if (catalog == null || catalog.WallTiles == null || catalog.WallTiles.Count == 0)
+            {
+                return;
+            }
+
+            int minX = int.MaxValue;
+            int minY = int.MaxValue;
+            int maxX = int.MinValue;
+            int maxY = int.MinValue;
+
+            for (int i = 0; i < Rooms.Count; i++)
+            {
+                RoomPlacement room = Rooms[i];
+                minX = Mathf.Min(minX, room.originCell.x);
+                minY = Mathf.Min(minY, room.originCell.y);
+                maxX = Mathf.Max(maxX, room.originCell.x + room.sizeInCells.x);
+                maxY = Mathf.Max(maxY, room.originCell.y + room.sizeInCells.y);
+            }
+
+            Vector3Int min = ChunkToCell(new Vector2Int(minX, minY));
+            Vector3Int max = ChunkToCell(new Vector2Int(maxX, maxY));
+            BoundsInt bounds = new BoundsInt(min.x, min.y, 0, max.x - min.x, max.y - min.y, 1);
+
+            TilemapStamper.FillBorder(targetTilemap, bounds, catalog.WallTiles[0]);
         }
 
         private void CarveConnections()

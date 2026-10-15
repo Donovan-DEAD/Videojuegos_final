@@ -46,5 +46,74 @@ namespace MadnessDreams
                 }
             }
         }
+
+        /// <summary>
+        /// Estampa un cuarto dentro de su footprint exacto (tamaño en celdas × tamaño de celda) y rellena
+        /// con muro las celdas del footprint que el chunk no cubre, de modo que un chunk más corto que su
+        /// footprint no deje una costura abierta.
+        /// </summary>
+        public static void StampFootprint(Tilemap tilemap, MapChunkSO chunk, Vector3Int origin, Vector2Int footprint, TileBase wall)
+        {
+            Stamp(tilemap, chunk, origin);
+
+            if (tilemap == null || footprint.x <= 0 || footprint.y <= 0)
+            {
+                return;
+            }
+
+            Vector2Int size = chunk != null ? chunk.Size : Vector2Int.zero;
+            if (size.x >= footprint.x && size.y >= footprint.y)
+            {
+                return;
+            }
+
+            if (wall == null)
+            {
+                return;
+            }
+
+            for (int y = 0; y < footprint.y; y++)
+            {
+                for (int x = 0; x < footprint.x; x++)
+                {
+                    if (x < size.x && y < size.y)
+                    {
+                        continue;
+                    }
+
+                    tilemap.SetTile(new Vector3Int(origin.x + x, origin.y + y, origin.z), wall);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Rellena el borde exterior (1 tile de grosor) del área indicada con un tile. Se usa para sellar
+        /// el perímetro del mapa completo (cierres de puertas hacia afuera y columnas/filas faltantes).
+        /// </summary>
+        public static void FillBorder(Tilemap tilemap, BoundsInt bounds, TileBase tile)
+        {
+            if (tilemap == null || tile == null || bounds.size.x <= 0 || bounds.size.y <= 0)
+            {
+                return;
+            }
+
+            int xMin = bounds.xMin;
+            int xMax = bounds.xMax - 1;
+            int yMin = bounds.yMin;
+            int yMax = bounds.yMax - 1;
+            int z = bounds.zMin;
+
+            for (int x = xMin; x <= xMax; x++)
+            {
+                tilemap.SetTile(new Vector3Int(x, yMin, z), tile);
+                tilemap.SetTile(new Vector3Int(x, yMax, z), tile);
+            }
+
+            for (int y = yMin + 1; y < yMax; y++)
+            {
+                tilemap.SetTile(new Vector3Int(xMin, y, z), tile);
+                tilemap.SetTile(new Vector3Int(xMax, y, z), tile);
+            }
+        }
     }
 }

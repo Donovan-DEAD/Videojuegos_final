@@ -215,7 +215,7 @@ namespace MadnessDreams
         {
             if (size.x % cellSize != 0 || size.y % cellSize != 0)
             {
-                Debug.LogWarning($"El cuarto '{target.name}' mide {size} y no es múltiplo de la celda ({cellSize}).", target);
+                Debug.LogError($"El cuarto '{target.name}' mide {size} y no es múltiplo de la celda ({cellSize}): dejará una costura abierta al estamparse.", target);
             }
 
             if (tiles != null && tiles.Length == size.x * size.y && size.x > 1 && size.y > 1)

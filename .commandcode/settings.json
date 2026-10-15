@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__unity__editor_status",
+      "mcp__unity__get_authoring_root",
+      "mcp__unity__list_open_scenes",
+      "mcp__unity__package_list",
+      "mcp__unity__find_assets",
+      "mcp__unity__get_scene_hierarchy",
+      "mcp__unity__get_build_settings",
+      "mcp__unity__get_player_settings",
+      "mcp__unity__get_tags_layers",
+      "mcp__unity__get_graphics_settings",
+      "mcp__unity__get_quality_settings",
+      "mcp__unity__write_text_file",
+      "mcp__unity__console",
+      "mcp__unity__recompile",
+      "mcp__unity__menu",
+      "mcp__unity__open_scene",
+      "mcp__unity__eval",
+      "mcp__unity__console_status",
+      "mcp__unity__editor_play",
+      "mcp__unity__capture_game_view",
+      "mcp__unity__find_gameobjects",
+      "mcp__unity__runtime_status",
+      "mcp__unity__get_component_properties",
+      "Shell(xxd:*)",
+      "mcp__unity__editor_stop",
+      "Shell(echo:*)",
+      "Shell(git:*)",
+      "Shell(ls:*)",
+      "Shell(grep:*)",
+      "Shell(apt-cache:*)",
+      "Shell(sudo -n true 2 >& 1)",
+      "Shell(echo \"conda: $(command -v conda || echo none)\"; echo \"mamba: $(command -v mamba || echo none)\"; echo \"micromamba: $(command -v micromamba || echo none)\"; conda --version 2>&1 | head -1; echo \"=== channels ===\"; conda config --show channels 2>&1 | head)",
+      "Shell(mamba:*)",
+      "Shell(export PATH=\"/opt/miniforge/bin:$PATH\"; echo \"which: $(command -v git-lfs)\"; git lfs version; echo \"=== install filters ===\"; git lfs install 2>&1; echo \"=== lfs files tracked ===\"; git lfs ls-files 2>&1 | head -30)",
+      "Shell(export:*)"
+    ],
+    "deny": [],
+    "defaultMode": "default"
+  }
+}
