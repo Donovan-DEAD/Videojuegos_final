@@ -155,7 +155,7 @@ namespace MadnessDreams
                 meleeIndicator = Instantiate(meleeIndicatorPrefab);
             }
 
-            meleeIndicator.Show(origin, radius, meleeAttackDuration);
+            meleeIndicator.Show(origin, radius, meleeAttackDuration, meleePoint != null ? meleePoint : transform);
         }
 
         private void OnDrawGizmosSelected()

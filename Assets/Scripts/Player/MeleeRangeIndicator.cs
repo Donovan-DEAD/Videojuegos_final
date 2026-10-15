@@ -13,6 +13,8 @@ namespace MadnessDreams
         [SerializeField] private Color color = new Color(0.35f, 0.9f, 1f, 0.35f);
 
         private float hideTimer;
+        private Transform followTarget;
+        private Vector3 followOffset;
 
         private void Awake()
         {
@@ -29,8 +31,10 @@ namespace MadnessDreams
         /// Coloca el círculo en la posición indicada, lo ajusta al radio dado y lo muestra
         /// durante el tiempo señalado.
         /// </summary>
-        public void Show(Vector3 worldPosition, float radius, float duration)
+        public void Show(Vector3 worldPosition, float radius, float duration, Transform target = null)
         {
+            followTarget = target;
+            followOffset = target != null ? target.InverseTransformPoint(worldPosition) : Vector3.zero;
             transform.position = worldPosition;
             transform.localScale = ScaleFor(radius);
 
@@ -55,6 +59,11 @@ namespace MadnessDreams
 
         private void Update()
         {
+            if (followTarget != null)
+            {
+                transform.position = followTarget.TransformPoint(followOffset);
+            }
+
             if (hideTimer <= 0f)
             {
                 return;
@@ -63,6 +72,7 @@ namespace MadnessDreams
             hideTimer -= Time.deltaTime;
             if (hideTimer <= 0f)
             {
+                followTarget = null;
                 gameObject.SetActive(false);
             }
         }

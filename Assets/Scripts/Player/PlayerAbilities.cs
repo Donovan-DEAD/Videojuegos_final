@@ -284,7 +284,7 @@ namespace MadnessDreams
                 meleeIndicator = Instantiate(meleeIndicatorPrefab);
             }
 
-            meleeIndicator.Show(origin, radius, duration);
+            meleeIndicator.Show(origin, radius, duration, meleePoint != null ? meleePoint : transform);
         }
 
         private IEnumerator Dash(Vector2 direction, float distance, float duration)
