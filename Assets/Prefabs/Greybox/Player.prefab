@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 6501257052462071451}
   - component: {fileID: 8958526097058193931}
   - component: {fileID: 6664231474420168605}
+  - component: {fileID: 9220786961414663292}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -285,8 +286,6 @@ MonoBehaviour:
   startingAbilities:
   - {fileID: 11400000, guid: d51b2f2174297884b983efd1b60ddbe4, type: 2}
   - {fileID: 11400000, guid: 1c75ed08d16ae8d4cbc277abebaa7d54, type: 2}
-  - {fileID: 11400000, guid: edb4799c45027ec449e88d4adc404ab0, type: 2}
-  - {fileID: 11400000, guid: 5adeea99a96b60146b356c7ed997a410, type: 2}
   maxAbilities: 4
   enemyMask:
     serializedVersion: 2
@@ -314,6 +313,24 @@ MonoBehaviour:
   healthPerLevel: 10
   level: 1
   maxLevel: 20
+--- !u!114 &9220786961414663292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2519860285677557331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 339e8fcc534b7394cb4c4dcaaba23109, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.PlayerBuffs
+  damageDuration: 20
+  speedDuration: 20
+  healthDuration: 20
+  damagePerStack: 0.25
+  speedPerStack: 0.2
+  healthPerStack: 20
 --- !u!1 &2855265012472593398
 GameObject:
   m_ObjectHideFlags: 0

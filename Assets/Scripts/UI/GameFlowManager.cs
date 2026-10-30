@@ -24,6 +24,8 @@ namespace MadnessDreams
         public const string GameplayScene = "03_Gameplay";
         public const string DefeatScene = "04_Defeat";
         public const string SettingsScene = "05_Settings";
+        public const string CompletionScene = "06_Completion";
+        public const string CreditsScene = "07_Credits";
 
         private static GameFlowManager instance;
 
@@ -76,6 +78,43 @@ namespace MadnessDreams
         /// Ajustes del usuario cargados desde preferencias.
         /// </summary>
         public SettingsData Settings { get; private set; }
+        /// <summary>
+        /// Nivel persistente del jugador durante la partida (sube al pasar de mundo).
+        /// </summary>
+        public int PlayerLevel { get; private set; } = 1;
+        private System.Collections.Generic.List<int> worldOrder = new System.Collections.Generic.List<int>();
+        private int worldOrderIndex = 0;
+        
+        /// <summary>Mundos aún por visitar en la run.</summary>
+        public int RemainingWorldCount => Mathf.Max(0, worldOrder.Count - worldOrderIndex);
+        /// <summary>Fragmentos (moneda) acumulados en la run.</summary>
+        public int Fragments { get; private set; }
+        
+        /// <summary>Se dispara al cambiar la cantidad de fragmentos.</summary>
+        public event System.Action<int> FragmentsChanged;
+        public event System.Action<int> FragmentsGained;
+        
+        /// <summary>Suma fragmentos y notifica el cambio.</summary>
+        public void AddFragments(int amount)
+        {
+            int gained = Mathf.Max(0, amount);
+            Fragments += gained;
+            FragmentsChanged?.Invoke(Fragments);
+            if (gained > 0) FragmentsGained?.Invoke(gained);
+        }
+        
+        /// <summary>Gasta fragmentos si hay suficientes; false si no alcanza.</summary>
+        public bool SpendFragments(int amount)
+        {
+            if (Fragments < amount)
+            {
+                return false;
+            }
+        
+            Fragments -= amount;
+            FragmentsChanged?.Invoke(Fragments);
+            return true;
+        }
 
         /// <summary>
         /// Se dispara cuando el jugador muere, antes de ir a la escena de derrota.
@@ -117,6 +156,48 @@ namespace MadnessDreams
         /// <summary>
         /// Navega a la escena del menú principal con transición.
         /// </summary>
+        /// <summary>Sube un nivel al jugador (persistente entre mundos).</summary>
+        public void LevelUp()
+        {
+            PlayerLevel++;
+        }
+        /// <summary>Baraja el orden de los mundos para una nueva run (sin repetir).</summary>
+        public void BeginRun(int worldCount)
+        {
+            worldOrder = new System.Collections.Generic.List<int>(worldCount);
+            for (int i = 0; i < worldCount; i++)
+            {
+                worldOrder.Add(i);
+            }
+        
+            for (int i = worldOrder.Count - 1; i > 0; i--)
+            {
+                int j = Random.Range(0, i + 1);
+                int tmp = worldOrder[i];
+                worldOrder[i] = worldOrder[j];
+                worldOrder[j] = tmp;
+            }
+        
+            worldOrderIndex = 0;
+        }
+        
+        /// <summary>Devuelve y consume el siguiente índice de mundo sin repetir, o -1 si no quedan.</summary>
+        public int ClaimNextWorld()
+        {
+            if (worldOrderIndex < worldOrder.Count)
+            {
+                return worldOrder[worldOrderIndex++];
+            }
+        
+            return -1;
+        }
+        
+        /// <summary>Reinicia la selección de mundos (al iniciar o reintentar una run).</summary>
+        public void ResetWorldOrder()
+        {
+            worldOrder.Clear();
+            worldOrderIndex = 0;
+        }
         public void GoToMainMenu()
         {
             TransitionTo(MainMenuScene);
@@ -131,6 +212,9 @@ namespace MadnessDreams
             RunSeed = Random.Range(int.MinValue, int.MaxValue);
             CurrentWorldIndex = 0;
             PendingWorldIndex = 0;
+            PlayerLevel = 1;
+            ResetWorldOrder();
+            Fragments = 0;
             LoadSceneWithLoading(GameplayScene);
         }
 
@@ -142,6 +226,9 @@ namespace MadnessDreams
             RunSeed = Random.Range(int.MinValue, int.MaxValue);
             CurrentWorldIndex = 0;
             PendingWorldIndex = 0;
+            PlayerLevel = 1;
+            ResetWorldOrder();
+            Fragments = 0;
             LoadSceneWithLoading(GameplayScene);
         }
 
@@ -191,10 +278,11 @@ namespace MadnessDreams
         /// <summary>
         /// Notifica el fin de la run (dispara RunCompleted) y vuelve al menú principal.
         /// </summary>
+        /// <summary>Notifica el fin de la run y va a la pantalla de finalización.</summary>
         public void NotifyRunCompleted()
         {
             RunCompleted?.Invoke();
-            GoToMainMenu();
+            TransitionTo(CompletionScene);
         }
 
         /// <summary>

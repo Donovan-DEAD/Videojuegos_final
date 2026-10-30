@@ -52,6 +52,7 @@ namespace MadnessDreams
         [Header("Boss")]
         [SerializeField] private GameObject bossPrefab;
         [SerializeField] private BossStatsSO boss;
+        [SerializeField] private BossAbilitySO rewardAbility;
 
         public int Seed => seed;
         public BlockBankSO Bank => bank;
@@ -68,6 +69,8 @@ namespace MadnessDreams
         public List<EnemyArchetypeSO> EnemyPool => enemyPool;
         public int EnemiesPerChunk => enemiesPerChunk;
         public BossStatsSO Boss => boss;
+        /// <summary>Habilidad que suelta el jefe de este mundo al morir.</summary>
+        public BossAbilitySO RewardAbility => rewardAbility;
         public GameObject BossPrefab => bossPrefab;
 
         /// <summary>

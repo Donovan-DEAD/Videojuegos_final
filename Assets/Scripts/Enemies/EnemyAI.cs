@@ -40,6 +40,8 @@ namespace MadnessDreams
         [SerializeField] private float alertTime = 0.3f;
         [SerializeField] private float lostPlayerTimeout = 3f;
         [SerializeField] private float deathLingerTime = 2f;
+        [SerializeField] private int fragmentsPerKill = 1;
+        [SerializeField] private GameObject fragmentPickupPrefab;
 
         /// <summary>Estado actual de la FSM.</summary>
         public EnemyState State { get; private set; } = EnemyState.Patrol;
@@ -345,6 +347,7 @@ namespace MadnessDreams
             SetCollidersEnabled(false);
             UpdateAnimation();
             Died?.Invoke(this);
+            SpawnFragmentDrop();
 
             if (deathLingerTime > 0f)
             {
@@ -352,6 +355,19 @@ namespace MadnessDreams
             }
         }
 
+        private void SpawnFragmentDrop()
+        {
+            if (fragmentPickupPrefab != null)
+            {
+                GameObject drop = Instantiate(fragmentPickupPrefab, transform.position, Quaternion.identity);
+                FragmentPickup pickup = drop.GetComponent<FragmentPickup>();
+                if (pickup != null) pickup.Setup(fragmentsPerKill);
+            }
+            else if (GameFlowManager.Instance != null)
+            {
+                GameFlowManager.Instance.AddFragments(fragmentsPerKill);
+            }
+        }
         private void SetCollidersEnabled(bool value)
         {
             Collider2D[] colliders = GetComponentsInChildren<Collider2D>();

@@ -111,6 +111,47 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>Calcula un cellSize uniforme para que la cuadrícula completa quepa dentro del contenedor.</summary>
+        public static float FitCellSize(RectTransform container, int gridWidth, int gridHeight, float cellGap, float padding)
+        {
+            if (container == null)
+            {
+                return 1f;
+            }
+        
+            float availableW = container.rect.width - padding * 2f;
+            float availableH = container.rect.height - padding * 2f;
+            if (availableW <= 0f) availableW = container.sizeDelta.x - padding * 2f;
+            if (availableH <= 0f) availableH = container.sizeDelta.y - padding * 2f;
+        
+            float sizeW = gridWidth > 0 ? (availableW - (gridWidth - 1) * cellGap) / gridWidth : 0f;
+            float sizeH = gridHeight > 0 ? (availableH - (gridHeight - 1) * cellGap) / gridHeight : 0f;
+            return Mathf.Max(1f, Mathf.Min(sizeW, sizeH));
+        }
+        
+        /// <summary>Índice del cuarto que contiene la posición de mundo, o -1 si no está en ninguno.</summary>
+        public static int RoomIndexAt(List<RoomPlacement> rooms, Vector3 world, int chunkSize)
+        {
+            if (rooms == null || chunkSize <= 0)
+            {
+                return -1;
+            }
+        
+            int cellX = Mathf.FloorToInt(world.x / chunkSize);
+            int cellY = Mathf.FloorToInt(world.y / chunkSize);
+        
+            for (int i = 0; i < rooms.Count; i++)
+            {
+                RoomPlacement room = rooms[i];
+                if (cellX >= room.originCell.x && cellX < room.originCell.x + room.sizeInCells.x &&
+                    cellY >= room.originCell.y && cellY < room.originCell.y + room.sizeInCells.y)
+                {
+                    return i;
+                }
+            }
+        
+            return -1;
+        }
         private static Image CreateRect(RectTransform container, float x, float y, float w, float h, Color color)
         {
             var go = new GameObject("Room", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));

@@ -26,8 +26,22 @@ namespace MadnessDreams
             {
                 bossManager.BossDefeated += OnBossDefeated;
             }
-
-            int startIndex = GameFlowManager.Instance != null ? GameFlowManager.Instance.PendingWorldIndex : 0;
+        
+            int startIndex = 0;
+            if (GameFlowManager.Instance != null)
+            {
+                if (GameFlowManager.Instance.RemainingWorldCount <= 0)
+                {
+                    GameFlowManager.Instance.BeginRun(worlds.Count);
+                }
+        
+                int next = GameFlowManager.Instance.ClaimNextWorld();
+                if (next >= 0)
+                {
+                    startIndex = next;
+                }
+            }
+        
             GenerateWorld(startIndex);
         }
 
@@ -85,28 +99,19 @@ namespace MadnessDreams
         /// </summary>
         public void RequestAdvance()
         {
-            if (worlds == null || worlds.Count == 0)
+            if (GameFlowManager.Instance == null)
             {
                 return;
             }
-
-            int next = CurrentWorldIndex + 1;
-            if (next < worlds.Count)
+        
+            if (GameFlowManager.Instance.RemainingWorldCount <= 0)
             {
-                if (GameFlowManager.Instance != null)
-                {
-                    GameFlowManager.Instance.SetPendingWorldIndex(next);
-                    GameFlowManager.Instance.LoadSceneWithLoading(GameFlowManager.GameplayScene);
-                }
-
+                GameFlowManager.Instance.NotifyRunCompleted();
                 return;
             }
-
-            // Un solo mundo de ejemplo: reiniciar la run con una semilla nueva mantiene el portal con sentido.
-            if (GameFlowManager.Instance != null)
-            {
-                GameFlowManager.Instance.Retry();
-            }
+        
+            GameFlowManager.Instance.LevelUp();
+            GameFlowManager.Instance.LoadSceneWithLoading(GameFlowManager.GameplayScene);
         }
     }
 }

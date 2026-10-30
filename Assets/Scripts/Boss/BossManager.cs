@@ -10,6 +10,7 @@ namespace MadnessDreams
     {
         [SerializeField] private WorldConfigSO config;
         [SerializeField] private BossArenaController arena;
+        [SerializeField] private GameObject abilityPickupPrefab;
 
         /// <summary>
         /// Se dispara cuando la arena notifica que el jefe del mundo fue derrotado.
@@ -38,9 +39,33 @@ namespace MadnessDreams
             arena.BossDefeated += OnBossDefeated;
         }
 
+        /// <summary>Suelta la habilidad de recompensa del mundo en la posición del jefe derrotado.</summary>
+        private void SpawnReward()
+        {
+            if (abilityPickupPrefab == null)
+            {
+                Debug.LogWarning("BossManager.SpawnReward: falta abilityPickupPrefab.", this);
+                return;
+            }
+            
+            if (config == null || config.RewardAbility == null)
+            {
+                Debug.LogWarning("BossManager.SpawnReward: falta config o RewardAbility.", this);
+                return;
+            }
+        
+            Vector3 position = arena != null && arena.BossInstance != null ? arena.BossInstance.transform.position : transform.position;
+            GameObject pickup = Instantiate(abilityPickupPrefab, position, Quaternion.identity);
+            AbilityPickup abilityPickup = pickup.GetComponent<AbilityPickup>();
+            if (abilityPickup != null)
+            {
+                abilityPickup.Setup(config.RewardAbility);
+            }
+        }
         private void OnBossDefeated()
         {
             Debug.Log("Boss defeated.");
+            SpawnReward();
             BossDefeated?.Invoke();
         }
 

@@ -32,6 +32,11 @@ namespace MadnessDreams
         }
 
         /// <summary>Si lo toca el jugador, intenta enseñar la habilidad y se destruye si tuvo éxito.</summary>
+        /// <summary>Asigna la habilidad que este recogible enseñará al jugador.</summary>
+        public void Setup(BossAbilitySO newAbility)
+        {
+            ability = newAbility;
+        }
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (!other.CompareTag("Player"))

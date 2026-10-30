@@ -48,6 +48,14 @@ namespace MadnessDreams
             CurrentHealth = maxHealth;
             HealthChanged?.Invoke(CurrentHealth, maxHealth);
         }
+        
+        /// <summary>Cambia la vida máxima sin resetear la vida actual (para buffs temporales).</summary>
+        public void SetMaxHealthPreserveCurrent(int value)
+        {
+            maxHealth = Mathf.Max(1, value);
+            CurrentHealth = Mathf.Clamp(CurrentHealth, 0, maxHealth);
+            HealthChanged?.Invoke(CurrentHealth, maxHealth);
+        }
 
         /// <summary>
         /// Resta daño sin bajar de cero, emite <see cref="HealthChanged"/> y dispara <see cref="Died"/> al llegar a cero.

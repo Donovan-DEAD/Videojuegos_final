@@ -27,6 +27,7 @@ namespace MadnessDreams
 
         /// <summary>Número de ranuras de habilidad disponibles.</summary>
         public int SlotCount => slots != null ? slots.Length : 0;
+        public event System.Action<BossAbilitySO> AbilityLearned;
 
         /// <summary>Cachea Rigidbody2D/PlayerController e inicializa las ranuras con las habilidades iniciales.</summary>
         private void Awake()
@@ -75,6 +76,12 @@ namespace MadnessDreams
             {
                 if (slots[i] == ability)
                 {
+                    if (IsSlotLocked(i))
+                    {
+                        lockedSlots[i] = false;
+                        return true;
+                    }
+                
                     return false;
                 }
             }
@@ -84,6 +91,7 @@ namespace MadnessDreams
                 if (slots[i] == null)
                 {
                     slots[i] = ability;
+                    AbilityLearned?.Invoke(ability);
                     return true;
                 }
             }

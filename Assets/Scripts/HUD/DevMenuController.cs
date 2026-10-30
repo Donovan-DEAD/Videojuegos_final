@@ -21,6 +21,7 @@ namespace MadnessDreams
 
         private PlayerStats stats;
         private PlayerAbilities abilities;
+        private PlayerBuffs buffs;
 
         /// <summary>
         /// Enlaza los botones, configura los rangos de los sliders y oculta el panel al arrancar.
@@ -47,6 +48,7 @@ namespace MadnessDreams
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             stats = player != null ? player.GetComponent<PlayerStats>() : null;
             abilities = player != null ? player.GetComponent<PlayerAbilities>() : null;
+            buffs = player != null ? player.GetComponent<PlayerBuffs>() : null;
 
             if (stats != null)
             {
@@ -124,6 +126,43 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>Da fragmentos (moneda) para probar el comercio.</summary>
+        public void GiveFragments(int amount)
+        {
+            if (GameFlowManager.Instance != null)
+            {
+                GameFlowManager.Instance.AddFragments(amount);
+            }
+        }
+        
+        /// <summary>Restaura toda la vida.</summary>
+        public void HealFull()
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            Health h = player != null ? player.GetComponent<Health>() : null;
+            if (h != null)
+            {
+                h.SetMaxHealth(h.MaxHealth);
+            }
+        }
+        
+        /// <summary>Aplica mejora temporal de daño.</summary>
+        public void BuffDamage()
+        {
+            if (buffs != null) buffs.ApplyBuff(BuffKind.Damage);
+        }
+        
+        /// <summary>Aplica mejora temporal de velocidad.</summary>
+        public void BuffSpeed()
+        {
+            if (buffs != null) buffs.ApplyBuff(BuffKind.Speed);
+        }
+        
+        /// <summary>Aplica mejora temporal de vida máxima.</summary>
+        public void BuffHealth()
+        {
+            if (buffs != null) buffs.ApplyBuff(BuffKind.MaxHealth);
+        }
         private void RefreshLevelLabel()
         {
             if (levelLabel != null)

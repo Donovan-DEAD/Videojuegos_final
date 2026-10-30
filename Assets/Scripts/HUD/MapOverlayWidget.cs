@@ -19,6 +19,9 @@ namespace MadnessDreams
         [SerializeField] private Color normalColor = new Color(0.32f, 0.32f, 0.38f);
         [SerializeField] private Color bossColor = new Color(0.85f, 0.25f, 0.25f);
         [SerializeField] private Color playerColor = new Color(0.40f, 0.90f, 1f);
+        [SerializeField] private float padding = 8f;
+        [SerializeField] private Color currentColor = Color.white;
+        [SerializeField] private Color visitedColor = new Color(0.42f, 0.44f, 0.52f);
 
         private MapGenerator mapGenerator;
         private Transform player;
@@ -26,6 +29,10 @@ namespace MadnessDreams
         private int height;
         private int chunkSize;
         private bool built;
+        private Image[] roomImages;
+        private Color[] roomBaseColors;
+        private int currentRoomIndex = -1;
+        private System.Collections.Generic.HashSet<int> visitedRooms = new System.Collections.Generic.HashSet<int>();
 
         /// <summary>
         /// Indica si el overlay está actualmente abierto (su raíz activa).
@@ -142,6 +149,7 @@ namespace MadnessDreams
             chunkSize = config != null ? config.ChunkSize : 16;
             width = config != null ? config.Width : 8;
             height = config != null ? config.Height : 8;
+            cellSize = MapGrid.FitCellSize(container, width, height, cellGap, padding);
 
             MapGrid.ClearCells(container, playerMarker);
 
@@ -170,6 +178,39 @@ namespace MadnessDreams
             built = true;
         }
 
+        /// <summary>Ilumina el cuarto actual del jugador y restaura el color del anterior.</summary>
+        /// <summary>Marca el cuarto actual como visitado, pinta los visitados con tinte tenue y el actual en blanco.</summary>
+        private void HighlightCurrentRoom()
+        {
+            if (roomImages == null || mapGenerator == null || player == null)
+            {
+                return;
+            }
+        
+            int index = MapGrid.RoomIndexAt(mapGenerator.Rooms, player.position, chunkSize);
+            if (index >= 0)
+            {
+                visitedRooms.Add(index);
+            }
+        
+            for (int i = 0; i < roomImages.Length; i++)
+            {
+                if (roomImages[i] == null)
+                {
+                    continue;
+                }
+        
+                Color baseColor = roomBaseColors != null && i < roomBaseColors.Length ? roomBaseColors[i] : normalColor;
+                roomImages[i].color = visitedRooms.Contains(i) ? visitedColor : baseColor;
+            }
+        
+            if (index >= 0 && index < roomImages.Length && roomImages[index] != null)
+            {
+                roomImages[index].color = currentColor;
+            }
+        
+            currentRoomIndex = index;
+        }
         private void LateUpdate()
         {
             if (!IsOpen || !built || player == null || playerMarker == null)
@@ -177,7 +218,9 @@ namespace MadnessDreams
                 return;
             }
 
-            playerMarker.anchoredPosition = MapGrid.MarkerPosition(player.position, chunkSize, cellSize, cellGap, width, height);
+            Vector2 target = MapGrid.MarkerPosition(player.position, chunkSize, cellSize, cellGap, width, height);
+            playerMarker.anchoredPosition = Vector2.Lerp(playerMarker.anchoredPosition, target, Time.deltaTime * 12f);
+            HighlightCurrentRoom();
         }
     }
 }

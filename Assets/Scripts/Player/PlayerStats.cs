@@ -25,6 +25,7 @@ namespace MadnessDreams
         private PlayerController controller;
         private PlayerCombat combat;
         private Health health;
+        private PlayerBuffs buffs;
 
         public int Level => level;
         public int MaxLevel => maxLevel;
@@ -45,6 +46,11 @@ namespace MadnessDreams
             controller = GetComponent<PlayerController>();
             combat = GetComponent<PlayerCombat>();
             health = GetComponent<Health>();
+            buffs = GetComponent<PlayerBuffs>();
+            if (GameFlowManager.Instance != null)
+            {
+                level = Mathf.Clamp(GameFlowManager.Instance.PlayerLevel, 1, maxLevel);
+            }
             Apply();
         }
 
@@ -98,6 +104,10 @@ namespace MadnessDreams
             if (health != null)
             {
                 health.SetMaxHealth(Mathf.RoundToInt(Health));
+                if (buffs != null)
+                {
+                    buffs.Reapply();
+                }
             }
         }
     }

@@ -291,3 +291,6 @@ MonoBehaviour:
   fovCheckInterval: 0.1
   alertTime: 0.3
   lostPlayerTimeout: 3
+  deathLingerTime: 2
+  fragmentsPerKill: 1
+  fragmentPickupPrefab: {fileID: 7373975785493461432, guid: d9d788b860672ec49acbc78e97bcf87a, type: 3}

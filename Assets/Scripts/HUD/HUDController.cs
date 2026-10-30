@@ -32,7 +32,7 @@ namespace MadnessDreams
             if (healthBar != null) healthBar.Bind(health);
             if (attacks != null) attacks.Bind(combat);
             if (minimap != null) minimap.Bind(mapGenerator, playerTransform);
-            if (fragments != null) fragments.SetCount(0);
+            
 
             if (mapOverlay != null) mapOverlay.Bind(mapGenerator, playerTransform);
             if (minimapButton != null && mapOverlay != null) minimapButton.onClick.AddListener(mapOverlay.Toggle);
