@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccb21d272dd0ba34090f15af81d49f3b, type: 3}
   m_Name: Ability_FairyDust
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.BossAbilitySO
+  category: 1
   type: 3
   displayName: Polvo de Hada
   description: 

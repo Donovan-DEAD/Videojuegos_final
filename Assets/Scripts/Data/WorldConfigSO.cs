@@ -53,6 +53,22 @@ namespace MadnessDreams
         [SerializeField] private GameObject bossPrefab;
         [SerializeField] private BossStatsSO boss;
         [SerializeField] private BossAbilitySO rewardAbility;
+        [Header("Layout fijo (celdas; -1 = auto)")]
+        [SerializeField] private Vector2Int startCell = new Vector2Int(-1, -1);
+        [SerializeField] private Vector2Int bossCell = new Vector2Int(-1, -1);
+        [SerializeField] private Vector2Int merchantCell = new Vector2Int(-1, -1);
+        [SerializeField] private GameObject merchantPrefab;
+        [SerializeField] private Vector2Int specialCell = new Vector2Int(-1, -1);
+        [SerializeField] private GameObject minibossPrefab;
+        [SerializeField] private BossAbilitySO minibossRewardAbility;
+        [Header("Miniboss Room")]
+        [SerializeField] private Color minibossRoomTint = new Color(0.55f, 0.20f, 0.75f, 0.35f);
+
+        [Header("Intros")]
+        [SerializeField] private BossIntroSO bossIntro;
+        [SerializeField] private BossIntroSO minibossIntro;
+        [SerializeField] private BossIntroSO bossOutro;
+        [SerializeField] private BossIntroSO minibossOutro;
 
         public int Seed => seed;
         public BlockBankSO Bank => bank;
@@ -71,6 +87,18 @@ namespace MadnessDreams
         public BossStatsSO Boss => boss;
         /// <summary>Habilidad que suelta el jefe de este mundo al morir.</summary>
         public BossAbilitySO RewardAbility => rewardAbility;
+        public Vector2Int StartCell => startCell;
+        public Vector2Int BossCell => bossCell;
+        public Vector2Int MerchantCell => merchantCell;
+        public GameObject MerchantPrefab => merchantPrefab;
+        public Vector2Int SpecialCell => specialCell;
+        public GameObject MinibossPrefab => minibossPrefab;
+        public BossAbilitySO MinibossRewardAbility => minibossRewardAbility;
+        public Color MinibossRoomTint => minibossRoomTint;
+        public BossIntroSO BossIntro => bossIntro;
+        public BossIntroSO MinibossIntro => minibossIntro;
+        public BossIntroSO BossOutro => bossOutro;
+        public BossIntroSO MinibossOutro => minibossOutro;
         public GameObject BossPrefab => bossPrefab;
 
         /// <summary>

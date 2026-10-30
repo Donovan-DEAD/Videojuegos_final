@@ -15,6 +15,7 @@ namespace MadnessDreams
         private MapChunkSO target;
         private int cellSize = 16;
         private RoomTag tag = RoomTag.None;
+        private CellRole role = CellRole.Normal;
         private bool captureSpawnPoints = true;
         private string spawnPrefix = "EnemySpawn";
         private bool autoGenerateSpawns = true;
@@ -66,6 +67,7 @@ namespace MadnessDreams
             target = (MapChunkSO)EditorGUILayout.ObjectField("Target MapChunkSO", target, typeof(MapChunkSO), false);
             cellSize = Mathf.Max(1, EditorGUILayout.IntField("Cell size (tiles)", cellSize));
             tag = (RoomTag)EditorGUILayout.EnumPopup("Tag", tag);
+            role = (CellRole)EditorGUILayout.EnumPopup("Role", role);
             captureSpawnPoints = EditorGUILayout.Toggle("Capture spawn points", captureSpawnPoints);
 
             using (new EditorGUI.DisabledScope(!captureSpawnPoints))
@@ -84,7 +86,7 @@ namespace MadnessDreams
             {
                 if (GUILayout.Button("Capture"))
                 {
-                    Capture(source, target, cellSize, tag, captureSpawnPoints, spawnPrefix, autoGenerateSpawns, spawnGrid);
+                    Capture(source, target, cellSize, tag, role, captureSpawnPoints, spawnPrefix, autoGenerateSpawns, spawnGrid);
                 }
             }
         }
@@ -92,7 +94,7 @@ namespace MadnessDreams
         /// <summary>
         /// Captura el Tilemap origen en el MapChunkSO destino (tiles, tamaño en celdas, tag y puntos de spawn) y lanza las validaciones.
         /// </summary>
-        public static void Capture(Tilemap source, MapChunkSO target, int cellSize, RoomTag tag, bool captureSpawnPoints, string spawnPrefix, bool autoGenerateSpawns, int spawnGrid)
+        public static void Capture(Tilemap source, MapChunkSO target, int cellSize, RoomTag tag, CellRole role, bool captureSpawnPoints, string spawnPrefix, bool autoGenerateSpawns, int spawnGrid)
         {
             if (source == null || target == null)
             {
@@ -110,6 +112,13 @@ namespace MadnessDreams
             target.SetTileData(flattened);
             target.SetSizeInCells(cells);
             target.SetTag(tag);
+            var roleSo = new SerializedObject(target);
+            var roleProp = roleSo.FindProperty("role");
+            if (roleProp != null)
+            {
+                roleProp.intValue = (int)role;
+                roleSo.ApplyModifiedPropertiesWithoutUndo();
+            }
 
             int spawnCount = 0;
             if (captureSpawnPoints)

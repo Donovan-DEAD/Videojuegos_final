@@ -62,36 +62,50 @@ namespace MadnessDreams
 
         private void SpawnRoom(int roomIndex, RoomPlacement room, System.Random rng, int playerLevel, int worldIndex)
         {
+            if (room.role == CellRole.Special)
+            {
+                SpawnMiniBoss(room);
+                SpawnMinibossTint(room);
+                return;
+            }
+            
+            
+            if (room.role == CellRole.Merchant)
+            {
+                SpawnMerchant(room);
+                return;
+            }
+        
             ZoneThemeSO theme = config.ThemeFor(room.tag);
             if (theme == null)
             {
                 theme = config.ThemeFor(RoomTag.None);
             }
-
+        
             if (theme == null)
             {
                 return;
             }
-
+        
             RectInt area = RoomArea(room);
             if (area.width <= 2 || area.height <= 2)
             {
                 return;
             }
-
+        
             bool[,] occupied = BuildOccupied(area);
             HashSet<Vector2Int> keepClear = KeepClear(roomIndex, area);
-
+        
             bool combat = room.role != CellRole.Start;
             List<Vector2Int> barrierFootprints = new List<Vector2Int>();
-
+        
             if (combat)
             {
                 PlaceBarriers(theme, area, occupied, keepClear, barrierFootprints, rng);
             }
-
+        
             PlaceProps(theme, area, occupied, keepClear, rng);
-
+        
             if (combat)
             {
                 SpawnEnemies(room, theme, area, occupied, rng, playerLevel, worldIndex);
@@ -217,6 +231,98 @@ namespace MadnessDreams
             }
         }
 
+        private void SpawnMiniBoss(RoomPlacement room)
+        {
+            if (config == null || config.MinibossPrefab == null || mapGenerator == null)
+            {
+                return;
+            }
+        
+            Vector3 world = mapGenerator.TargetTilemap.GetCellCenterWorld(mapGenerator.RoomCenterCell(room));
+            GameObject go = Instantiate(config.MinibossPrefab, world, Quaternion.identity);
+            MiniBossController mb = go.GetComponent<MiniBossController>();
+            if (mb != null) mb.Setup(config.MinibossRewardAbility, null, config.MinibossOutro);
+            SpawnMinibossTrigger(room, go);
+        }
+
+        private void SpawnMinibossTrigger(RoomPlacement room, GameObject miniboss)
+        {
+            int cellSize = config.ChunkSize;
+            Vector2Int sizeTiles = room.sizeInCells * cellSize;
+            Vector3Int originCell = mapGenerator.ChunkToCell(room.originCell);
+            Vector3 center = mapGenerator.TargetTilemap.GetCellCenterWorld(new Vector3Int(originCell.x + sizeTiles.x / 2, originCell.y + sizeTiles.y / 2, 0));
+
+            var go = new GameObject("MinibossArenaTrigger");
+            go.transform.position = center;
+            int bossLayer = LayerMask.NameToLayer("BossTrigger");
+            if (bossLayer >= 0) go.layer = bossLayer;
+            var rb = go.AddComponent<Rigidbody2D>();
+            rb.bodyType = RigidbodyType2D.Kinematic;
+            var col = go.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = new Vector2(sizeTiles.x, sizeTiles.y);
+            var trigger = go.AddComponent<MiniBossArenaTrigger>();
+            trigger.Setup(config.MinibossIntro, miniboss);
+        }
+
+        private void SpawnMinibossTint(RoomPlacement room)
+        {
+            if (config == null || mapGenerator == null) return;
+
+            int cellSize = config.ChunkSize;
+            Vector2Int sizeTiles = room.sizeInCells * cellSize;
+            Vector3Int originCell = mapGenerator.ChunkToCell(room.originCell);
+            Vector3 center = mapGenerator.TargetTilemap.GetCellCenterWorld(new Vector3Int(originCell.x + sizeTiles.x / 2, originCell.y + sizeTiles.y / 2, 0));
+
+            var tex = new Texture2D(1, 1);
+            tex.SetPixel(0, 0, Color.white);
+            tex.Apply();
+
+            var go = new GameObject("MinibossRoomTint");
+            go.transform.position = center;
+            go.transform.localScale = new Vector3(sizeTiles.x, sizeTiles.y, 1f);
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = Sprite.Create(tex, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
+            sr.color = config.MinibossRoomTint;
+            sr.sortingOrder = 1;
+        }
+        private void SpawnMerchant(RoomPlacement room)
+        {
+            if (config == null || config.MerchantPrefab == null || mapGenerator == null)
+            {
+                return;
+            }
+        
+            Vector3 world = mapGenerator.TargetTilemap.GetCellCenterWorld(mapGenerator.RoomCenterCell(room));
+            Instantiate(config.MerchantPrefab, world, Quaternion.identity);
+            SpawnMerchantBlocker(room);
+        }
+        
+        private void SpawnMerchantBlocker(RoomPlacement room)
+        {
+            int layer = LayerMask.NameToLayer("MerchantBlock");
+            if (layer < 0) return;
+
+            int playerLayer = LayerMask.NameToLayer("Player");
+            int enemyLayer = LayerMask.NameToLayer("Enemies");
+            if (playerLayer >= 0) Physics2D.IgnoreLayerCollision(layer, playerLayer, true);
+            if (enemyLayer >= 0) Physics2D.IgnoreLayerCollision(layer, enemyLayer, false);
+            Physics2D.IgnoreLayerCollision(layer, LayerMask.NameToLayer("Default"), true);
+        
+            int cellSize = config.ChunkSize;
+            Vector2Int sizeTiles = room.sizeInCells * cellSize;
+            Vector3Int originCell = mapGenerator.ChunkToCell(room.originCell);
+            Vector3 center = mapGenerator.TargetTilemap.GetCellCenterWorld(new Vector3Int(originCell.x + sizeTiles.x / 2, originCell.y + sizeTiles.y / 2, 0));
+        
+            var blocker = new GameObject("MerchantBlocker");
+            blocker.transform.position = center;
+            blocker.layer = layer;
+            var rb = blocker.AddComponent<Rigidbody2D>();
+            rb.bodyType = RigidbodyType2D.Static;
+            var col = blocker.AddComponent<BoxCollider2D>();
+            col.size = new Vector2(sizeTiles.x, sizeTiles.y);
+            col.isTrigger = false;
+        }
         private void SpawnEnemies(RoomPlacement room, ZoneThemeSO theme, RectInt area, bool[,] occupied, System.Random rng, int playerLevel, int worldIndex)
         {
             if (spawner == null || room.chunk == null)

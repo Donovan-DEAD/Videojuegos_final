@@ -18,10 +18,14 @@ namespace MadnessDreams
 
         [Header("Boss arena")]
         [SerializeField] private MapChunkSO bossArena;
+        [SerializeField] private MapChunkSO merchantRoom;
+        [SerializeField] private MapChunkSO minibossRoom;
 
         public List<MapChunkSO> NormalChunks => normalChunks;
         public MapChunkSO StartRoom => startRoom;
         public MapChunkSO BossArena => bossArena;
+        public MapChunkSO MerchantRoom => merchantRoom;
+        public MapChunkSO MinibossRoom => minibossRoom;
 
         public int NormalChunkCount => normalChunks == null ? 0 : normalChunks.Count;
 

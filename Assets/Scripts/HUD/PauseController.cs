@@ -34,6 +34,8 @@ namespace MadnessDreams
 
         private void Update()
         {
+            if (BossIntroController.IsShowing) return;
+
             if (WasPausePressed())
             {
                 if (IsPaused)

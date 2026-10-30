@@ -12,7 +12,11 @@ namespace MadnessDreams
         [SerializeField] private Image[] slotSweeps;
         [SerializeField] private Text[] slotKeys;
         [SerializeField] private Image[] slotLocks;
+        [SerializeField] private Image[] slotFrames;
+        [SerializeField] private Color basicFrameColor = new Color(0.25f, 0.55f, 0.95f, 1f);
+        [SerializeField] private Color specialFrameColor = new Color(0.85f, 0.65f, 0.20f, 1f);
         [SerializeField] private Color readyColor = Color.white;
+        [SerializeField] private Color lockedColor = new Color(0.12f, 0.12f, 0.18f, 1f);
         [SerializeField] private Color lockedKeyColor = new Color(1f, 1f, 1f, 0.35f);
 
         private PlayerAbilities abilities;
@@ -41,7 +45,7 @@ namespace MadnessDreams
         /// <summary>
         /// Actualiza la apariencia de la ranura indicada: icono, barra de enfriamiento normalizada y estado de bloqueo.
         /// </summary>
-        public void SetSlot(int index, Sprite icon, float cooldownNormalized, bool locked)
+        public void SetSlot(int index, Sprite icon, float cooldownNormalized, bool locked, AbilityCategory category = AbilityCategory.Basic)
         {
             if (slotIcons == null || index < 0 || index >= slotIcons.Length)
             {
@@ -55,7 +59,7 @@ namespace MadnessDreams
                     slotIcons[index].sprite = icon;
                 }
 
-                slotIcons[index].color = locked ? new Color(0f, 0f, 0f, 0f) : readyColor;
+                slotIcons[index].color = locked ? lockedColor : readyColor;
             }
 
             if (slotSweeps != null && index < slotSweeps.Length && slotSweeps[index] != null)

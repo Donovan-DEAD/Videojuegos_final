@@ -256,6 +256,7 @@ GameObject:
   - component: {fileID: 413341557}
   - component: {fileID: 413341556}
   - component: {fileID: 413341558}
+  - component: {fileID: 413341559}
   m_Layer: 0
   m_Name: CreditsButton
   m_TagString: Untagged
@@ -365,6 +366,21 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &413341559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 413341554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e10e987ac7f3214b88b0ca9cdd723c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.AnimatedButton
+  hoverScale: 1.06
+  pressScale: 0.94
+  duration: 0.15
 --- !u!1 &524427121
 GameObject:
   m_ObjectHideFlags: 0
@@ -644,6 +660,7 @@ GameObject:
   - component: {fileID: 1399534883}
   - component: {fileID: 1399534882}
   - component: {fileID: 1399534881}
+  - component: {fileID: 1399534885}
   m_Layer: 0
   m_Name: MenuButton
   m_TagString: Untagged
@@ -753,6 +770,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -130}
   m_SizeDelta: {x: 420, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1399534885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1399534880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e10e987ac7f3214b88b0ca9cdd723c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.AnimatedButton
+  hoverScale: 1.06
+  pressScale: 0.94
+  duration: 0.15
 --- !u!1 &1769045294
 GameObject:
   m_ObjectHideFlags: 0

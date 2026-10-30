@@ -14,12 +14,12 @@ namespace MadnessDreams
         {
             rooms.Clear();
             connections.Clear();
-
+        
             int width = Mathf.Max(1, config.Width);
             int height = Mathf.Max(1, config.Height);
             int cellSize = Mathf.Max(1, config.ChunkSize);
             BlockBankSO bank = config.Bank;
-
+        
             int[,] index = new int[width, height];
             for (int y = 0; y < height; y++)
             {
@@ -28,46 +28,66 @@ namespace MadnessDreams
                     index[x, y] = -1;
                 }
             }
-
-            Vector2Int startOrigin = PlaceStart(bank, cellSize, width, height, index, rooms);
-            PlaceBoss(bank, cellSize, width, height, index, rooms, startOrigin);
+        
+            Vector2Int startOrigin = PlaceStart(bank, cellSize, width, height, index, rooms, config.StartCell);
+            PlaceBoss(bank, cellSize, width, height, index, rooms, startOrigin, config.BossCell);
+            PlaceMerchant(bank, cellSize, width, height, index, rooms, startOrigin, config.MerchantCell);
+            PlaceSpecial(bank, cellSize, width, height, index, rooms, startOrigin, config.SpecialCell);
             Pack(config, bank, cellSize, width, height, index, rooms, rng);
             BuildConnections(width, height, index, connections);
         }
 
-        private static Vector2Int PlaceStart(BlockBankSO bank, int cellSize, int width, int height, int[,] index, List<RoomPlacement> rooms)
+        private static Vector2Int PlaceStart(BlockBankSO bank, int cellSize, int width, int height, int[,] index, List<RoomPlacement> rooms, Vector2Int desiredOrigin)
         {
             MapChunkSO archetype = bank != null ? bank.StartRoom : null;
             if (archetype == null && bank != null && bank.NormalChunkCount > 0)
             {
                 archetype = bank.NormalChunks[0];
             }
-
+        
             Vector2Int cells = ClampToGrid(archetype != null ? archetype.ResolveSizeInCells(cellSize) : Vector2Int.one, width, height);
-            Vector2Int origin = new Vector2Int((width - cells.x) / 2, (height - cells.y) / 2);
-
-            AddRoom(rooms, index, width, height, archetype, cells, origin, RoomTag.None, CellRole.Start);
+        
+            Vector2Int origin = desiredOrigin.x >= 0 && desiredOrigin.y >= 0
+                ? new Vector2Int(Mathf.Clamp(desiredOrigin.x, 0, width - cells.x), Mathf.Clamp(desiredOrigin.y, 0, height - cells.y))
+                : new Vector2Int((width - cells.x) / 2, (height - cells.y) / 2);
+        
+            if (!AddRoom(rooms, index, width, height, archetype, cells, origin, RoomTag.None, CellRole.Start))
+            {
+                origin = new Vector2Int((width - cells.x) / 2, (height - cells.y) / 2);
+                AddRoom(rooms, index, width, height, archetype, cells, origin, RoomTag.None, CellRole.Start);
+            }
+        
             return origin;
         }
 
-        private static void PlaceBoss(BlockBankSO bank, int cellSize, int width, int height, int[,] index, List<RoomPlacement> rooms, Vector2Int startOrigin)
+        private static void PlaceBoss(BlockBankSO bank, int cellSize, int width, int height, int[,] index, List<RoomPlacement> rooms, Vector2Int startOrigin, Vector2Int desiredBoss)
         {
             MapChunkSO arena = bank != null ? bank.BossArena : null;
             if (arena != null)
             {
                 Vector2Int cells = ClampToGrid(arena.ResolveSizeInCells(cellSize), width, height);
+        
+                if (desiredBoss.x >= 0 && desiredBoss.y >= 0)
+                {
+                    Vector2Int fixedOrigin = new Vector2Int(Mathf.Clamp(desiredBoss.x, 0, width - cells.x), Mathf.Clamp(desiredBoss.y, 0, height - cells.y));
+                    if (AddRoom(rooms, index, width, height, arena, cells, fixedOrigin, RoomTag.None, CellRole.Boss))
+                    {
+                        return;
+                    }
+                }
+        
                 if (TryFindFarthestOrigin(index, width, height, cells, startOrigin, out Vector2Int origin))
                 {
                     AddRoom(rooms, index, width, height, arena, cells, origin, RoomTag.None, CellRole.Boss);
                     return;
                 }
             }
-
+        
             MapChunkSO fallback = null;
             Vector2Int fallbackCells = Vector2Int.one;
             Vector2Int fallbackOrigin = Vector2Int.zero;
             int bestArea = 0;
-
+        
             if (bank != null && bank.NormalChunks != null)
             {
                 for (int i = 0; i < bank.NormalChunks.Count; i++)
@@ -77,14 +97,14 @@ namespace MadnessDreams
                     {
                         continue;
                     }
-
+        
                     Vector2Int cells = ClampToGrid(chunk.ResolveSizeInCells(cellSize), width, height);
                     int area = cells.x * cells.y;
                     if (area <= bestArea)
                     {
                         continue;
                     }
-
+        
                     if (TryFindFarthestOrigin(index, width, height, cells, startOrigin, out Vector2Int origin))
                     {
                         fallback = chunk;
@@ -94,7 +114,7 @@ namespace MadnessDreams
                     }
                 }
             }
-
+        
             if (fallback != null)
             {
                 AddRoom(rooms, index, width, height, fallback, fallbackCells, fallbackOrigin, RoomTag.None, CellRole.Boss);
@@ -105,6 +125,90 @@ namespace MadnessDreams
             }
         }
 
+        private static void PlaceMerchant(BlockBankSO bank, int cellSize, int width, int height, int[,] index, List<RoomPlacement> rooms, Vector2Int startOrigin, Vector2Int desiredMerchant)
+        {
+            Vector2Int targetCells = new Vector2Int(2, 2);
+            MapChunkSO chunk = bank != null ? bank.MerchantRoom : null;
+        
+            if (bank != null && bank.NormalChunks != null)
+            {
+                for (int i = 0; i < bank.NormalChunks.Count; i++)
+                {
+                    MapChunkSO c = bank.NormalChunks[i];
+                    if (c != null && c.ResolveSizeInCells(cellSize) == targetCells)
+                    {
+                        chunk = c;
+                        break;
+                    }
+                }
+            }
+        
+            if (chunk == null && bank != null && bank.StartRoom != null) chunk = bank.StartRoom;
+            if (chunk == null && bank != null && bank.NormalChunkCount > 0) chunk = bank.NormalChunks[0];
+            if (chunk == null) return;
+        
+            Vector2Int cells = ClampToGrid(chunk.ResolveSizeInCells(cellSize), width, height);
+            Vector2Int origin = desiredMerchant.x >= 0 && desiredMerchant.y >= 0 ? desiredMerchant : startOrigin + new Vector2Int(1, 0);
+            origin = new Vector2Int(Mathf.Clamp(origin.x, 0, width - cells.x), Mathf.Clamp(origin.y, 0, height - cells.y));
+        
+            if (AddRoom(rooms, index, width, height, chunk, cells, origin, RoomTag.None, CellRole.Merchant))
+            {
+                return;
+            }
+        
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (AddRoom(rooms, index, width, height, chunk, cells, new Vector2Int(x, y), RoomTag.None, CellRole.Merchant))
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+        private static void PlaceSpecial(BlockBankSO bank, int cellSize, int width, int height, int[,] index, List<RoomPlacement> rooms, Vector2Int startOrigin, Vector2Int desiredSpecial)
+        {
+            Vector2Int targetCells = new Vector2Int(2, 2);
+            MapChunkSO chunk = bank != null ? bank.MinibossRoom : null;
+        
+            if (bank != null && bank.NormalChunks != null)
+            {
+                for (int i = 0; i < bank.NormalChunks.Count; i++)
+                {
+                    MapChunkSO c = bank.NormalChunks[i];
+                    if (c != null && c.ResolveSizeInCells(cellSize) == targetCells)
+                    {
+                        chunk = c;
+                        break;
+                    }
+                }
+            }
+        
+            if (chunk == null && bank != null && bank.StartRoom != null) chunk = bank.StartRoom;
+            if (chunk == null && bank != null && bank.NormalChunkCount > 0) chunk = bank.NormalChunks[0];
+            if (chunk == null) return;
+        
+            Vector2Int cells = ClampToGrid(chunk.ResolveSizeInCells(cellSize), width, height);
+            Vector2Int origin = desiredSpecial.x >= 0 && desiredSpecial.y >= 0 ? desiredSpecial : startOrigin + new Vector2Int(2, 0);
+            origin = new Vector2Int(Mathf.Clamp(origin.x, 0, width - cells.x), Mathf.Clamp(origin.y, 0, height - cells.y));
+        
+            if (AddRoom(rooms, index, width, height, chunk, cells, origin, RoomTag.None, CellRole.Special))
+            {
+                return;
+            }
+        
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (AddRoom(rooms, index, width, height, chunk, cells, new Vector2Int(x, y), RoomTag.None, CellRole.Special))
+                    {
+                        return;
+                    }
+                }
+            }
+        }
         private static void Pack(WorldConfigSO config, BlockBankSO bank, int cellSize, int width, int height, int[,] index, List<RoomPlacement> rooms, System.Random rng)
         {
             List<RoomSizeClass> available = AvailableClasses(bank, cellSize);

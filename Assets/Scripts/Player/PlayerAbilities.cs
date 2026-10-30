@@ -151,14 +151,18 @@ namespace MadnessDreams
                 }
                 return false;
             }
-
-            switch (index)
+        
+            try
             {
-                case 0: return Input.GetKeyDown(KeyCode.Q);
-                case 1: return Input.GetKeyDown(KeyCode.E);
-                case 2: return Input.GetKeyDown(KeyCode.R);
-                case 3: return Input.GetKeyDown(KeyCode.F);
+                switch (index)
+                {
+                    case 0: return Input.GetKeyDown(KeyCode.Q);
+                    case 1: return Input.GetKeyDown(KeyCode.E);
+                    case 2: return Input.GetKeyDown(KeyCode.R);
+                    case 3: return Input.GetKeyDown(KeyCode.F);
+                }
             }
+            catch { }
             return false;
         }
 

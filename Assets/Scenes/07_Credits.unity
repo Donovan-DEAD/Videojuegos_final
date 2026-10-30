@@ -507,6 +507,7 @@ GameObject:
   - component: {fileID: 884601251}
   - component: {fileID: 884601250}
   - component: {fileID: 884601249}
+  - component: {fileID: 884601253}
   m_Layer: 0
   m_Name: MenuButton
   m_TagString: Untagged
@@ -616,6 +617,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -280}
   m_SizeDelta: {x: 420, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &884601253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 884601248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e10e987ac7f3214b88b0ca9cdd723c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.AnimatedButton
+  hoverScale: 1.06
+  pressScale: 0.94
+  duration: 0.15
 --- !u!1 &1047062857
 GameObject:
   m_ObjectHideFlags: 0

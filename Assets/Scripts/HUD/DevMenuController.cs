@@ -22,6 +22,7 @@ namespace MadnessDreams
         private PlayerStats stats;
         private PlayerAbilities abilities;
         private PlayerBuffs buffs;
+        [SerializeField] private MerchantMenuUI merchantMenu;
 
         /// <summary>
         /// Enlaza los botones, configura los rangos de los sliders y oculta el panel al arrancar.
@@ -98,12 +99,14 @@ namespace MadnessDreams
         /// </summary>
         public void Open()
         {
+            if (MenuManager.Instance != null) MenuManager.Instance.Open(this, Close);
             RefreshLevelLabel();
             if (panel != null) panel.SetActive(true);
         }
 
         public void Close()
         {
+            if (MenuManager.Instance != null) MenuManager.Instance.Release(this);
             if (panel != null) panel.SetActive(false);
         }
 
@@ -162,6 +165,11 @@ namespace MadnessDreams
         public void BuffHealth()
         {
             if (buffs != null) buffs.ApplyBuff(BuffKind.MaxHealth);
+        }
+        /// <summary>Abre la tienda del comerciante (para pruebas).</summary>
+        public void OpenMerchant()
+        {
+            if (merchantMenu != null) merchantMenu.Open();
         }
         private void RefreshLevelLabel()
         {

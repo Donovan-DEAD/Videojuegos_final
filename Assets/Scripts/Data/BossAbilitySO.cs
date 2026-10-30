@@ -2,6 +2,13 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
+    /// <summary>Categoría visual de la habilidad en la hotbar.</summary>
+    public enum AbilityCategory
+    {
+        Basic,
+        Special
+    }
+
     /// <summary>
     /// Identifica cada habilidad de jefe para elegir su comportamiento y efectos asociados.
     /// </summary>
@@ -24,6 +31,9 @@ namespace MadnessDreams
     [CreateAssetMenu(fileName = "Ability", menuName = "Madness Dreams/Boss Ability")]
     public class BossAbilitySO : ScriptableObject
     {
+        [Header("Hotbar")]
+        [SerializeField] private AbilityCategory category = AbilityCategory.Basic;
+
         [Header("Identity")]
         [SerializeField] private BossAbilityType type;
         [SerializeField] private string displayName;
@@ -52,6 +62,7 @@ namespace MadnessDreams
         [SerializeField] private float dashDistance = 0f;
         [SerializeField] private float dashDuration = 0.2f;
 
+        public AbilityCategory Category => category;
         public BossAbilityType Type => type;
         public string DisplayName => displayName;
         public string Description => description;

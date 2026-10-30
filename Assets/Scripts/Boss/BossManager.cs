@@ -35,7 +35,7 @@ namespace MadnessDreams
                 return;
             }
 
-            arena.Setup(config.BossPrefab, config.Boss);
+            arena.Setup(config.BossPrefab, config.Boss, config.BossIntro);
             arena.BossDefeated += OnBossDefeated;
         }
 
@@ -66,7 +66,15 @@ namespace MadnessDreams
         {
             Debug.Log("Boss defeated.");
             SpawnReward();
-            BossDefeated?.Invoke();
+
+            if (config != null && config.BossOutro != null && BossIntroController.Instance != null)
+            {
+                BossIntroController.Instance.Show(config.BossOutro, () => BossDefeated?.Invoke());
+            }
+            else
+            {
+                BossDefeated?.Invoke();
+            }
         }
 
         /// <summary>

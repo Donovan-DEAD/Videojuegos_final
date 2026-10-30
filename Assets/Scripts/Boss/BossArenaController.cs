@@ -12,6 +12,7 @@ namespace MadnessDreams
         [SerializeField] private BossSpawnPoint bossSpawnPoint;
         [SerializeField] private GameObject bossPrefab;
         [SerializeField] private BossStatsSO bossStats;
+        [SerializeField] private BossIntroSO intro;
 
         public bool BossActive { get; private set; }
         public bool BossDied { get; private set; }
@@ -41,10 +42,11 @@ namespace MadnessDreams
         /// <summary>
         /// Define el prefab del jefe y sus estadísticas antes de iniciar el combate.
         /// </summary>
-        public void Setup(GameObject prefab, BossStatsSO stats)
+        public void Setup(GameObject prefab, BossStatsSO stats, BossIntroSO introData = null)
         {
             bossPrefab = prefab;
             bossStats = stats;
+            if (introData != null) intro = introData;
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -76,6 +78,18 @@ namespace MadnessDreams
             BossActive = true;
             SetExitsBlocked(true);
 
+            if (BossIntroController.Instance != null && intro != null)
+            {
+                BossIntroController.Instance.Show(intro, SpawnBoss);
+            }
+            else
+            {
+                SpawnBoss();
+            }
+        }
+
+        private void SpawnBoss()
+        {
             if (bossSpawnPoint == null || bossPrefab == null)
             {
                 return;

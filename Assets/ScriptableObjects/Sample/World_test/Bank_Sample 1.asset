@@ -25,3 +25,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ca9d062e5e1f47646a90596a18b5809a, type: 2}
   startRoom: {fileID: 11400000, guid: 376d61ed3ba5702449f02c324c909ba1, type: 2}
   bossArena: {fileID: 11400000, guid: 05f546d2c4c8c674ab566bb25976b520, type: 2}
+  merchantRoom: {fileID: 11400000, guid: 5d759621e049e5a44a3198aeb8411a5f, type: 2}
+  minibossRoom: {fileID: 11400000, guid: 72a7d0944d63a024990e472923972c61, type: 2}
