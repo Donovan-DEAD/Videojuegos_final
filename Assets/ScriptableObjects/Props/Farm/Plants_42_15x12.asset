@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da41b897e7cbaf441aa4912e2a266fe2, type: 3}
+  m_Name: Plants_42_15x12
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.PropDefinitionSO
+  prefab: {fileID: 6198358533220824680, guid: 3b51e6c0cd7ea1d43ae9cb4262d05e04, type: 3}
+  kind: 0
+  footprint: {x: 1, y: 1}
+  weight: 1
+  avoidPassages: 1

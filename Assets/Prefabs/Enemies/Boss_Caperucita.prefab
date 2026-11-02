@@ -252,10 +252,24 @@ MonoBehaviour:
   lungeMaxDistance: 7
   recoverTime: 0.35
   summonWindup: 0.7
-  minionPrefabs: []
-  minionsPerSummon: 2
-  extraWolvesOnEnrage: 2
+  minionPrefabs:
+  - {fileID: 2100142994497809069, guid: 037f64edabfba8149b5d053241f3072f, type: 3}
+  - {fileID: 1441464458427298309, guid: 6c72ff79171769741a104871010c5ba8, type: 3}
+  - {fileID: 5476534046709977618, guid: 66d1d49c980b6654a85e8b24764410b7, type: 3}
+  minionsPerSummon: 1
+  extraWolvesOnEnrage: 1
   minionSpread: 2.5
+  minionWaves: 2
+  waveInterval: 1.2
+  summonEffectPrefab: {fileID: 3691708964619083262, guid: ccd89756c288de940869f6388d97d9fa, type: 3}
+  bodyRenderer: {fileID: 0}
+  enrageColor: {r: 0.75, g: 0.08, b: 0.08, a: 1}
+  howlEffectPrefab: {fileID: 3691708964619083262, guid: ccd89756c288de940869f6388d97d9fa, type: 3}
+  howlRadius: 8
+  howlDuration: 3
+  howlSpeedMultiplier: 1.6
+  howlInterval: 8
+  howlWindup: 0.7
   enrageSpeedMultiplier: 1.35
   enrageCooldownMultiplier: 0.6
   enrageLungeCooldownMultiplier: 0.5

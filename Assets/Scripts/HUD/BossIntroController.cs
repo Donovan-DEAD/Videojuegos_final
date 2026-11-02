@@ -73,22 +73,28 @@ namespace MadnessDreams
 
         private IEnumerator WaitAndClose(BossIntroSO data, System.Action onComplete)
         {
-            float t = 0f;
-            bool skipped = false;
-            while (t < data.HoldDuration && !skipped)
+            try
             {
-                t += Time.unscaledDeltaTime;
-                if (data.WaitForInput && EnterPressed()) skipped = true;
-                yield return null;
+                float t = 0f;
+                bool skipped = false;
+                while (t < Mathf.Min(data.HoldDuration, data.MaxWaitSeconds) && !skipped)
+                {
+                    t += Time.unscaledDeltaTime;
+                    if (data.WaitForInput && EnterPressed()) skipped = true;
+                    yield return null;
+                }
+        
+                if (group != null) Tween.Alpha(group, 0f, data.FadeOut, useUnscaledTime: true);
+                yield return new WaitForSecondsRealtime(data.FadeOut);
+                if (panel != null) panel.SetActive(false);
             }
-
-            if (group != null) Tween.Alpha(group, 0f, data.FadeOut, useUnscaledTime: true);
-            yield return new WaitForSecondsRealtime(data.FadeOut);
-
-            if (panel != null) panel.SetActive(false);
-            Time.timeScale = previousScale;
-            IsShowing = false;
-            routine = null;
+            finally
+            {
+                Time.timeScale = previousScale;
+                IsShowing = false;
+                routine = null;
+            }
+        
             onComplete?.Invoke();
         }
 

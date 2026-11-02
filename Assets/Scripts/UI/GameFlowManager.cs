@@ -70,6 +70,8 @@ namespace MadnessDreams
         /// Escena destino que cargará la pantalla de carga.
         /// </summary>
         public string NextScene { get; private set; } = GameplayScene;
+        /// <summary>Historia a mostrar en la pantalla entre mundos.</summary>
+        public StoryInterludeSO PendingStoryInterlude { get; private set; }
         /// <summary>
         /// Escena a la que volver al cerrar la pantalla de Ajustes.
         /// </summary>
@@ -82,11 +84,41 @@ namespace MadnessDreams
         /// Nivel persistente del jugador durante la partida (sube al pasar de mundo).
         /// </summary>
         public int PlayerLevel { get; private set; } = 1;
+        /// <summary>Vida actual del jugador para conservarla entre mundos.</summary>
+        public int SavedPlayerHealth { get; private set; } = 0;
+        public void SetSavedPlayerHealth(int value) { SavedPlayerHealth = Mathf.Max(0, value); }
+
+        private readonly System.Collections.Generic.List<BossAbilitySO> savedAbilities = new System.Collections.Generic.List<BossAbilitySO>();
+        public System.Collections.Generic.IReadOnlyList<BossAbilitySO> GetSavedAbilities() => savedAbilities;
+        public void SetSavedAbilities(System.Collections.Generic.List<BossAbilitySO> abilities) { savedAbilities.Clear(); if (abilities != null) savedAbilities.AddRange(abilities); }
+        public void ClearSavedAbilities() { savedAbilities.Clear(); }
+
+        private readonly int[] savedPotions = new int[4];
+        public int GetSavedPotion(int kind) => (kind >= 0 && kind < savedPotions.Length) ? savedPotions[kind] : 0;
+        public void SetSavedPotion(int kind, int count) { if (kind >= 0 && kind < savedPotions.Length) savedPotions[kind] = Mathf.Max(0, count); }
+        public void ClearSavedPotions() { for (int i = 0; i < savedPotions.Length; i++) savedPotions[i] = 0; }
+
+        public bool HasSavedStats { get; private set; }
+        public float SavedBaseMoveSpeed { get; private set; }
+        public float SavedBaseDamageMultiplier { get; private set; }
+        public float SavedBaseHealth { get; private set; }
+        public int SavedLevel { get; private set; } = 1;
+
+        public void SetSavedStats(float moveSpeed, float damage, float health, int level)
+        {
+            HasSavedStats = true;
+            SavedBaseMoveSpeed = moveSpeed;
+            SavedBaseDamageMultiplier = damage;
+            SavedBaseHealth = health;
+            SavedLevel = Mathf.Max(1, level);
+            PlayerLevel = Mathf.Max(1, level);
+        }
         private System.Collections.Generic.List<int> worldOrder = new System.Collections.Generic.List<int>();
         private int worldOrderIndex = 0;
         
         /// <summary>Mundos aún por visitar en la run.</summary>
         public int RemainingWorldCount => Mathf.Max(0, worldOrder.Count - worldOrderIndex);
+        public bool HasWorldOrder => worldOrder != null && worldOrder.Count > 0;
         /// <summary>Fragmentos (moneda) acumulados en la run.</summary>
         public int Fragments { get; private set; }
         
@@ -153,6 +185,16 @@ namespace MadnessDreams
             PendingWorldIndex = Mathf.Max(0, index);
         }
 
+        public void SetPendingStoryInterlude(StoryInterludeSO interlude)
+        {
+            PendingStoryInterlude = interlude;
+        }
+
+        public void ClearPendingStoryInterlude()
+        {
+            PendingStoryInterlude = null;
+        }
+
         /// <summary>
         /// Navega a la escena del menú principal con transición.
         /// </summary>
@@ -213,6 +255,10 @@ namespace MadnessDreams
             CurrentWorldIndex = 0;
             PendingWorldIndex = 0;
             PlayerLevel = 1;
+            SavedPlayerHealth = 0;
+            ClearSavedAbilities();
+            ClearSavedPotions();
+            PlayerAbilities.ClearPersistent();
             ResetWorldOrder();
             Fragments = 0;
             LoadSceneWithLoading(GameplayScene);
@@ -227,6 +273,10 @@ namespace MadnessDreams
             CurrentWorldIndex = 0;
             PendingWorldIndex = 0;
             PlayerLevel = 1;
+            SavedPlayerHealth = 0;
+            ClearSavedAbilities();
+            ClearSavedPotions();
+            PlayerAbilities.ClearPersistent();
             ResetWorldOrder();
             Fragments = 0;
             LoadSceneWithLoading(GameplayScene);

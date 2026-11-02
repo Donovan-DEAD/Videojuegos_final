@@ -2,10 +2,7 @@ using UnityEngine;
 
 namespace MadnessDreams
 {
-    /// <summary>
-    /// Recogible que, al tocar al jugador, le enseña una BossAbilitySO y opcionalmente se destruye;
-    /// además aplica un ligero vaivén visual.
-    /// </summary>
+    /// <summary>Recogible de habilidad: enseña la BossAbilitySO al jugador por trigger o por cercanía.</summary>
     [RequireComponent(typeof(Collider2D))]
     public class AbilityPickup : MonoBehaviour
     {
@@ -13,47 +10,49 @@ namespace MadnessDreams
         [SerializeField] private bool destroyOnPickup = true;
         [SerializeField] private float bobAmplitude = 0.15f;
         [SerializeField] private float bobSpeed = 2f;
+        [SerializeField] private float pickupRadius = 1.5f;
 
         private Vector3 startPosition;
+        private Transform player;
 
-        /// <summary>Guarda la posición inicial usada para el vaivén.</summary>
         private void Start()
         {
             startPosition = transform.position;
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null) player = p.transform;
         }
 
-        /// <summary>Aplica el vaivén vertical mientras bobAmplitude sea mayor que cero.</summary>
         private void Update()
         {
             if (bobAmplitude > 0f)
             {
                 transform.position = startPosition + Vector3.up * (Mathf.Sin(Time.time * bobSpeed) * bobAmplitude);
             }
+
+            if (player != null && Vector2.Distance(transform.position, player.position) <= pickupRadius)
+            {
+                TryCollect(player.gameObject);
+            }
         }
 
-        /// <summary>Si lo toca el jugador, intenta enseñar la habilidad y se destruye si tuvo éxito.</summary>
-        /// <summary>Asigna la habilidad que este recogible enseñará al jugador.</summary>
         public void Setup(BossAbilitySO newAbility)
         {
             ability = newAbility;
         }
+
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (!other.CompareTag("Player"))
-            {
-                return;
-            }
+            if (!other.CompareTag("Player")) return;
+            TryCollect(other.gameObject);
+        }
 
-            PlayerAbilities abilities = other.GetComponent<PlayerAbilities>();
-            if (abilities == null)
-            {
-                abilities = other.GetComponentInParent<PlayerAbilities>();
-            }
+        private void TryCollect(GameObject playerObject)
+        {
+            if (ability == null) return;
 
-            if (abilities == null)
-            {
-                return;
-            }
+            PlayerAbilities abilities = playerObject.GetComponent<PlayerAbilities>();
+            if (abilities == null) abilities = playerObject.GetComponentInParent<PlayerAbilities>();
+            if (abilities == null) return;
 
             if (abilities.Learn(ability) && destroyOnPickup)
             {

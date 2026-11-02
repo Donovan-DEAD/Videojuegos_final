@@ -22,6 +22,7 @@ namespace MadnessDreams
         [SerializeField] private float fadeOut = 0.25f;
         [SerializeField] private float holdDuration = 999f;
         [SerializeField] private bool waitForInput = true;
+        [SerializeField] private float maxWaitSeconds = 15f;
 
         [Header("Audio (opcional)")]
         [SerializeField] private AudioClip sfx;
@@ -37,6 +38,7 @@ namespace MadnessDreams
         public float FadeOut => fadeOut;
         public float HoldDuration => holdDuration;
         public bool WaitForInput => waitForInput;
+        public float MaxWaitSeconds => maxWaitSeconds;
         public AudioClip Sfx => sfx;
     }
 }

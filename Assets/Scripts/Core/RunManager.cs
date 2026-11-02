@@ -30,7 +30,7 @@ namespace MadnessDreams
             int startIndex = 0;
             if (GameFlowManager.Instance != null)
             {
-                if (GameFlowManager.Instance.RemainingWorldCount <= 0)
+                if (!GameFlowManager.Instance.HasWorldOrder)
                 {
                     GameFlowManager.Instance.BeginRun(worlds.Count);
                 }
@@ -111,6 +111,7 @@ namespace MadnessDreams
             }
         
             GameFlowManager.Instance.LevelUp();
+            GameFlowManager.Instance.SetPendingStoryInterlude(CurrentWorld != null ? CurrentWorld.StoryInterlude : null);
             GameFlowManager.Instance.LoadSceneWithLoading(GameFlowManager.GameplayScene);
         }
     }

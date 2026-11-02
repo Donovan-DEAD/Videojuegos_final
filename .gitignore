@@ -112,3 +112,9 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+_UnusedBackup/
+
+# Local tool caches (regenerable)
+.codebase-memory/graph.db.zst
+.codebase-memory/artifact.json

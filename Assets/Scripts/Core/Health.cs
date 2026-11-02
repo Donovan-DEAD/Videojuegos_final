@@ -60,6 +60,14 @@ namespace MadnessDreams
         /// <summary>
         /// Resta daño sin bajar de cero, emite <see cref="HealthChanged"/> y dispara <see cref="Died"/> al llegar a cero.
         /// </summary>
+        /// <summary>Fija la salud actual (limitada a [0, max]) y emite los eventos.</summary>
+        public void SetCurrentHealth(int value)
+        {
+            CurrentHealth = Mathf.Clamp(value, 0, maxHealth);
+            HealthChanged?.Invoke(CurrentHealth, maxHealth);
+            if (CurrentHealth == 0) Died?.Invoke();
+        }
+
         public void TakeDamage(int amount)
         {
             if (IsDead)

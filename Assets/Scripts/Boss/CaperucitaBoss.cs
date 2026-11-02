@@ -21,6 +21,7 @@ namespace MadnessDreams
             Lunge,
             Recover,
             Summon,
+            Howl,
             Dead
         }
 
@@ -49,6 +50,23 @@ namespace MadnessDreams
         [SerializeField] private int minionsPerSummon = 2;
         [SerializeField] private int extraWolvesOnEnrage = 2;
         [SerializeField] private float minionSpread = 2.5f;
+        [SerializeField] private int minionWaves = 3;
+        [SerializeField] private float waveInterval = 1.2f;
+        [SerializeField] private GameObject summonEffectPrefab;
+        [Header("Character (Caperucita)")]
+        [SerializeField] private SpriteRenderer bodyRenderer;
+        [SerializeField] private Color enrageColor = new Color(0.75f, 0.08f, 0.08f, 1f);
+        private int slashCount;
+        private bool summoning;
+
+        [Header("Howl")]
+        [SerializeField] private GameObject howlEffectPrefab;
+        [SerializeField] private float howlRadius = 8f;
+        [SerializeField] private float howlDuration = 3f;
+        [SerializeField] private float howlSpeedMultiplier = 1.6f;
+        [SerializeField] private float howlInterval = 8f;
+        [SerializeField] private float howlWindup = 0.7f;
+        private float howlCooldownRemaining;
 
         [Header("Enrage (last phase)")]
         [SerializeField] private float enrageSpeedMultiplier = 1.35f;
@@ -91,6 +109,7 @@ namespace MadnessDreams
             rb = GetComponent<Rigidbody2D>();
             health = GetComponent<Health>();
             bodyCollider = GetComponent<Collider2D>();
+            if (bodyRenderer == null) bodyRenderer = GetComponent<SpriteRenderer>();
         }
 
         /// <summary>
@@ -173,6 +192,11 @@ namespace MadnessDreams
                 lungeCooldownRemaining -= Time.deltaTime;
             }
 
+            if (howlCooldownRemaining > 0f)
+            {
+                howlCooldownRemaining -= Time.deltaTime;
+            }
+
             switch (state)
             {
                 case CaperucitaState.Stalk: UpdateStalk(); break;
@@ -181,6 +205,7 @@ namespace MadnessDreams
                 case CaperucitaState.Lunge: UpdateLunge(); break;
                 case CaperucitaState.Recover: UpdateRecover(); break;
                 case CaperucitaState.Summon: UpdateSummon(); break;
+                case CaperucitaState.Howl: UpdateHowl(); break;
             }
 
             UpdateAnimation();
@@ -211,6 +236,13 @@ namespace MadnessDreams
                 return;
             }
 
+            if (IsEnraged && howlCooldownRemaining <= 0f && distance > stats.AttackRange)
+            {
+                EnterState(CaperucitaState.Howl);
+                stateTimer = howlWindup;
+                return;
+            }
+
             if (distance <= stats.AttackRange && attackCooldownRemaining <= 0f)
             {
                 EnterState(CaperucitaState.Windup);
@@ -237,6 +269,17 @@ namespace MadnessDreams
             DealDamageInRadius(origin, stats.AttackRange, stats.Damage);
 
             attackCooldownRemaining = AttackCooldown;
+            slashCount++;
+
+            // El lobo encadenaba un segundo zarpazo al estar enfurecido.
+            if (IsEnraged && slashCount < 2)
+            {
+                stateTimer = 0.12f;
+                EnterState(CaperucitaState.Windup);
+                return;
+            }
+
+            slashCount = 0;
             EnterState(CaperucitaState.Recover);
             stateTimer = recoverTime;
         }
@@ -286,25 +329,60 @@ namespace MadnessDreams
             }
         }
 
-        private void UpdateSummon()
+        private void UpdateHowl()
         {
             StopMoving();
             stateTimer -= Time.deltaTime;
 
             if (stateTimer <= 0f)
             {
-                SpawnWolves();
+                DoHowl();
+                howlCooldownRemaining = howlInterval;
                 EnterState(CaperucitaState.Stalk);
+            }
+        }
+
+        private void DoHowl()
+        {
+            if (howlEffectPrefab != null) Instantiate(howlEffectPrefab, transform.position, Quaternion.identity);
+
+            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, howlRadius);
+            var buffed = new System.Collections.Generic.List<EnemyMovement>();
+
+            foreach (var h in hits)
+            {
+                var em = h.GetComponent<EnemyMovement>();
+                if (em == null) em = h.GetComponentInParent<EnemyMovement>();
+                if (em == null || buffed.Contains(em)) continue;
+                em.SpeedMultiplier = howlSpeedMultiplier;
+                buffed.Add(em);
+            }
+
+            if (buffed.Count > 0) StartCoroutine(RestoreHowl(buffed));
+        }
+
+        private System.Collections.IEnumerator RestoreHowl(System.Collections.Generic.List<EnemyMovement> list)
+        {
+            yield return new WaitForSeconds(howlDuration);
+            foreach (var em in list) if (em != null) em.SpeedMultiplier = 1f;
+        }
+
+        private void UpdateSummon()
+        {
+            StopMoving();
+            stateTimer -= Time.deltaTime;
+
+            if (stateTimer <= 0f && !summoning)
+            {
+                StartCoroutine(SummonWaves());
             }
         }
 
         private void OnHealthChanged(int current, int max)
         {
             int newPhase = CalculatePhase(current, max);
-            if (newPhase == currentPhase)
-            {
-                return;
-            }
+            if (newPhase == currentPhase) return;
+            if (newPhase < currentPhase) { currentPhase = newPhase; return; }
 
             currentPhase = newPhase;
             OnPhaseChanged(currentPhase);
@@ -336,6 +414,8 @@ namespace MadnessDreams
         {
             Debug.Log($"{name} (Caperucita) entered phase {phase + 1}.", this);
 
+            if (bodyRenderer != null && phase >= 2) bodyRenderer.color = enrageColor;
+
             if (phase < 1)
             {
                 return;
@@ -343,6 +423,21 @@ namespace MadnessDreams
 
             EnterState(CaperucitaState.Summon);
             stateTimer = summonWindup;
+        }
+
+        private System.Collections.IEnumerator SummonWaves()
+        {
+            summoning = true;
+            int waves = minionWaves + (IsEnraged ? 1 : 0);
+            for (int w = 0; w < waves; w++)
+            {
+                if (state == CaperucitaState.Dead) break;
+                if (summonEffectPrefab != null) Instantiate(summonEffectPrefab, transform.position, Quaternion.identity);
+                SpawnWolves();
+                yield return new WaitForSeconds(waveInterval);
+            }
+            summoning = false;
+            if (state != CaperucitaState.Dead) EnterState(CaperucitaState.Stalk);
         }
 
         private void SpawnWolves()
@@ -363,7 +458,13 @@ namespace MadnessDreams
                 }
 
                 Vector2 offset = Random.insideUnitCircle.normalized * Random.Range(minionSpread * 0.5f, minionSpread);
-                Instantiate(prefab, transform.position + (Vector3)offset, Quaternion.identity);
+                Vector3 spawnPos = transform.position + (Vector3)offset;
+                Instantiate(prefab, spawnPos, Quaternion.identity);
+                if (summonEffectPrefab != null)
+                {
+                    GameObject fx = Instantiate(summonEffectPrefab, spawnPos, Quaternion.identity);
+                    fx.transform.localScale *= 0.6f;
+                }
             }
         }
 
@@ -452,6 +553,7 @@ namespace MadnessDreams
                 case CaperucitaState.Windup:
                 case CaperucitaState.Slash:
                 case CaperucitaState.Lunge:
+                case CaperucitaState.Howl:
                     return AnimationState.MeleeAttack;
 
                 case CaperucitaState.Stalk:

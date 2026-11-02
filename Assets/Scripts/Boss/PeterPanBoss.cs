@@ -53,6 +53,20 @@ namespace MadnessDreams
         [SerializeField] private int minionsPerSummon = 2;
         [SerializeField] private int extraMinionsOnEnrage = 2;
         [SerializeField] private float minionSpread = 2.5f;
+        [SerializeField] private int minionWaves = 3;
+        [SerializeField] private float waveInterval = 1.2f;
+        [SerializeField] private GameObject summonEffectPrefab;
+        [Header("Character (Peter Pan)")]
+        [SerializeField] private SpriteRenderer bodyRenderer;
+        [SerializeField] private Color enrageColor = new Color(0.15f, 0.55f, 0.2f, 1f);
+        [SerializeField] private float blinkDistance = 4f;
+
+        [Header("Shadow Clone")]
+        [SerializeField] private GameObject shadowClonePrefab;
+        [SerializeField] private float shadowCooldown = 9f;
+        [SerializeField] private float shadowDuration = 4f;
+        private float shadowCooldownRemaining;
+        private bool summoning;
 
         [Header("Enrage (last phase)")]
         [SerializeField] private float enrageSpeedMultiplier = 1.25f;
@@ -98,6 +112,7 @@ namespace MadnessDreams
             rb = GetComponent<Rigidbody2D>();
             health = GetComponent<Health>();
             bodyCollider = GetComponent<Collider2D>();
+            if (bodyRenderer == null) bodyRenderer = GetComponent<SpriteRenderer>();
         }
 
         /// <summary>
@@ -180,6 +195,11 @@ namespace MadnessDreams
                 dashCooldownRemaining -= Time.deltaTime;
             }
 
+            if (shadowCooldownRemaining > 0f)
+            {
+                shadowCooldownRemaining -= Time.deltaTime;
+            }
+
             switch (state)
             {
                 case PeterPanState.Kite: UpdateKite(); break;
@@ -205,7 +225,13 @@ namespace MadnessDreams
 
             if (distance < closeRange && dashCooldownRemaining <= 0f)
             {
-                StartReposition(-toPlayer);
+                if (shadowClonePrefab != null && shadowCooldownRemaining <= 0f)
+                {
+                    SpawnShadowClone();
+                    shadowCooldownRemaining = shadowCooldown;
+                }
+
+                Blink(-toPlayer);
                 return;
             }
 
@@ -249,6 +275,27 @@ namespace MadnessDreams
             }
         }
 
+        private void SpawnShadowClone()
+        {
+            if (shadowClonePrefab == null) return;
+
+            GameObject clone = Instantiate(shadowClonePrefab, transform.position, Quaternion.identity);
+            ShadowClone sc = clone.GetComponent<ShadowClone>();
+            if (sc != null) sc.Setup(player, transform.position, shadowDuration);
+        }
+
+        private void Blink(Vector2 direction)
+        {
+            if (summonEffectPrefab != null) Instantiate(summonEffectPrefab, transform.position, Quaternion.identity);
+
+            Vector3 target = transform.position + (Vector3)(direction.normalized * blinkDistance);
+            transform.position = target;
+
+            if (summonEffectPrefab != null) Instantiate(summonEffectPrefab, transform.position, Quaternion.identity);
+            dashCooldownRemaining = DashCooldown;
+            EnterState(PeterPanState.Kite);
+        }
+
         private void StartReposition(Vector2 direction)
         {
             if (direction.sqrMagnitude < 0.0001f)
@@ -290,10 +337,9 @@ namespace MadnessDreams
             StopMoving();
             stateTimer -= Time.deltaTime;
 
-            if (stateTimer <= 0f)
+            if (stateTimer <= 0f && !summoning)
             {
-                SpawnMinions();
-                EnterState(PeterPanState.Kite);
+                StartCoroutine(SummonWaves());
             }
         }
 
@@ -355,10 +401,8 @@ namespace MadnessDreams
         private void OnHealthChanged(int current, int max)
         {
             int newPhase = CalculatePhase(current, max);
-            if (newPhase == currentPhase)
-            {
-                return;
-            }
+            if (newPhase == currentPhase) return;
+            if (newPhase < currentPhase) { currentPhase = newPhase; return; }
 
             currentPhase = newPhase;
             OnPhaseChanged(currentPhase);
@@ -390,6 +434,8 @@ namespace MadnessDreams
         {
             Debug.Log($"{name} (Peter Pan) entered phase {phase + 1}.", this);
 
+            if (bodyRenderer != null && phase >= 2) bodyRenderer.color = enrageColor;
+
             if (phase < 1)
             {
                 return;
@@ -397,6 +443,21 @@ namespace MadnessDreams
 
             EnterState(PeterPanState.Summon);
             stateTimer = summonWindup;
+        }
+
+        private System.Collections.IEnumerator SummonWaves()
+        {
+            summoning = true;
+            int waves = minionWaves + (IsEnraged ? 1 : 0);
+            for (int w = 0; w < waves; w++)
+            {
+                if (state == PeterPanState.Dead) break;
+                if (summonEffectPrefab != null) Instantiate(summonEffectPrefab, transform.position, Quaternion.identity);
+                SpawnMinions();
+                yield return new WaitForSeconds(waveInterval);
+            }
+            summoning = false;
+            if (state != PeterPanState.Dead) EnterState(PeterPanState.Kite);
         }
 
         private void SpawnMinions()
@@ -417,7 +478,13 @@ namespace MadnessDreams
                 }
 
                 Vector2 offset = Random.insideUnitCircle.normalized * Random.Range(minionSpread * 0.5f, minionSpread);
-                Instantiate(prefab, transform.position + (Vector3)offset, Quaternion.identity);
+                Vector3 spawnPos = transform.position + (Vector3)offset;
+                Instantiate(prefab, spawnPos, Quaternion.identity);
+                if (summonEffectPrefab != null)
+                {
+                    GameObject fx = Instantiate(summonEffectPrefab, spawnPos, Quaternion.identity);
+                    fx.transform.localScale *= 0.6f;
+                }
             }
         }
 

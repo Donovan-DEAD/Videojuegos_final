@@ -24,6 +24,12 @@ namespace MadnessDreams
         private Rigidbody2D rb;
         private PlayerController controller;
         private MeleeRangeIndicator meleeIndicator;
+        private static readonly System.Collections.Generic.List<BossAbilitySO> persistentAbilities = new System.Collections.Generic.List<BossAbilitySO>();
+
+        public static void ClearPersistent()
+        {
+            persistentAbilities.Clear();
+        }
 
         /// <summary>Número de ranuras de habilidad disponibles.</summary>
         public int SlotCount => slots != null ? slots.Length : 0;
@@ -39,9 +45,14 @@ namespace MadnessDreams
             cooldowns = new float[slots.Length];
             lockedSlots = new bool[slots.Length];
 
-            for (int i = 0; i < startingAbilities.Count && i < slots.Length; i++)
+            if (persistentAbilities.Count > 0)
             {
-                slots[i] = startingAbilities[i];
+                for (int i = 0; i < persistentAbilities.Count && i < slots.Length; i++) slots[i] = persistentAbilities[i];
+            }
+            else if (GameFlowManager.Instance != null)
+            {
+                var saved = GameFlowManager.Instance.GetSavedAbilities();
+                for (int i = 0; i < saved.Count && i < slots.Length; i++) slots[i] = saved[i];
             }
         }
 
@@ -88,10 +99,11 @@ namespace MadnessDreams
 
             for (int i = 0; i < slots.Length; i++)
             {
-                if (slots[i] == null)
+                if (slots[i] == null && !IsSlotLocked(i))
                 {
                     slots[i] = ability;
                     AbilityLearned?.Invoke(ability);
+                    SaveAbilities();
                     return true;
                 }
             }
@@ -135,6 +147,14 @@ namespace MadnessDreams
 
             float cd = slots[index].Cooldown;
             return cd > 0f ? Mathf.Clamp01(cooldowns[index] / cd) : 0f;
+        }
+
+        private void SaveAbilities()
+        {
+            if (slots == null) return;
+            persistentAbilities.Clear();
+            for (int i = 0; i < slots.Length; i++) if (slots[i] != null) persistentAbilities.Add(slots[i]);
+            if (GameFlowManager.Instance != null) GameFlowManager.Instance.SetSavedAbilities(new System.Collections.Generic.List<BossAbilitySO>(persistentAbilities));
         }
 
         private static bool WasPressed(int index)

@@ -34,9 +34,12 @@ namespace MadnessDreams
             amount = Mathf.Max(1, value);
         }
 
+        private bool collected;
+
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (!other.CompareTag("Player")) return;
+            if (collected || !other.CompareTag("Player")) return;
+            collected = true;
             if (GameFlowManager.Instance != null) GameFlowManager.Instance.AddFragments(amount);
             Destroy(gameObject);
         }

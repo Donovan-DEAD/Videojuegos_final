@@ -13,6 +13,8 @@ namespace MadnessDreams
         [SerializeField] private Image progressFill;
         [SerializeField] private Text progressLabel;
         [SerializeField] private float minimumTime = 0.75f;
+        [SerializeField] private StoryInterludeSO debugStory;
+        [SerializeField] private bool showDebugStory = false;
 
         /// <summary>
         /// Lee la escena destino desde GameFlowManager y arranca la carga asíncrona mostrando el progreso.
@@ -21,7 +23,26 @@ namespace MadnessDreams
         {
             string target = GameFlowManager.Instance != null ? GameFlowManager.Instance.NextScene : GameFlowManager.GameplayScene;
             Debug.Log($"[LoadingScreen] Start -> target '{target}'.");
-            StartCoroutine(LoadRoutine(target));
+            StartCoroutine(BootRoutine(target));
+        }
+
+        private IEnumerator BootRoutine(string target)
+        {
+            StoryInterludeSO interlude = GameFlowManager.Instance != null ? GameFlowManager.Instance.PendingStoryInterlude : null;
+            if (interlude == null && showDebugStory) interlude = debugStory;
+            if (interlude != null)
+            {
+                StoryInterludeController controller = FindAnyObjectByType<StoryInterludeController>();
+                if (controller != null)
+                {
+                    bool done = false;
+                    controller.Play(interlude, () => done = true);
+                    while (!done) yield return null;
+                    if (GameFlowManager.Instance != null) GameFlowManager.Instance.ClearPendingStoryInterlude();
+                }
+            }
+
+            yield return LoadRoutine(target);
         }
 
         private IEnumerator LoadRoutine(string target)

@@ -1,0 +1,957 @@
+fileFormatVersion: 2
+guid: 4c1795aeedf7d9243b53765d48d017bc
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6901110214603898140
+    second: Sword_Death_with_shadow_0
+  - first:
+      213: 3486066537343050017
+    second: Sword_Death_with_shadow_1
+  - first:
+      213: -8730381270488422734
+    second: Sword_Death_with_shadow_2
+  - first:
+      213: 1669096748750677614
+    second: Sword_Death_with_shadow_3
+  - first:
+      213: -6085663115288832050
+    second: Sword_Death_with_shadow_4
+  - first:
+      213: 2927023157847565332
+    second: Sword_Death_with_shadow_5
+  - first:
+      213: -7413234016689468708
+    second: Sword_Death_with_shadow_6
+  - first:
+      213: -1437179796039859641
+    second: Sword_Death_with_shadow_7
+  - first:
+      213: -1898721926268907706
+    second: Sword_Death_with_shadow_8
+  - first:
+      213: 8704267666584005706
+    second: Sword_Death_with_shadow_9
+  - first:
+      213: -863218503944290913
+    second: Sword_Death_with_shadow_10
+  - first:
+      213: 3381918470877200018
+    second: Sword_Death_with_shadow_11
+  - first:
+      213: 5228534837552831904
+    second: Sword_Death_with_shadow_12
+  - first:
+      213: 3709800142902833224
+    second: Sword_Death_with_shadow_13
+  - first:
+      213: 8766051019246472063
+    second: Sword_Death_with_shadow_14
+  - first:
+      213: 6951749385032228607
+    second: Sword_Death_with_shadow_15
+  - first:
+      213: 3951072137298677337
+    second: Sword_Death_with_shadow_16
+  - first:
+      213: -7043690173806592798
+    second: Sword_Death_with_shadow_17
+  - first:
+      213: -1059383599151231446
+    second: Sword_Death_with_shadow_18
+  - first:
+      213: -568641198576499339
+    second: Sword_Death_with_shadow_19
+  - first:
+      213: -4149921179801906340
+    second: Sword_Death_with_shadow_20
+  - first:
+      213: 5423811718417287903
+    second: Sword_Death_with_shadow_21
+  - first:
+      213: 7599858763699736994
+    second: Sword_Death_with_shadow_22
+  - first:
+      213: 1729249964562116205
+    second: Sword_Death_with_shadow_23
+  - first:
+      213: -3428727375963310404
+    second: Sword_Death_with_shadow_24
+  - first:
+      213: -6061378124471081825
+    second: Sword_Death_with_shadow_25
+  - first:
+      213: 2532957827203920090
+    second: Sword_Death_with_shadow_26
+  - first:
+      213: 283282221755806880
+    second: Sword_Death_with_shadow_27
+  - first:
+      213: 7426211368735807502
+    second: Sword_Death_with_shadow_0_0
+  - first:
+      213: 4502283497222987248
+    second: Sword_Death_with_shadow_0_1
+  - first:
+      213: -4914626493463841350
+    second: Sword_Death_with_shadow_0_2
+  - first:
+      213: 3915326414660744352
+    second: Sword_Death_with_shadow_0_3
+  - first:
+      213: -4224932551851426848
+    second: Sword_Death_with_shadow_0_4
+  - first:
+      213: 9190920889737611184
+    second: Sword_Death_with_shadow_0_5
+  - first:
+      213: -1013825990337347742
+    second: Sword_Death_with_shadow_0_6
+  - first:
+      213: -2866238508802056061
+    second: Sword_Death_with_shadow_1_0
+  - first:
+      213: -2838079713569834593
+    second: Sword_Death_with_shadow_1_1
+  - first:
+      213: 6393439276736008198
+    second: Sword_Death_with_shadow_1_2
+  - first:
+      213: -6678597829553824485
+    second: Sword_Death_with_shadow_1_3
+  - first:
+      213: -7314171737686160673
+    second: Sword_Death_with_shadow_1_4
+  - first:
+      213: 7864210910106654239
+    second: Sword_Death_with_shadow_1_5
+  - first:
+      213: 936757293715091640
+    second: Sword_Death_with_shadow_1_6
+  - first:
+      213: 7006102603808109559
+    second: Sword_Death_with_shadow_2_0
+  - first:
+      213: 8949774118864017620
+    second: Sword_Death_with_shadow_2_1
+  - first:
+      213: -5899242049554182260
+    second: Sword_Death_with_shadow_2_2
+  - first:
+      213: -2584131365838765762
+    second: Sword_Death_with_shadow_2_3
+  - first:
+      213: 1603789788476147131
+    second: Sword_Death_with_shadow_2_4
+  - first:
+      213: -4375748767797177101
+    second: Sword_Death_with_shadow_2_5
+  - first:
+      213: 6045561176727325563
+    second: Sword_Death_with_shadow_2_6
+  - first:
+      213: -4173875468815026078
+    second: Sword_Death_with_shadow_3_0
+  - first:
+      213: -1940262830475737163
+    second: Sword_Death_with_shadow_3_1
+  - first:
+      213: 3108298395249963797
+    second: Sword_Death_with_shadow_3_2
+  - first:
+      213: 8232262038101259846
+    second: Sword_Death_with_shadow_3_3
+  - first:
+      213: -1247789365629471109
+    second: Sword_Death_with_shadow_3_4
+  - first:
+      213: 6592831881246679977
+    second: Sword_Death_with_shadow_3_5
+  - first:
+      213: -7799044148075222734
+    second: Sword_Death_with_shadow_3_6
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 64
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_0_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e081774e4e33f0760800000000000000
+      internalID: 7426211368735807502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_0_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0fd54129cf25b7e30800000000000000
+      internalID: 4502283497222987248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_0_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab53d553e3dbbcbb0800000000000000
+      internalID: -4914626493463841350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_0_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a4be8d31a8065630800000000000000
+      internalID: 3915326414660744352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_0_4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0eb39ee8a360e55c0800000000000000
+      internalID: -4224932551851426848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_0_5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b707878ad5bc8f70800000000000000
+      internalID: 9190920889737611184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_0_6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 192
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26f32ed12aa2ee1f0800000000000000
+      internalID: -1013825990337347742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_1_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 380ee4123431938d0800000000000000
+      internalID: -2866238508802056061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_1_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f997d6c898d1d98d0800000000000000
+      internalID: -2838079713569834593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_1_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60051e6f52f0ab850800000000000000
+      internalID: 6393439276736008198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_1_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1ddfb3a8aad053a0800000000000000
+      internalID: -6678597829553824485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_1_4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fdac3058e87de7a90800000000000000
+      internalID: -7314171737686160673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_1_5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1698a7082a432d60800000000000000
+      internalID: 7864210910106654239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_1_6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 128
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b0f4a4abc7000d00800000000000000
+      internalID: 936757293715091640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_2_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f3fbefb23daa3160800000000000000
+      internalID: 7006102603808109559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_2_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d8dfd6a42cf33c70800000000000000
+      internalID: 8949774118864017620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_2_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8f86488c9ea12ea0800000000000000
+      internalID: -5899242049554182260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_2_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e314c3ec632532cd0800000000000000
+      internalID: -2584131365838765762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_2_4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb5058cb05ec14610800000000000000
+      internalID: 1603789788476147131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_2_5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f4981deda73643c0800000000000000
+      internalID: -4375748767797177101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_2_6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7b89b60cd526e350800000000000000
+      internalID: 6045561176727325563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_3_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2683090106a6316c0800000000000000
+      internalID: -4173875468815026078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_3_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b789925c3dc215e0800000000000000
+      internalID: -1940262830475737163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_3_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5137ac80ce4e22b20800000000000000
+      internalID: 3108298395249963797
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_3_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64675fe05bede3270800000000000000
+      internalID: 8232262038101259846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_3_4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b76352bde26feaee0800000000000000
+      internalID: -1247789365629471109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_3_5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a324996aa17e7b50800000000000000
+      internalID: 6592831881246679977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sword_Death_with_shadow_3_6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 239236e1baa34c390800000000000000
+      internalID: -7799044148075222734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Sword_Death_with_shadow_0: 6901110214603898140
+      Sword_Death_with_shadow_0_0: 7426211368735807502
+      Sword_Death_with_shadow_0_1: 4502283497222987248
+      Sword_Death_with_shadow_0_2: -4914626493463841350
+      Sword_Death_with_shadow_0_3: 3915326414660744352
+      Sword_Death_with_shadow_0_4: -4224932551851426848
+      Sword_Death_with_shadow_0_5: 9190920889737611184
+      Sword_Death_with_shadow_0_6: -1013825990337347742
+      Sword_Death_with_shadow_1: 3486066537343050017
+      Sword_Death_with_shadow_10: -863218503944290913
+      Sword_Death_with_shadow_11: 3381918470877200018
+      Sword_Death_with_shadow_12: 5228534837552831904
+      Sword_Death_with_shadow_13: 3709800142902833224
+      Sword_Death_with_shadow_14: 8766051019246472063
+      Sword_Death_with_shadow_15: 6951749385032228607
+      Sword_Death_with_shadow_16: 3951072137298677337
+      Sword_Death_with_shadow_17: -7043690173806592798
+      Sword_Death_with_shadow_18: -1059383599151231446
+      Sword_Death_with_shadow_19: -568641198576499339
+      Sword_Death_with_shadow_1_0: -2866238508802056061
+      Sword_Death_with_shadow_1_1: -2838079713569834593
+      Sword_Death_with_shadow_1_2: 6393439276736008198
+      Sword_Death_with_shadow_1_3: -6678597829553824485
+      Sword_Death_with_shadow_1_4: -7314171737686160673
+      Sword_Death_with_shadow_1_5: 7864210910106654239
+      Sword_Death_with_shadow_1_6: 936757293715091640
+      Sword_Death_with_shadow_2: -8730381270488422734
+      Sword_Death_with_shadow_20: -4149921179801906340
+      Sword_Death_with_shadow_21: 5423811718417287903
+      Sword_Death_with_shadow_22: 7599858763699736994
+      Sword_Death_with_shadow_23: 1729249964562116205
+      Sword_Death_with_shadow_24: -3428727375963310404
+      Sword_Death_with_shadow_25: -6061378124471081825
+      Sword_Death_with_shadow_26: 2532957827203920090
+      Sword_Death_with_shadow_27: 283282221755806880
+      Sword_Death_with_shadow_2_0: 7006102603808109559
+      Sword_Death_with_shadow_2_1: 8949774118864017620
+      Sword_Death_with_shadow_2_2: -5899242049554182260
+      Sword_Death_with_shadow_2_3: -2584131365838765762
+      Sword_Death_with_shadow_2_4: 1603789788476147131
+      Sword_Death_with_shadow_2_5: -4375748767797177101
+      Sword_Death_with_shadow_2_6: 6045561176727325563
+      Sword_Death_with_shadow_3: 1669096748750677614
+      Sword_Death_with_shadow_3_0: -4173875468815026078
+      Sword_Death_with_shadow_3_1: -1940262830475737163
+      Sword_Death_with_shadow_3_2: 3108298395249963797
+      Sword_Death_with_shadow_3_3: 8232262038101259846
+      Sword_Death_with_shadow_3_4: -1247789365629471109
+      Sword_Death_with_shadow_3_5: 6592831881246679977
+      Sword_Death_with_shadow_3_6: -7799044148075222734
+      Sword_Death_with_shadow_4: -6085663115288832050
+      Sword_Death_with_shadow_5: 2927023157847565332
+      Sword_Death_with_shadow_6: -7413234016689468708
+      Sword_Death_with_shadow_7: -1437179796039859641
+      Sword_Death_with_shadow_8: -1898721926268907706
+      Sword_Death_with_shadow_9: 8704267666584005706
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

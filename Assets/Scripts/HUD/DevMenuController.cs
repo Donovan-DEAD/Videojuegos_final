@@ -23,6 +23,7 @@ namespace MadnessDreams
         private PlayerAbilities abilities;
         private PlayerBuffs buffs;
         [SerializeField] private MerchantMenuUI merchantMenu;
+        [SerializeField] private GameObject openMerchantButton;
 
         /// <summary>
         /// Enlaza los botones, configura los rangos de los sliders y oculta el panel al arrancar.
@@ -39,6 +40,7 @@ namespace MadnessDreams
             if (healthSlider != null) { healthSlider.minValue = 1f; healthSlider.maxValue = 1000f; }
 
             if (panel != null) panel.SetActive(false);
+            if (openMerchantButton != null) openMerchantButton.SetActive(false);
         }
 
         /// <summary>
@@ -102,12 +104,14 @@ namespace MadnessDreams
             if (MenuManager.Instance != null) MenuManager.Instance.Open(this, Close);
             RefreshLevelLabel();
             if (panel != null) panel.SetActive(true);
+            if (openMerchantButton != null) openMerchantButton.SetActive(true);
         }
 
         public void Close()
         {
             if (MenuManager.Instance != null) MenuManager.Instance.Release(this);
             if (panel != null) panel.SetActive(false);
+            if (openMerchantButton != null) openMerchantButton.SetActive(false);
         }
 
         private void ChangeLevel(int delta)
@@ -169,7 +173,9 @@ namespace MadnessDreams
         /// <summary>Abre la tienda del comerciante (para pruebas).</summary>
         public void OpenMerchant()
         {
-            if (merchantMenu != null) merchantMenu.Open();
+            if (merchantMenu == null) merchantMenu = FindAnyObjectByType<MerchantMenuUI>(FindObjectsInactive.Include);
+            if (merchantMenu == null) return;
+            merchantMenu.Open();
         }
         private void RefreshLevelLabel()
         {

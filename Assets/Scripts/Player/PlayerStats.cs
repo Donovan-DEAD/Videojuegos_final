@@ -47,11 +47,39 @@ namespace MadnessDreams
             combat = GetComponent<PlayerCombat>();
             health = GetComponent<Health>();
             buffs = GetComponent<PlayerBuffs>();
+        
+            bool restore = false;
             if (GameFlowManager.Instance != null)
             {
                 level = Mathf.Clamp(GameFlowManager.Instance.PlayerLevel, 1, maxLevel);
+                restore = GameFlowManager.Instance.SavedPlayerHealth > 0;
+        
+                if (GameFlowManager.Instance.HasSavedStats)
+                {
+                    baseMoveSpeed = GameFlowManager.Instance.SavedBaseMoveSpeed;
+                    baseDamageMultiplier = GameFlowManager.Instance.SavedBaseDamageMultiplier;
+                    baseHealth = GameFlowManager.Instance.SavedBaseHealth;
+                    level = Mathf.Clamp(GameFlowManager.Instance.SavedLevel, 1, maxLevel);
+                }
             }
-            Apply();
+        
+            Apply(restore);
+        }
+
+        private void Start()
+        {
+            if (health != null && GameFlowManager.Instance != null && GameFlowManager.Instance.SavedPlayerHealth > 0)
+            {
+                health.SetCurrentHealth(GameFlowManager.Instance.SavedPlayerHealth);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (health != null && GameFlowManager.Instance != null)
+            {
+                GameFlowManager.Instance.SetSavedPlayerHealth(health.CurrentHealth);
+            }
         }
 
         /// <summary>Fija el nivel (limitado a [1, MaxLevel]) y reaplica las estadísticas.</summary>
@@ -59,6 +87,7 @@ namespace MadnessDreams
         {
             level = Mathf.Clamp(value, 1, maxLevel);
             Apply();
+            SaveStats();
         }
 
         /// <summary>Fija el nivel máximo.</summary>
@@ -72,6 +101,7 @@ namespace MadnessDreams
         {
             baseMoveSpeed = Mathf.Clamp(value, 0.5f, 30f);
             Apply();
+            SaveStats();
         }
 
         /// <summary>Fija el multiplicador de daño base (0.1-10) y reaplica las estadísticas.</summary>
@@ -79,6 +109,7 @@ namespace MadnessDreams
         {
             baseDamageMultiplier = Mathf.Clamp(value, 0.1f, 10f);
             Apply();
+            SaveStats();
         }
 
         /// <summary>Fija la vida base (1-1000) y reaplica las estadísticas.</summary>
@@ -86,10 +117,19 @@ namespace MadnessDreams
         {
             baseHealth = Mathf.Clamp(value, 1f, 1000f);
             Apply();
+            SaveStats();
         }
 
         /// <summary>Propaga las estadísticas resultantes a PlayerController, PlayerCombat y Health.</summary>
-        public void Apply()
+        private void SaveStats()
+        {
+            if (GameFlowManager.Instance != null)
+            {
+                GameFlowManager.Instance.SetSavedStats(baseMoveSpeed, baseDamageMultiplier, baseHealth, level);
+            }
+        }
+
+        public void Apply(bool preserveHealth = false)
         {
             if (controller != null)
             {
@@ -103,7 +143,8 @@ namespace MadnessDreams
 
             if (health != null)
             {
-                health.SetMaxHealth(Mathf.RoundToInt(Health));
+                if (preserveHealth) health.SetMaxHealthPreserveCurrent(Mathf.RoundToInt(Health));
+                else health.SetMaxHealth(Mathf.RoundToInt(Health));
                 if (buffs != null)
                 {
                     buffs.Reapply();

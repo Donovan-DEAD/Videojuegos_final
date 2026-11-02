@@ -4877,7 +4877,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.15, y: 1.15, z: 1}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4423902676772057316}
@@ -4934,7 +4934,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 3
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: fa3c5a768cc96e8459792b8189e8abb3, type: 3}
+  m_Sprite: {fileID: -4203171804369909530, guid: a1308a3826887484abb39756d690afc4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -5038,6 +5038,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.PlayerAnimationController
   animator: {fileID: 6501257052462071451}
   stateParameter: State
+  moveXParameter: MoveX
+  moveYParameter: MoveY
   controller: {fileID: 0}
   combat: {fileID: 0}
   health: {fileID: 0}
@@ -5087,8 +5089,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Offset: {x: 0, y: -0.1}
+  m_Radius: 0.32
 --- !u!95 &6501257052462071451
 Animator:
   serializedVersion: 7
@@ -5123,11 +5125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4bcc8a963449824fa9a6c37f8062baa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.PlayerAbilities
-  startingAbilities:
-  - {fileID: 11400000, guid: d51b2f2174297884b983efd1b60ddbe4, type: 2}
-  - {fileID: 11400000, guid: 1c75ed08d16ae8d4cbc277abebaa7d54, type: 2}
-  - {fileID: 11400000, guid: edb4799c45027ec449e88d4adc404ab0, type: 2}
-  - {fileID: 11400000, guid: 5adeea99a96b60146b356c7ed997a410, type: 2}
+  startingAbilities: []
   maxAbilities: 4
   enemyMask:
     serializedVersion: 2
@@ -5198,6 +5196,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.PotionController
   inventory: {fileID: 4386805863268828192}
+  trail: {fileID: 0}
+  healColor: {r: 0.35, g: 1, b: 0.45, a: 1}
+  damageColor: {r: 1, g: 0.25, b: 0.25, a: 1}
+  speedColor: {r: 0.35, g: 0.65, b: 1, a: 1}
+  healthColor: {r: 0.4, g: 1, b: 0.5, a: 1}
 --- !u!114 &2842288700867289714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5212,6 +5215,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.PlayerEffectTrail
   particles: {fileID: 7688741964038109147}
   moveThreshold: 0.02
+  particlesPerEffect: 1
   damageColor: {r: 1, g: 0.25, b: 0.25, a: 1}
   speedColor: {r: 0.35, g: 0.65, b: 1, a: 1}
   healthColor: {r: 0.4, g: 1, b: 0.5, a: 1}

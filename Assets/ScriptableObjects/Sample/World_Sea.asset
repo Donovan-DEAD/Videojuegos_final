@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e81cd25bcf43b947abe4404d0f858d3, type: 3}
+  m_Name: World_Sea
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.WorldConfigSO
+  seed: 200
+  bank: {fileID: 11400000, guid: e275584334f7463429bc588b47fb6d1d, type: 2}
+  width: 16
+  height: 16
+  chunkSize: 16
+  bossRegionSize: 1
+  sizeWeights: 02000000020000000100000001000000
+  openingWidth: 4
+  fillRatio: 1
+  themes:
+  - tag: 2
+    theme: {fileID: 11400000, guid: b32773e6ec2fac144bb1aba8fe10c705, type: 2}
+    weight: 1
+  tileset: {fileID: 11400000, guid: 0e82b0b60c3491f4692705aebd27bcdf, type: 2}
+  difficulty: {fileID: 11400000, guid: a979387f7821c7d409e467ee5ee29fd8, type: 2}
+  enemyPool:
+  - {fileID: 11400000, guid: 8eb25e91f354d284a837b2c8262fa026, type: 2}
+  - {fileID: 11400000, guid: 04054d06320881e4e886f5dc95fc2e2c, type: 2}
+  - {fileID: 11400000, guid: e742e63ccd489fe408966615b970dac5, type: 2}
+  - {fileID: 11400000, guid: 95fbc7f3c9bd3e8418684d84cb46b3a0, type: 2}
+  enemiesPerChunk: 2
+  bossPrefab: {fileID: 5166569382037719708, guid: c84865c60e31652478865c30714950c3, type: 3}
+  boss: {fileID: 11400000, guid: 5752e32b26b9b284a828e81cd1ab6df7, type: 2}
+  rewardAbility: {fileID: 11400000, guid: 1c75ed08d16ae8d4cbc277abebaa7d54, type: 2}
+  startCell: {x: 8, y: 8}
+  bossCell: {x: 13, y: 13}
+  merchantCell: {x: 9, y: 8}
+  merchantPrefab: {fileID: 5277286200323792214, guid: 5dd38f4ed50e2a94b9989086c444f0e0, type: 3}
+  specialCell: {x: -1, y: -1}
+  minibossPrefab: {fileID: 7883852240400934066, guid: 8cdf451b5ccb285409870adde9847abd, type: 3}
+  minibossRewardAbility: {fileID: 11400000, guid: d51b2f2174297884b983efd1b60ddbe4, type: 2}
+  minibossRoomTint: {r: 0.55, g: 0.2, b: 0.75, a: 0.35}
+  bossIntro: {fileID: 11400000, guid: 92fcba11b9300584684baa9ead741912, type: 2}
+  minibossIntro: {fileID: 11400000, guid: 7a74f92dbc32d72409b274624cb1adcb, type: 2}
+  bossOutro: {fileID: 11400000, guid: 223625e30384629428325f748fa92813, type: 2}
+  minibossOutro: {fileID: 11400000, guid: 3490553715fd58443b4dd228ec3f95f4, type: 2}
+  storyInterlude: {fileID: 11400000, guid: 66ac3ecd3a1f6b44a8a87f485a7239d5, type: 2}

@@ -12,8 +12,11 @@ namespace MadnessDreams
     {
         [SerializeField] private MapGenerator mapGenerator;
         [SerializeField] private Spawner spawner;
+        [SerializeField] private float propMaxSize = 3f;
+        [SerializeField] private int propEdgeMargin = 2;
 
         private WorldConfigSO config;
+        private static Sprite whiteSprite;
 
         /// <summary>Inyecta la configuración y resuelve referencias a MapGenerator y Spawner si faltan.</summary>
         public void Configure(WorldConfigSO worldConfig)
@@ -187,7 +190,7 @@ namespace MadnessDreams
                     break;
                 }
 
-                if (!TryFindAnchor(area, prop.Footprint, occupied, keepClear, true, rng, out Vector2Int anchor))
+                if (!TryFindAnchor(area, prop.Footprint, occupied, keepClear, true, rng, 0, out Vector2Int anchor))
                 {
                     continue;
                 }
@@ -220,14 +223,15 @@ namespace MadnessDreams
                 }
 
                 HashSet<Vector2Int> avoid = prop.AvoidPassages ? keepClear : null;
-                if (!TryFindAnchor(area, prop.Footprint, occupied, avoid, false, rng, out Vector2Int anchor))
+                if (!TryFindAnchor(area, prop.Footprint, occupied, avoid, false, rng, propEdgeMargin, out Vector2Int anchor))
                 {
                     continue;
                 }
 
                 MarkFootprint(occupied, anchor, prop.Footprint, true);
                 Vector3 position = FootprintCenter(area, anchor, prop.Footprint);
-                Instantiate(prop.Prefab, position, Quaternion.identity);
+                GameObject instance = Instantiate(prop.Prefab, position, Quaternion.identity);
+                ClampPropScale(instance);
             }
         }
 
@@ -274,15 +278,19 @@ namespace MadnessDreams
             Vector3Int originCell = mapGenerator.ChunkToCell(room.originCell);
             Vector3 center = mapGenerator.TargetTilemap.GetCellCenterWorld(new Vector3Int(originCell.x + sizeTiles.x / 2, originCell.y + sizeTiles.y / 2, 0));
 
-            var tex = new Texture2D(1, 1);
-            tex.SetPixel(0, 0, Color.white);
-            tex.Apply();
+            if (whiteSprite == null)
+            {
+                var tex = new Texture2D(1, 1);
+                tex.SetPixel(0, 0, Color.white);
+                tex.Apply();
+                whiteSprite = Sprite.Create(tex, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
+            }
 
             var go = new GameObject("MinibossRoomTint");
             go.transform.position = center;
             go.transform.localScale = new Vector3(sizeTiles.x, sizeTiles.y, 1f);
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = Sprite.Create(tex, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
+            sr.sprite = whiteSprite;
             sr.color = config.MinibossRoomTint;
             sr.sortingOrder = 1;
         }
@@ -440,7 +448,7 @@ namespace MadnessDreams
             return result;
         }
 
-        private bool TryFindAnchor(RectInt area, Vector2Int footprint, bool[,] occupied, HashSet<Vector2Int> avoid, bool preferBorder, System.Random rng, out Vector2Int anchor)
+        private bool TryFindAnchor(RectInt area, Vector2Int footprint, bool[,] occupied, HashSet<Vector2Int> avoid, bool preferBorder, System.Random rng, int edgeMargin, out Vector2Int anchor)
         {
             anchor = Vector2Int.zero;
             footprint = new Vector2Int(Mathf.Max(1, footprint.x), Mathf.Max(1, footprint.y));
@@ -448,9 +456,9 @@ namespace MadnessDreams
             List<Vector2Int> valid = new List<Vector2Int>();
             List<Vector2Int> border = new List<Vector2Int>();
 
-            for (int y = 0; y <= area.height - footprint.y; y++)
+            for (int y = edgeMargin; y <= area.height - footprint.y - edgeMargin; y++)
             {
-                for (int x = 0; x <= area.width - footprint.x; x++)
+                for (int x = edgeMargin; x <= area.width - footprint.x - edgeMargin; x++)
                 {
                     bool ok = true;
                     bool touchesWall = false;
@@ -514,6 +522,20 @@ namespace MadnessDreams
 
             anchor = pool[rng.Next(pool.Count)];
             return true;
+        }
+
+        private void ClampPropScale(GameObject instance)
+        {
+            if (instance == null || propMaxSize <= 0f) return;
+            SpriteRenderer sr = instance.GetComponentInChildren<SpriteRenderer>();
+            if (sr == null || sr.sprite == null) return;
+
+            Vector2 size = sr.sprite.bounds.size;
+            float maxDim = Mathf.Max(size.x, size.y);
+            if (maxDim > propMaxSize)
+            {
+                instance.transform.localScale *= propMaxSize / maxDim;
+            }
         }
 
         private Vector3 FootprintCenter(RectInt area, Vector2Int anchor, Vector2Int footprint)

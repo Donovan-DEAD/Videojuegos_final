@@ -62,8 +62,12 @@ namespace MadnessDreams
                 abilityPickup.Setup(config.RewardAbility);
             }
         }
+        private bool rewarded;
+
         private void OnBossDefeated()
         {
+            if (rewarded) return;
+            rewarded = true;
             Debug.Log("Boss defeated.");
             SpawnReward();
 

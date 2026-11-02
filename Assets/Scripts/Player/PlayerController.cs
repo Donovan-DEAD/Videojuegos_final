@@ -17,6 +17,8 @@ namespace MadnessDreams
 
         /// <summary>Indica si hay entrada de movimiento en el frame actual.</summary>
         public bool IsMoving => movement.sqrMagnitude > 0.0001f;
+        /// <summary>Dirección de entrada actual (normalizada o cero).</summary>
+        public Vector2 MoveDirection => movement;
         /// <summary>Permite habilitar o suspender el control de movimiento.</summary>
         public bool ControlEnabled { get; set; } = true;
 

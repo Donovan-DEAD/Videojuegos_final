@@ -70,6 +70,9 @@ namespace MadnessDreams
         [SerializeField] private BossIntroSO bossOutro;
         [SerializeField] private BossIntroSO minibossOutro;
 
+        [Header("Story")]
+        [SerializeField] private StoryInterludeSO storyInterlude;
+
         public int Seed => seed;
         public BlockBankSO Bank => bank;
         public int Width => width;
@@ -99,6 +102,7 @@ namespace MadnessDreams
         public BossIntroSO MinibossIntro => minibossIntro;
         public BossIntroSO BossOutro => bossOutro;
         public BossIntroSO MinibossOutro => minibossOutro;
+        public StoryInterludeSO StoryInterlude => storyInterlude;
         public GameObject BossPrefab => bossPrefab;
 
         /// <summary>

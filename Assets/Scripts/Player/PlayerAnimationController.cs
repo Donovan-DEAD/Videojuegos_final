@@ -9,6 +9,10 @@ namespace MadnessDreams
     {
         [SerializeField] private Animator animator;
         [SerializeField] private string stateParameter = "State";
+        [SerializeField] private string moveXParameter = "MoveX";
+        [SerializeField] private string moveYParameter = "MoveY";
+
+        private Vector2 lastDirection = Vector2.down;
         [SerializeField] private PlayerController controller;
         [SerializeField] private PlayerCombat combat;
         [SerializeField] private Health health;
@@ -33,7 +37,12 @@ namespace MadnessDreams
                 return;
             }
 
+            Vector2 dir = controller != null ? controller.MoveDirection : Vector2.zero;
+            if (dir.sqrMagnitude > 0.0001f) lastDirection = dir.normalized;
+
             animator.SetInteger(stateParameter, (int)CurrentState);
+            animator.SetFloat(moveXParameter, lastDirection.x);
+            animator.SetFloat(moveYParameter, lastDirection.y);
         }
 
         private AnimationState DetermineState()
