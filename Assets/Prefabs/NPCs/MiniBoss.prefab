@@ -160,7 +160,7 @@ MonoBehaviour:
   abilityPickupPrefab: {fileID: 7234161729998589369, guid: bc8c9d6423c91344780451fa9e304306, type: 3}
   outro: {fileID: 0}
   moveSpeed: 2.2
-  attackRange: 1.6
+  attackRange: 2.5
   attackDamage: 8
   attackCooldown: 1.2
   deathDelay: 1.5

@@ -9,6 +9,7 @@ IA de los enemigos comunes (los jefes viven en `Scripts/Boss`).
 | `EnemyAttack` | Ejecuta melee/ranged según `AttackType` y expone `IsWindingUp`, `AttackType`. |
 | `EnemyFOV` | Cono de visión + línea de vista y radio de audición. |
 | `SlowEffect` | Multiplicador temporal de velocidad (lo aplica el proyectil de espinas). |
+| `EnemyIdentity` | Identificación greybox: borde del color del arquetipo (hijo, fuera del Animator) + etiqueta flotante con `EnemyStatsSO.displayName`. Se oculta al morir. |
 
 ## Estados de animación (`Animator` int `State`)
 
@@ -24,3 +25,7 @@ Reproducir: `Assets/Animations/Enemy/EnemyAnimator.controller`. Cada clip anima 
 (el color **es** el estado hasta tener arte final).
 
 **Prefabs:** `Assets/Prefabs/Enemies/` (los 8 tipos del GDD) + `Projectile_Enemy`.
+
+**Identidad:** cada `EnemyStatsSO` (`Assets/ScriptableObjects/Enemies/`) define `displayName` e
+`identityColor`; `EnemyAI` crea/aplica `EnemyIdentity` en `Awake`, así que todos los enemigos instanciados
+(incluidos los invocados por jefes) quedan identificados sin tocar los prefabs.

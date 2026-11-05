@@ -16,7 +16,12 @@ namespace MadnessDreams
         [SerializeField] private int propEdgeMargin = 2;
 
         private WorldConfigSO config;
+        private int cachedPlayerLevel = 1;
+        private int cachedWorldIndex;
         private static Sprite whiteSprite;
+
+        /// <summary>Cantidad de cuartos que puede poblar el generador actual.</summary>
+        public int RoomCount => mapGenerator != null && mapGenerator.Rooms != null ? mapGenerator.Rooms.Count : 0;
 
         /// <summary>Inyecta la configuración y resuelve referencias a MapGenerator y Spawner si faltan.</summary>
         public void Configure(WorldConfigSO worldConfig)
@@ -34,6 +39,32 @@ namespace MadnessDreams
             }
         }
 
+        /// <summary>Cachea el nivel del jugador y el índice de mundo para poblar cuarto a cuarto.</summary>
+        public void BeginSpawn(System.Random rng)
+        {
+            if (config == null || mapGenerator == null || mapGenerator.TargetTilemap == null)
+            {
+                return;
+            }
+
+            PlayerStats stats = FindAnyObjectByType<PlayerStats>();
+            cachedPlayerLevel = stats != null ? stats.Level : 1;
+
+            RunManager runManager = FindAnyObjectByType<RunManager>();
+            cachedWorldIndex = runManager != null ? runManager.CurrentWorldIndex : 0;
+        }
+
+        /// <summary>Puebla el cuarto indicado usando los valores cacheados por BeginSpawn.</summary>
+        public void SpawnRoomAt(int index, System.Random rng)
+        {
+            if (config == null || mapGenerator == null || index < 0 || index >= mapGenerator.Rooms.Count)
+            {
+                return;
+            }
+
+            SpawnRoom(index, mapGenerator.Rooms[index], rng, cachedPlayerLevel, cachedWorldIndex);
+        }
+
         /// <summary>Recorre los cuartos del MapGenerator y los puebla según el nivel del jugador y el índice de mundo.</summary>
         public void SpawnAll(System.Random rng)
         {
@@ -42,24 +73,11 @@ namespace MadnessDreams
                 return;
             }
 
-            int playerLevel = 1;
-            PlayerStats stats = FindAnyObjectByType<PlayerStats>();
-            if (stats != null)
-            {
-                playerLevel = stats.Level;
-            }
+            BeginSpawn(rng);
 
-            int worldIndex = 0;
-            RunManager runManager = FindAnyObjectByType<RunManager>();
-            if (runManager != null)
+            for (int i = 0; i < mapGenerator.Rooms.Count; i++)
             {
-                worldIndex = runManager.CurrentWorldIndex;
-            }
-
-            List<RoomPlacement> rooms = mapGenerator.Rooms;
-            for (int i = 0; i < rooms.Count; i++)
-            {
-                SpawnRoom(i, rooms[i], rng, playerLevel, worldIndex);
+                SpawnRoomAt(i, rng);
             }
         }
 

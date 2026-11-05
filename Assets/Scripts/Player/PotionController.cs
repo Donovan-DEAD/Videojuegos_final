@@ -50,6 +50,8 @@ namespace MadnessDreams
                 case PotionKind.Speed: if (buffs != null) buffs.ApplyBuff(BuffKind.Speed); break;
                 case PotionKind.MaxHealth: if (buffs != null) buffs.ApplyBuff(BuffKind.MaxHealth); break;
             }
+
+            if (trail != null) trail.Burst(ColorFor(kind), 14);
         }
 
         private Color ColorFor(PotionKind kind)

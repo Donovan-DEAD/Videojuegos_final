@@ -26,3 +26,5 @@ MonoBehaviour:
   fovRadius: 5
   fovAngle: 360
   hearingRadius: 4
+  displayName: Zarza viva
+  identityColor: {r: 0.2, g: 0.55, b: 0.25, a: 1}

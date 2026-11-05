@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: World_Sea
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.WorldConfigSO
   seed: 200
-  bank: {fileID: 11400000, guid: e275584334f7463429bc588b47fb6d1d, type: 2}
+  bank: {fileID: 11400000, guid: 79944730f3485f148991faa90131581e, type: 2}
   width: 16
   height: 16
   chunkSize: 16
@@ -28,10 +28,10 @@ MonoBehaviour:
   tileset: {fileID: 11400000, guid: 0e82b0b60c3491f4692705aebd27bcdf, type: 2}
   difficulty: {fileID: 11400000, guid: a979387f7821c7d409e467ee5ee29fd8, type: 2}
   enemyPool:
-  - {fileID: 11400000, guid: 8eb25e91f354d284a837b2c8262fa026, type: 2}
-  - {fileID: 11400000, guid: 04054d06320881e4e886f5dc95fc2e2c, type: 2}
-  - {fileID: 11400000, guid: e742e63ccd489fe408966615b970dac5, type: 2}
-  - {fileID: 11400000, guid: 95fbc7f3c9bd3e8418684d84cb46b3a0, type: 2}
+  - {fileID: 11400000, guid: fe72eb45dc5965c4a9eb45197d97c251, type: 2}
+  - {fileID: 11400000, guid: 38eb54b8776029e41b609f7fdc657ec2, type: 2}
+  - {fileID: 11400000, guid: 553571a4b56fc1845ae8e09267934f16, type: 2}
+  - {fileID: 11400000, guid: 56f742e240efcc7409e8c733dafc5039, type: 2}
   enemiesPerChunk: 2
   bossPrefab: {fileID: 5166569382037719708, guid: c84865c60e31652478865c30714950c3, type: 3}
   boss: {fileID: 11400000, guid: 5752e32b26b9b284a828e81cd1ab6df7, type: 2}
@@ -48,4 +48,4 @@ MonoBehaviour:
   minibossIntro: {fileID: 11400000, guid: 7a74f92dbc32d72409b274624cb1adcb, type: 2}
   bossOutro: {fileID: 11400000, guid: 223625e30384629428325f748fa92813, type: 2}
   minibossOutro: {fileID: 11400000, guid: 3490553715fd58443b4dd228ec3f95f4, type: 2}
-  storyInterlude: {fileID: 11400000, guid: 66ac3ecd3a1f6b44a8a87f485a7239d5, type: 2}
+  storyInterlude: {fileID: 11400000, guid: e6a011801e200c14bbb94fa824efde3a, type: 2}

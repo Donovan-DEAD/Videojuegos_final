@@ -13,7 +13,11 @@ namespace MadnessDreams
         [SerializeField] private Color speedColor = new Color(0.35f, 0.65f, 1f);
         [SerializeField] private Color healthColor = new Color(0.4f, 1f, 0.5f);
 
+        [SerializeField] private float behindOffset = 1.5f;
+
         private PlayerBuffs buffs;
+        private PlayerController controller;
+        private Vector2 facing = Vector2.down;
         private Vector3 lastPos;
         private bool emitting;
         private readonly List<Color> active = new List<Color>(3);
@@ -22,6 +26,7 @@ namespace MadnessDreams
         private void Awake()
         {
             buffs = GetComponent<PlayerBuffs>();
+            controller = GetComponent<PlayerController>();
             if (particles == null) particles = GetComponentInChildren<ParticleSystem>(true);
             lastPos = transform.position;
         }
@@ -29,6 +34,9 @@ namespace MadnessDreams
         private void LateUpdate()
         {
             if (particles == null) return;
+
+            UpdateFacing();
+            PositionEffect();
 
             Vector3 pos = transform.position;
             Vector3 delta = pos - lastPos;
@@ -55,10 +63,27 @@ namespace MadnessDreams
             }
         }
 
+        private void UpdateFacing()
+        {
+            if (controller != null && controller.MoveDirection.sqrMagnitude > 0.0001f)
+            {
+                facing = controller.MoveDirection.normalized;
+            }
+        }
+
+        private void PositionEffect()
+        {
+            if (particles == null) return;
+            Vector3 offset = new Vector3(-facing.x, -facing.y, 0f) * behindOffset;
+            particles.transform.position = transform.position + offset;
+        }
+
         /// <summary>Ráfaga puntual del color indicado (p. ej. al usar una poción).</summary>
         public void Burst(Color color, int count)
         {
             if (particles == null || count <= 0) return;
+            UpdateFacing();
+            PositionEffect();
             emitParams.position = particles.transform.position;
             emitParams.startColor = color;
             particles.Emit(emitParams, count);

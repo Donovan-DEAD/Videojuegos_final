@@ -13,7 +13,15 @@ MonoBehaviour:
   m_Name: ZoneTheme_Sea
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.ZoneThemeSO
   tag: 2
-  enemyBank: []
+  enemyBank:
+  - archetype: {fileID: 11400000, guid: fe72eb45dc5965c4a9eb45197d97c251, type: 2}
+    weight: 3
+  - archetype: {fileID: 11400000, guid: 38eb54b8776029e41b609f7fdc657ec2, type: 2}
+    weight: 2
+  - archetype: {fileID: 11400000, guid: 553571a4b56fc1845ae8e09267934f16, type: 2}
+    weight: 2
+  - archetype: {fileID: 11400000, guid: 56f742e240efcc7409e8c733dafc5039, type: 2}
+    weight: 2
   propBank:
   - prop: {fileID: 11400000, guid: 7e7fd0d33d4dc534b805a388a8c1c820, type: 2}
     weight: 1

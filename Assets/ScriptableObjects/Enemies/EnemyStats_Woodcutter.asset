@@ -26,3 +26,5 @@ MonoBehaviour:
   fovRadius: 7
   fovAngle: 360
   hearingRadius: 4
+  displayName: "Le\xF1ador pose\xEDdo"
+  identityColor: {r: 0.65, g: 0.42, b: 0.2, a: 1}

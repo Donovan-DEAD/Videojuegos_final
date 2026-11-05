@@ -4,6 +4,7 @@ namespace MadnessDreams
 {
     /// <summary>
     /// Estadísticas base de un enemigo: movimiento, salud, ataque y detección.
+    /// Incluye también su identidad visual (nombre e color) para el greybox.
     /// </summary>
     [CreateAssetMenu(fileName = "EnemyStats", menuName = "Madness Dreams/Enemy Stats")]
     public class EnemyStatsSO : ScriptableObject
@@ -30,6 +31,10 @@ namespace MadnessDreams
         [SerializeField] private float fovAngle = 120f;
         [SerializeField] private float hearingRadius = 4f;
 
+        [Header("Identity (greybox)")]
+        [SerializeField] private string displayName = "";
+        [SerializeField] private Color identityColor = Color.white;
+
         public float MoveSpeed => moveSpeed;
         public float ChaseSpeed => chaseSpeed;
         public int MaxHealth => maxHealth;
@@ -44,5 +49,11 @@ namespace MadnessDreams
         public float FovRadius => fovRadius;
         public float FovAngle => fovAngle;
         public float HearingRadius => hearingRadius;
+
+        /// <summary>Nombre visible del enemigo; si está vacío usa el nombre del asset.</summary>
+        public string DisplayName => string.IsNullOrEmpty(displayName) ? name : displayName;
+
+        /// <summary>Color identificador del arquetipo (borde del enemigo y etiqueta).</summary>
+        public Color IdentityColor => identityColor;
     }
 }

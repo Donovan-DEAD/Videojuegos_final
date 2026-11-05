@@ -34,7 +34,7 @@ namespace MadnessDreams
 
         private void Update()
         {
-            if (BossIntroController.IsShowing) return;
+            if (BossIntroController.IsShowing || LoadingScreen.IsShowing) return;
 
             if (WasPausePressed())
             {

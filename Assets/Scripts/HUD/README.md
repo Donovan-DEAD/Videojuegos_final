@@ -13,7 +13,7 @@ solo. Todo el HUD vive en el prefab **`Assets/Prefabs/UI/HUD.prefab`** (Canvas o
 | `MinimapWidget` | Minimapa: un rectángulo por cuarto + marcador continuo del jugador. |
 | `MapOverlayWidget` | Mapa grande (`M` o clic en el minimapa). |
 | `MapGrid` | Helper: `BuildRooms` (un rectángulo por cuarto) y `Build` (grilla por celda, fallback sin `MapGenerator`). |
-| `PauseController` | Pausa (`Esc`, `Time.timeScale = 0`) con Ajustes in-game y Menú. |
+| `PauseController` | Pausa (`Esc`, `Time.timeScale = 0`) con Ajustes in-game y Menú. Ignora `Esc` durante las intro/outro y la pantalla de carga. |
 | `DevMenuController` | Menú **DEV**: nivel, stats base y bloqueo de habilidades. |
 | `TaleFragmentWidget` | Contador de Fragmentos de Cuento (placeholder). |
 

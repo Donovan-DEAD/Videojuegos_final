@@ -49,12 +49,19 @@ namespace MadnessDreams
 
         private void Update()
         {
-            if (dead || player == null || health == null || health.CurrentHealth <= 0) return;
+            if (dead || health == null || health.CurrentHealth <= 0) return;
+
+            if (player == null)
+            {
+                GameObject p = GameObject.FindGameObjectWithTag("Player");
+                if (p != null) player = p.transform;
+            }
+            if (player == null) return;
 
             Vector2 to = (Vector2)(player.position - transform.position);
             float dist = to.magnitude;
 
-            if (dist <= attackRange)
+            if (dist <= EffectiveAttackRange())
             {
                 if (rb != null) rb.linearVelocity = Vector2.zero;
                 if (Time.time >= nextAttack) TryAttack();
@@ -65,10 +72,25 @@ namespace MadnessDreams
             }
         }
 
+        private float EffectiveAttackRange()
+        {
+            float range = attackRange;
+            Collider2D self = GetComponent<Collider2D>();
+            Collider2D other = player != null ? player.GetComponent<Collider2D>() : null;
+            if (self != null && other != null)
+            {
+                float selfRadius = Mathf.Max(self.bounds.extents.x, self.bounds.extents.y);
+                float otherRadius = Mathf.Max(other.bounds.extents.x, other.bounds.extents.y);
+                range = Mathf.Max(range, selfRadius + otherRadius + 0.15f);
+            }
+            return range;
+        }
+
         private void TryAttack()
         {
             nextAttack = Time.time + attackCooldown;
             Health ph = player.GetComponent<Health>();
+            if (ph == null) ph = player.GetComponentInParent<Health>();
             if (ph != null) ph.TakeDamage(attackDamage);
         }
 

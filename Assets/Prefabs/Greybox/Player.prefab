@@ -4983,7 +4983,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ef0cafd108bc884e829f444f9dc3906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.PlayerController
-  moveSpeed: 5
+  moveSpeed: 7.6
 --- !u!114 &8042041627457421451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5145,7 +5145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6db1928fd6c12124aa7ddfe047e29b8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.PlayerStats
-  baseMoveSpeed: 5
+  baseMoveSpeed: 7.6
   baseDamageMultiplier: 1
   baseHealth: 100
   speedPerLevel: 0.25

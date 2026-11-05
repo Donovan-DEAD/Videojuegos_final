@@ -26,3 +26,5 @@ MonoBehaviour:
   fovRadius: 9
   fovAngle: 360
   hearingRadius: 4
+  displayName: "Lobo guardi\xE1n"
+  identityColor: {r: 0.85, g: 0.25, b: 0.22, a: 1}

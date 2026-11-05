@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -25,6 +26,9 @@ namespace MadnessDreams
 
         public WorldConfigSO Config => config;
         public Tilemap TargetTilemap => targetTilemap;
+
+        /// <summary>Progreso de la última generación (0..1). Lo consume la pantalla de carga.</summary>
+        public float Progress { get; private set; }
 
         /// <summary>Catálogo de tiles del mundo (vive en el <see cref="WorldConfigSO"/>): distingue piso de muro y aporta el tile para abrir los pasos.</summary>
         public TilesetCatalogSO Tileset => config != null ? config.Tileset : null;
@@ -84,61 +88,149 @@ namespace MadnessDreams
             randomSeed = seed;
         }
 
-        /// <summary>Genera el mundo completo (limpia, dispone cuartos, estampa tiles, conecta y puebla contenido).</summary>
+        /// <summary>Genera el mundo completo de forma sincrónica (editor y pruebas).</summary>
         [ContextMenu("Generate")]
         public void Generate()
+        {
+            if (!Validate())
+            {
+                return;
+            }
+
+            System.Random rng = CreateRng();
+            BeginGenerate(rng);
+            StampRooms();
+            SealPerimeter();
+            SetRoomAnchors();
+            SpawnContent(rng);
+            CompleteGenerate(null);
+        }
+
+        /// <summary>
+        /// Genera el mundo repartiendo el trabajo en varios frames y reportando el progreso (0..1).
+        /// La pantalla de carga lo consume para no congelar el juego.
+        /// </summary>
+        public IEnumerator GenerateRoutine(System.Action<float> onProgress)
+        {
+            if (!Validate())
+            {
+                yield break;
+            }
+
+            System.Random rng = CreateRng();
+            BeginGenerate(rng);
+            Report(0.05f, onProgress);
+            yield return null;
+
+            int roomCount = Rooms.Count;
+            for (int i = 0; i < roomCount; i++)
+            {
+                StampRoom(Rooms[i]);
+                if ((i + 1) % 4 == 0 || i == roomCount - 1)
+                {
+                    Report(Mathf.Lerp(0.05f, 0.45f, (float)(i + 1) / Mathf.Max(1, roomCount)), onProgress);
+                    yield return null;
+                }
+            }
+
+            SealPerimeter();
+            Report(0.5f, onProgress);
+            yield return null;
+
+            SetRoomAnchors();
+
+            if (contentSpawner != null)
+            {
+                contentSpawner.Configure(config);
+                contentSpawner.BeginSpawn(rng);
+                int spawnRooms = contentSpawner.RoomCount;
+                for (int i = 0; i < spawnRooms; i++)
+                {
+                    contentSpawner.SpawnRoomAt(i, rng);
+                    if ((i + 1) % 4 == 0 || i == spawnRooms - 1)
+                    {
+                        Report(Mathf.Lerp(0.5f, 0.95f, (float)(i + 1) / Mathf.Max(1, spawnRooms)), onProgress);
+                        yield return null;
+                    }
+                }
+            }
+
+            CompleteGenerate(onProgress);
+        }
+
+        private bool Validate()
         {
             if (config == null || config.Bank == null || targetTilemap == null)
             {
                 Debug.LogError("MapGenerator: config, bank or targetTilemap is missing.", this);
-                return;
+                return false;
             }
 
+            return true;
+        }
+
+        private System.Random CreateRng()
+        {
+            return new System.Random(randomSeed >= 0 ? randomSeed : config.Seed);
+        }
+
+        private void BeginGenerate(System.Random rng)
+        {
             targetTilemap.ClearAllTiles();
             Rooms.Clear();
             Connections.Clear();
-
-            //System.Random rng = new System.Random(randomSeed >= 0 ? randomSeed : config.Seed);
-            System.Random rng = new System.Random();
+            Progress = 0f;
             RoomLayout.Build(config, rng, Rooms, Connections);
+        }
 
-            StampRooms();
-            SealPerimeter();
-            //CarveConnections();
-
+        private void SetRoomAnchors()
+        {
             StartChunk = StartRoom.originCell;
             BossOriginChunk = BossRoom.originCell;
+        }
 
-            SpawnContent(rng);
-
+        private void CompleteGenerate(System.Action<float> onProgress)
+        {
+            Progress = 1f;
+            onProgress?.Invoke(Progress);
             Generated?.Invoke();
+        }
+
+        private void Report(float value, System.Action<float> onProgress)
+        {
+            Progress = Mathf.Clamp01(value);
+            onProgress?.Invoke(Progress);
         }
 
         private void StampRooms()
         {
+            for (int i = 0; i < Rooms.Count; i++)
+            {
+                StampRoom(Rooms[i]);
+            }
+        }
+
+        private void StampRoom(RoomPlacement room)
+        {
+            if (room.chunk == null)
+            {
+                return;
+            }
+
             TilesetCatalogSO catalog = Tileset;
             TileBase wall = catalog != null && catalog.WallTiles.Count > 0 ? catalog.WallTiles[0] : null;
             int cellSize = config != null ? Mathf.Max(1, config.ChunkSize) : 0;
 
-            for (int i = 0; i < Rooms.Count; i++)
+            Vector2Int footprint = new Vector2Int(
+                room.sizeInCells.x * cellSize,
+                room.sizeInCells.y * cellSize);
+
+            if (cellSize > 0 && (room.chunk.Size.x != footprint.x || room.chunk.Size.y != footprint.y))
             {
-                RoomPlacement room = Rooms[i];
-                if (room.chunk == null)
-                {
-                    continue;
-                }
-
-                Vector2Int footprint = new Vector2Int(
-                    room.sizeInCells.x * cellSize,
-                    room.sizeInCells.y * cellSize);
-
-                if (cellSize > 0 && (room.chunk.Size.x != footprint.x || room.chunk.Size.y != footprint.y))
-                {
-                    Debug.LogError($"MapGenerator: chunk '{room.chunk.name}' size {room.chunk.Size} != footprint {footprint}; padding with walls.", room.chunk);
-                }
-
-                TilemapStamper.StampFootprint(targetTilemap, room.chunk, ChunkToCell(room.originCell), footprint, wall);
+                Debug.LogError($"MapGenerator: chunk '{room.chunk.name}' size {room.chunk.Size} != footprint {footprint}; padding with walls.", room.chunk);
             }
+
+            TilemapStamper.StampFootprint(targetTilemap, room.chunk, ChunkToCell(room.originCell), footprint, wall);
         }
 
         /// <summary>

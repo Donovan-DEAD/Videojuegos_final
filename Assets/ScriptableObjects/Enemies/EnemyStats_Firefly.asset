@@ -26,3 +26,5 @@ MonoBehaviour:
   fovRadius: 7
   fovAngle: 360
   hearingRadius: 4
+  displayName: "Luci\xE9rnaga maldita"
+  identityColor: {r: 1, g: 0.85, b: 0.2, a: 1}

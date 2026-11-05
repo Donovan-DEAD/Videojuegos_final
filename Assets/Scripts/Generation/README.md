@@ -7,24 +7,33 @@ Construye el nivel a partir de `WorldConfigSO` + `BlockBankSO`.
 1. **`RoomLayout.Build`** — reserva **Spawn** (centro) y **Boss** (el más lejano) y luego empaqueta cuartos
    de tamaño fijo por celdas; asigna `tag` por peso y calcula la **adyacencia** (cada celda vecina de
    cuartos distintos = una conexión). Grafo **totalmente conexo**.
-2. **`TilemapStamper.StampFootprint`** — estampa cada arquetipo (sin rotación) dentro de su footprint
-   exacto; si un chunk es más corto que su footprint, las celdas sin cubrir se rellenan con muro (no
-   deja costuras).
-3. **`MapGenerator.SealPerimeter`** — sella con muro el borde exterior del área ocupada, cerrando las
-   puertas que miran hacia afuera y cualquier columna/fila vacía en el límite (evita salir del mapa).
+2. **`TilemapStamper.Stamp`** — estampa cada arquetipo (sin rotación) en su celda de origen.
+3. **Pasos** — por cada conexión se limpia el borde con `TilemapStamper.ClearCells` (un paso por celda
+   compartida; 2 en lados de 2 celdas).
 4. **`RoomContentSpawner.SpawnAll`** — puebla por tag: barreras → props → enemigos.
 5. Dispara **`Generated`** (lo consumen `WorldLayout` y el HUD).
+
+## Generación incremental (`GenerateRoutine`)
+
+`RunManager` usa **`MapGenerator.GenerateRoutine(onProgress)`**: los mismos pasos, repartidos en
+varios frames (estampado por lotes y un cuarto de contenido por frame) reportando `Progress` (0..1).
+Así la pantalla de carga puede mostrar el avance real sin congelar el juego. `Generate()` sigue
+existiendo para el `[ContextMenu]` y las herramientas de editor.
+
+- **Escena activa:** `RunManager.Awake` activa la escena de gameplay antes de generar. La escena se
+  monta de forma **aditiva** desde `02_Loading`, y los props/enemigos instanciados deben pertenecer a
+  la escena de gameplay (si no, se destruyen al descargar la pantalla de carga).
 
 ## Archivos
 
 | Archivo | Rol |
 |---|---|
-| `MapGenerator` | Orquesta el pipeline; expone `Rooms`, `Connections`, `StartRoom`, `BossRoom`, `StartRoomCenterCell`, `BossRoomCenterCell`, `Generated`. |
+| `MapGenerator` | Orquesta el pipeline; expone `Rooms`, `Connections`, `StartRoom`, `BossRoom`, `StartRoomCenterCell`, `BossRoomCenterCell`, `Progress` y `GenerateRoutine`/`Generate`. Dispara `Generated`. |
 | `RoomLayout` | Reservas + empaquetado + adyacencia (estático, determinista por semilla). |
 | `RoomPlacement` | Struct: `chunk`, `sizeInCells`, `originCell`, `tag`, `role`. |
 | `RoomConnection` / `RoomSide` | Struct + enum: qué cuartos conecta, lado y celda de origen. |
-| `RoomContentSpawner` | Barreras (con validación anti-sellado por flood-fill), props y enemigos desde el `ZoneThemeSO`. |
-| `TilemapStamper` | `Stamp` (estampa tiles), `StampFootprint` (footprint exacto, rellena huecos con muro), `FillCells` y `FillBorder` (sella el perímetro). |
+| `RoomContentSpawner` | Barreras (con validación anti-sellado por flood-fill), props y enemigos desde el `ZoneThemeSO`. Expone `BeginSpawn`/`SpawnRoomAt`/`SpawnAll` y `RoomCount`. |
+| `TilemapStamper` | `Stamp` (estampa tiles) y `ClearCells` (talla pasos). |
 | `Spawner` | Instancia con jitter y chequeo de obstáculos (`Physics2D.OverlapCircle`). |
 | `CellRole` | Enum `Empty / Start / Normal / Boss`. |
 

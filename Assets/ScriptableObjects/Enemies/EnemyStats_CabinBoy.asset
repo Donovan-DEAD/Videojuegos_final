@@ -26,3 +26,5 @@ MonoBehaviour:
   fovRadius: 8
   fovAngle: 360
   hearingRadius: 4
+  displayName: Grumete perdido
+  identityColor: {r: 0.45, g: 0.7, b: 1, a: 1}

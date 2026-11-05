@@ -23,4 +23,5 @@ MonoBehaviour:
   fadeOut: 0.25
   holdDuration: 999
   waitForInput: 1
+  maxWaitSeconds: 15
   sfx: {fileID: 0}

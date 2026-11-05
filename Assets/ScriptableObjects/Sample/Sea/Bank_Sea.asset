@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 290755dce7e408c499bca5bb58b5195c, type: 3}
+  m_Name: Bank_Sea
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.BlockBankSO
+  normalChunks:
+  - {fileID: 11400000, guid: 392ce7fff7e9e3a45925a94ea19bf558, type: 2}
+  - {fileID: 11400000, guid: 9b8da08326d357e4ea1452793d34887f, type: 2}
+  - {fileID: 11400000, guid: a7dcd58b42657304bac792857b8fca18, type: 2}
+  - {fileID: 11400000, guid: 0e9e15db8b64ce440ac243e2c792deed, type: 2}
+  - {fileID: 11400000, guid: 318f9de8119add7469a6f1a5b01c9cfd, type: 2}
+  - {fileID: 11400000, guid: 9328a474d1d8e7b49908eb7bf8624c53, type: 2}
+  - {fileID: 11400000, guid: 6ab8f5cb678f39149bf8ba65773af248, type: 2}
+  - {fileID: 11400000, guid: e4473f977ea435f49a937722f84781f0, type: 2}
+  - {fileID: 11400000, guid: 186df59061fdb634ca9728517511786e, type: 2}
+  - {fileID: 11400000, guid: 250fd3d104261724d862b23dbd15c419, type: 2}
+  startRoom: {fileID: 11400000, guid: a4e176da95ef60d4986b7466aab44643, type: 2}
+  bossArena: {fileID: 11400000, guid: c7d4b072bbca75242a33255f28c43f45, type: 2}
+  merchantRoom: {fileID: 11400000, guid: 0b22c3f71bc7bb946b47e3275607255a, type: 2}
+  minibossRoom: {fileID: 11400000, guid: 9748a1c1e82c805418e358985839dcbf, type: 2}

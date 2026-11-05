@@ -195,14 +195,11 @@ namespace MadnessDreams
             PendingStoryInterlude = null;
         }
 
-        /// <summary>
-        /// Navega a la escena del menú principal con transición.
-        /// </summary>
-        /// <summary>Sube un nivel al jugador (persistente entre mundos).</summary>
         public void LevelUp()
         {
             PlayerLevel++;
         }
+
         /// <summary>Baraja el orden de los mundos para una nueva run (sin repetir).</summary>
         public void BeginRun(int worldCount)
         {
@@ -231,6 +228,17 @@ namespace MadnessDreams
                 return worldOrder[worldOrderIndex++];
             }
         
+            return -1;
+        }
+
+        /// <summary>Devuelve el índice del próximo mundo sin consumirlo, o -1 si no quedan.</summary>
+        public int PeekNextWorld()
+        {
+            if (worldOrderIndex < worldOrder.Count)
+            {
+                return worldOrder[worldOrderIndex];
+            }
+
             return -1;
         }
         
@@ -325,9 +333,6 @@ namespace MadnessDreams
             GoToDefeat();
         }
 
-        /// <summary>
-        /// Notifica el fin de la run (dispara RunCompleted) y vuelve al menú principal.
-        /// </summary>
         /// <summary>Notifica el fin de la run y va a la pantalla de finalización.</summary>
         public void NotifyRunCompleted()
         {

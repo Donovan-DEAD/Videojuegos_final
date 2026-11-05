@@ -55,6 +55,7 @@ namespace MadnessDreams
         protected Transform player;
         protected IDamageable playerDamageable;
 
+        private EnemyIdentity identity;
         private Vector3 homePosition;
         private float fovTimer;
         private bool canSeePlayer;
@@ -73,6 +74,13 @@ namespace MadnessDreams
             health = GetComponent<Health>();
 
             homePosition = transform.position;
+
+            identity = GetComponent<EnemyIdentity>();
+            if (identity == null)
+            {
+                identity = gameObject.AddComponent<EnemyIdentity>();
+            }
+
             ApplyStats();
         }
 
@@ -148,6 +156,11 @@ namespace MadnessDreams
             attack.SetStats(stats);
             fov.SetStats(stats);
             health.SetMaxHealth(stats.MaxHealth);
+
+            if (identity != null)
+            {
+                identity.Apply(stats);
+            }
         }
 
         private void UpdatePerception()
@@ -346,6 +359,12 @@ namespace MadnessDreams
             movement.Stop();
             SetCollidersEnabled(false);
             UpdateAnimation();
+
+            if (identity != null)
+            {
+                identity.SetVisible(false);
+            }
+
             Died?.Invoke(this);
             SpawnFragmentDrop();
 

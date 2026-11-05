@@ -259,7 +259,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 0c75c213285096e4ebaba0e6d7d911d7, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -657,7 +657,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.LoadingScreen
   progressFill: {fileID: 380373450}
   progressLabel: {fileID: 2146139796}
-  minimumTime: 0.75
+  minimumTime: 1.75
   debugStory: {fileID: 11400000, guid: 66ac3ecd3a1f6b44a8a87f485a7239d5, type: 2}
   showDebugStory: 1
 --- !u!4 &1725820894

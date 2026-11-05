@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 namespace MadnessDreams
 {
-    /// <summary>Muestra una intro a pantalla completa y pausa el juego mientras dura.</summary>
     public class BossIntroController : MonoBehaviour
     {
         public static BossIntroController Instance { get; private set; }
@@ -21,14 +20,24 @@ namespace MadnessDreams
         [SerializeField] private Text hint;
         [SerializeField] private AudioSource audioSource;
 
+        [Header("Progress Bar")]
+        [SerializeField] private Image progressFill;
+        [SerializeField] private bool autoCreateProgressBar = true;
+        [SerializeField] private Color progressColor = new Color(1f, 0.82f, 0.28f, 1f);
+        [SerializeField] private Color progressBackgroundColor = new Color(0f, 0f, 0f, 0.65f);
+        [SerializeField] private Vector2 progressSize = new Vector2(520f, 10f);
+        [SerializeField] private float progressBottomOffset = 70f;
+
         private Coroutine routine;
         private float previousScale = 1f;
+        private RectTransform progressRoot;
 
         private void Awake()
         {
             Instance = this;
             if (panel != null) panel.SetActive(false);
             if (group != null) group.alpha = 0f;
+            EnsureProgressBar();
         }
 
         private void OnDestroy()
@@ -61,6 +70,8 @@ namespace MadnessDreams
             if (audioSource != null && data.Sfx != null) audioSource.PlayOneShot(data.Sfx);
 
             if (panel != null) panel.SetActive(true);
+            EnsureProgressBar();
+            SetProgress(0f);
             if (group != null)
             {
                 group.alpha = 0f;
@@ -75,15 +86,19 @@ namespace MadnessDreams
         {
             try
             {
+                float total = data.MaxWaitSeconds > 0f ? Mathf.Min(data.HoldDuration, data.MaxWaitSeconds) : data.HoldDuration;
+                total = Mathf.Max(0.01f, total);
                 float t = 0f;
                 bool skipped = false;
-                while (t < Mathf.Min(data.HoldDuration, data.MaxWaitSeconds) && !skipped)
+                while (t < total && !skipped)
                 {
                     t += Time.unscaledDeltaTime;
+                    SetProgress(t / total);
                     if (data.WaitForInput && EnterPressed()) skipped = true;
                     yield return null;
                 }
-        
+                SetProgress(1f);
+
                 if (group != null) Tween.Alpha(group, 0f, data.FadeOut, useUnscaledTime: true);
                 yield return new WaitForSecondsRealtime(data.FadeOut);
                 if (panel != null) panel.SetActive(false);
@@ -94,8 +109,59 @@ namespace MadnessDreams
                 IsShowing = false;
                 routine = null;
             }
-        
+
             onComplete?.Invoke();
+        }
+
+        private void EnsureProgressBar()
+        {
+            if (progressFill != null)
+            {
+                ConfigureFill(progressFill);
+                return;
+            }
+            if (!autoCreateProgressBar || panel == null) return;
+
+            GameObject rootGo = new GameObject("ScreenProgressBar", typeof(RectTransform), typeof(CanvasRenderer));
+            progressRoot = rootGo.GetComponent<RectTransform>();
+            progressRoot.SetParent(panel.transform, false);
+            progressRoot.anchorMin = new Vector2(0.5f, 0f);
+            progressRoot.anchorMax = new Vector2(0.5f, 0f);
+            progressRoot.pivot = new Vector2(0.5f, 0f);
+            progressRoot.anchoredPosition = new Vector2(0f, progressBottomOffset);
+            progressRoot.sizeDelta = progressSize;
+
+            Image bg = rootGo.AddComponent<Image>();
+            bg.color = progressBackgroundColor;
+            bg.raycastTarget = false;
+
+            GameObject fillGo = new GameObject("Fill", typeof(RectTransform), typeof(CanvasRenderer));
+            RectTransform fillRt = fillGo.GetComponent<RectTransform>();
+            fillRt.SetParent(progressRoot, false);
+            fillRt.anchorMin = Vector2.zero;
+            fillRt.anchorMax = Vector2.one;
+            fillRt.offsetMin = new Vector2(2f, 2f);
+            fillRt.offsetMax = new Vector2(-2f, -2f);
+
+            Image fill = fillGo.AddComponent<Image>();
+            fill.color = progressColor;
+            fill.raycastTarget = false;
+            ConfigureFill(fill);
+            progressFill = fill;
+        }
+
+        private static void ConfigureFill(Image fill)
+        {
+            if (fill == null) return;
+            fill.type = Image.Type.Filled;
+            fill.fillMethod = Image.FillMethod.Horizontal;
+            fill.fillOrigin = 0;
+            fill.fillAmount = 0f;
+        }
+
+        private void SetProgress(float value)
+        {
+            if (progressFill != null) progressFill.fillAmount = Mathf.Clamp01(value);
         }
 
         private static bool EnterPressed()

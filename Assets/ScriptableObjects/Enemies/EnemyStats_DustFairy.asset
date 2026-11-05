@@ -26,3 +26,5 @@ MonoBehaviour:
   fovRadius: 8
   fovAngle: 360
   hearingRadius: 4
+  displayName: Hada de polvo
+  identityColor: {r: 0.95, g: 0.55, b: 0.95, a: 1}

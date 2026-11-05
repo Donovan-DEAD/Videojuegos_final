@@ -26,3 +26,5 @@ MonoBehaviour:
   fovRadius: 10
   fovAngle: 360
   hearingRadius: 4
+  displayName: Sirena
+  identityColor: {r: 0.2, g: 0.9, b: 0.85, a: 1}
