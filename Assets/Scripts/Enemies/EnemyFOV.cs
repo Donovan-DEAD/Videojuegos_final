@@ -12,11 +12,29 @@ namespace MadnessDreams
         [SerializeField] private Transform eyes;
 
         private EnemyStatsSO stats;
+        private int baseObstacleMask;
+        private bool baseMaskCached;
 
         /// <summary>Asigna las estadísticas que definen visión y audición.</summary>
         public void SetStats(EnemyStatsSO value)
         {
+            if (!baseMaskCached)
+            {
+                baseObstacleMask = obstacleMask.value;
+                baseMaskCached = true;
+            }
+
             stats = value;
+
+            int mask = baseObstacleMask;
+            if (value != null && value.VisionThroughWalls)
+            {
+                mask &= ~LayerMask.GetMask("Walls");
+            }
+
+            LayerMask layerMask = obstacleMask;
+            layerMask.value = mask;
+            obstacleMask = layerMask;
         }
 
         /// <summary>Indica si el jugador está dentro del radio de audición.</summary>

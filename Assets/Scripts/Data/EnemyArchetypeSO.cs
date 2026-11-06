@@ -18,5 +18,11 @@ namespace MadnessDreams
         public EnemyStatsSO Stats => stats;
         public int Tier => Mathf.Max(1, tier);
         public int Weight => Mathf.Max(0, weight);
+
+        /// <summary>Hábitat leído de las estadísticas; Ground si el arquetipo no las tiene.</summary>
+        public EnemyHabitat Habitat => stats != null ? stats.Habitat : EnemyHabitat.Ground;
+
+        /// <summary>True si el enemigo atraviesa muros.</summary>
+        public bool PassThroughWalls => stats != null && stats.PassThroughWalls;
     }
 }

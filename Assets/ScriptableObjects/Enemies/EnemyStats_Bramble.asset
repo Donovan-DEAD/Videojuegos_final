@@ -26,5 +26,18 @@ MonoBehaviour:
   fovRadius: 5
   fovAngle: 360
   hearingRadius: 4
+  habitat: 1
+  passThroughWalls: 0
+  visionThroughWalls: 0
+  hidesPeriodically: 0
+  hideIntervalMin: 5
+  hideIntervalMax: 8
+  hideDuration: 2
+  hideTerrain: 4
+  hideSearchRadius: 10
+  maxTimeOutOfWater: 0
+  hideWhileNotVisible: 1
+  stationary: 1
+  immuneWhileIdle: 1
   displayName: Zarza viva
   identityColor: {r: 0.2, g: 0.55, b: 0.25, a: 1}

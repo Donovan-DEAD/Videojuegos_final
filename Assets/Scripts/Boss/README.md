@@ -8,7 +8,7 @@
 | `BossArenaController` | Trigger de la arena: sella las salidas, instancia el jefe y dispara `BossSpawned` / `BossDefeated`. Expone `BossInstance`. |
 | `BossManager` | Recibe el `WorldConfigSO`, configura la arena y **reemite `BossDefeated`**. |
 | `BossSpawnPoint` | Marcador de posición de aparición del jefe. |
-| `PeterPanBoss` | Jefe del mar (aún sin prefab/stats). |
+| `PeterPanBoss` | Jefe volador del mar: kiting, andanadas de dagas, blink, clon de sombra y oleadas de esbirros. Al invocar usa `TerrainSpawnUtility` para que cada esbirro caiga en un terreno compatible. |
 
 ## Cadena de avance
 
@@ -19,5 +19,8 @@ el jugador lo toca → `RunManager.RequestAdvance()` → `02_Loading` → `03_Ga
 
 > Si no hay `BossManager` en la escena (p. ej. `Greybox`, con el jefe colocado a mano),
 > `WorldPortalController` engancha directamente el `Health` del jefe de la escena.
+
+> Peter Pan invoca con `TerrainSpawnUtility.ResolveSpawnPosition`: la Mermaid busca agua, el
+> CabinBoy/Crocodile piso/anfibio y los voladores cualquier celda libre.
 
 Ver: [../Gameplay/README.md](../Gameplay/README.md) · [../Core/README.md](../Core/README.md)

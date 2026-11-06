@@ -26,5 +26,18 @@ MonoBehaviour:
   fovRadius: 8
   fovAngle: 360
   hearingRadius: 4
+  habitat: 4
+  passThroughWalls: 1
+  visionThroughWalls: 0
+  hidesPeriodically: 1
+  hideIntervalMin: 7
+  hideIntervalMax: 12
+  hideDuration: 1.5
+  hideTerrain: 2
+  hideSearchRadius: 10
+  maxTimeOutOfWater: 0
+  hideWhileNotVisible: 1
+  stationary: 0
+  immuneWhileIdle: 0
   displayName: Hada de polvo
   identityColor: {r: 0.95, g: 0.55, b: 0.95, a: 1}

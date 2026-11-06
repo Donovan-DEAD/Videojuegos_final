@@ -131,6 +131,7 @@ namespace MadnessDreams
     {
         public Vector2Int localPosition;
         public int weight;
+        public TerrainType terrain;
     }
 
     /// <summary>

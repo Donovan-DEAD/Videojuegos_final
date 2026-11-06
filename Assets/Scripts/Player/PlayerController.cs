@@ -11,8 +11,10 @@ namespace MadnessDreams
     public class PlayerController : MonoBehaviour
     {
         [SerializeField] private float moveSpeed = 5f;
+        [SerializeField] private float waterSpeedMultiplier = 0.6f;
 
         private Rigidbody2D rb;
+        private MapGenerator mapGenerator;
         private Vector2 movement;
 
         /// <summary>Indica si hay entrada de movimiento en el frame actual.</summary>
@@ -31,6 +33,7 @@ namespace MadnessDreams
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
+            mapGenerator = FindAnyObjectByType<MapGenerator>();
         }
 
         private void Update()
@@ -68,7 +71,19 @@ namespace MadnessDreams
                 return;
             }
 
-            rb.linearVelocity = movement * moveSpeed;
+            rb.linearVelocity = movement * CurrentSpeed();
+        }
+
+        private float CurrentSpeed()
+        {
+            if (waterSpeedMultiplier >= 1f || mapGenerator == null || mapGenerator.Tileset == null || mapGenerator.TargetTilemap == null)
+            {
+                return moveSpeed;
+            }
+
+            return mapGenerator.GetTerrain(rb.position) == TerrainType.Water
+                ? moveSpeed * waterSpeedMultiplier
+                : moveSpeed;
         }
     }
 }

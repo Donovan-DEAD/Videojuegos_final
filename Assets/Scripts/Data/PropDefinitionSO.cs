@@ -13,7 +13,7 @@ namespace MadnessDreams
 
     /// <summary>
     /// Definición de un prop colocable: prefab, categoría, huella en celdas, peso y si debe
-    /// evitar los pasos.
+    /// evitar los pasos o puede colocarse sobre agua.
     /// </summary>
     [CreateAssetMenu(fileName = "Prop", menuName = "Madness Dreams/Prop Definition")]
     public class PropDefinitionSO : ScriptableObject
@@ -23,11 +23,13 @@ namespace MadnessDreams
         [SerializeField] private Vector2Int footprint = Vector2Int.one;
         [SerializeField] private int weight = 1;
         [SerializeField] private bool avoidPassages = true;
+        [SerializeField] private bool allowWater;
 
         public GameObject Prefab => prefab;
         public PropKind Kind => kind;
         public Vector2Int Footprint => footprint;
         public int Weight => Mathf.Max(0, weight);
         public bool AvoidPassages => avoidPassages;
+        public bool AllowWater => allowWater;
     }
 }

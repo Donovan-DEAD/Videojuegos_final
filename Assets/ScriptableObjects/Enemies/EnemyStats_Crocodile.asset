@@ -26,5 +26,18 @@ MonoBehaviour:
   fovRadius: 9
   fovAngle: 360
   hearingRadius: 4
+  habitat: 3
+  passThroughWalls: 0
+  visionThroughWalls: 0
+  hidesPeriodically: 1
+  hideIntervalMin: 6
+  hideIntervalMax: 10
+  hideDuration: 2
+  hideTerrain: 4
+  hideSearchRadius: 10
+  maxTimeOutOfWater: 4
+  hideWhileNotVisible: 1
+  stationary: 0
+  immuneWhileIdle: 0
   displayName: Cocodrilo Tik-Tak
   identityColor: {r: 0.35, g: 0.75, b: 0.25, a: 1}

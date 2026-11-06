@@ -26,5 +26,18 @@ MonoBehaviour:
   fovRadius: 10
   fovAngle: 360
   hearingRadius: 4
+  habitat: 2
+  passThroughWalls: 0
+  visionThroughWalls: 0
+  hidesPeriodically: 1
+  hideIntervalMin: 5
+  hideIntervalMax: 8
+  hideDuration: 2.5
+  hideTerrain: 4
+  hideSearchRadius: 10
+  maxTimeOutOfWater: 0
+  hideWhileNotVisible: 1
+  stationary: 0
+  immuneWhileIdle: 0
   displayName: Sirena
   identityColor: {r: 0.2, g: 0.9, b: 0.85, a: 1}

@@ -17,6 +17,8 @@ namespace MadnessDreams
         Attack,
         /// <summary>Regresa a su posición inicial tras perder al jugador.</summary>
         Return,
+        /// <summary>Se esconde en su terreno y permanece quieto un tiempo.</summary>
+        Hide,
         /// <summary>Muerto; detiene el movimiento y desactiva colisionadores.</summary>
         Dead
     }
@@ -45,6 +47,8 @@ namespace MadnessDreams
 
         /// <summary>Estado actual de la FSM.</summary>
         public EnemyState State { get; private set; } = EnemyState.Patrol;
+        /// <summary>Estadísticas activas (las usa el spawner de terreno al invocar).</summary>
+        public EnemyStatsSO Stats => stats;
         /// <summary>Se dispara al morir el enemigo, antes de destruirse.</summary>
         public event System.Action<EnemyAI> Died;
 
@@ -64,6 +68,12 @@ namespace MadnessDreams
         private Vector2 patrolDirection;
         private float patrolTimer;
         private bool patrolIsMoving;
+        private float blockedTimer;
+        private float outOfWaterTimer;
+        private float hideTimer;
+        private float hideRemaining;
+        private Vector3 hideTarget;
+        private bool hideTargetSet;
 
         /// <summary>Cachea los componentes requeridos, guarda la posición inicial y aplica las estadísticas.</summary>
         private void Awake()
@@ -133,6 +143,7 @@ namespace MadnessDreams
 
             attack.Tick(Time.deltaTime);
             UpdatePerception();
+            UpdateHideTimer();
 
             switch (State)
             {
@@ -141,6 +152,7 @@ namespace MadnessDreams
                 case EnemyState.Chase: UpdateChase(); break;
                 case EnemyState.Attack: UpdateAttack(); break;
                 case EnemyState.Return: UpdateReturn(); break;
+                case EnemyState.Hide: UpdateHide(); break;
             }
 
             UpdateAnimation();
@@ -155,11 +167,38 @@ namespace MadnessDreams
 
             attack.SetStats(stats);
             fov.SetStats(stats);
+            movement.SetHabitat(stats.Habitat);
+            movement.SetStationary(stats.Stationary);
+            ApplyColliderExclusions(stats.PassThroughWalls);
+            hideTimer = stats.HidesPeriodically ? Random.Range(stats.HideIntervalMin, stats.HideIntervalMax) : float.MaxValue;
             health.SetMaxHealth(stats.MaxHealth);
+            health.Invulnerable = stats.ImmuneWhileIdle;
 
             if (identity != null)
             {
                 identity.Apply(stats);
+            }
+        }
+
+        private void ApplyColliderExclusions(bool passThroughWalls)
+        {
+            int walls = LayerMask.GetMask("Walls");
+            Collider2D[] colliders = GetComponentsInChildren<Collider2D>(true);
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                LayerMask mask = colliders[i].excludeLayers;
+                int value = mask.value;
+                if (passThroughWalls)
+                {
+                    value |= walls;
+                }
+                else
+                {
+                    value &= ~walls;
+                }
+
+                mask.value = value;
+                colliders[i].excludeLayers = mask;
             }
         }
 
@@ -177,9 +216,20 @@ namespace MadnessDreams
 
         private void UpdatePatrol()
         {
+            if (UpdateOutOfWaterTimer())
+            {
+                return;
+            }
+
             if (canSeePlayer)
             {
                 EnterAlert();
+                return;
+            }
+
+            if (stats != null && stats.Stationary)
+            {
+                movement.Stop();
                 return;
             }
 
@@ -223,6 +273,11 @@ namespace MadnessDreams
 
         private void UpdateChase()
         {
+            if (UpdateOutOfWaterTimer())
+            {
+                return;
+            }
+
             if (player == null)
             {
                 ChangeState(EnemyState.Return);
@@ -251,15 +306,46 @@ namespace MadnessDreams
                 lostTimer = 0f;
             }
 
+            if (stats != null && stats.Stationary)
+            {
+                movement.Stop();
+                return;
+            }
+
             float speed = stats != null ? stats.ChaseSpeed : 0f;
             movement.MoveTowards(player.position, speed);
+
+            if (movement.LastMoveBlocked)
+            {
+                blockedTimer += Time.deltaTime;
+                if (blockedTimer >= 1.5f)
+                {
+                    blockedTimer = 0f;
+                    ChangeState(EnemyState.Return);
+                }
+            }
+            else
+            {
+                blockedTimer = 0f;
+            }
         }
 
         private void UpdateAttack()
         {
+            if (UpdateOutOfWaterTimer())
+            {
+                return;
+            }
+
             if (player == null)
             {
                 ChangeState(EnemyState.Return);
+                return;
+            }
+
+            if (stats != null && (stats.Habitat & EnemyHabitat.Flying) != 0 && movement.IsOnWallCell())
+            {
+                movement.MoveTowards(player.position, stats.ChaseSpeed);
                 return;
             }
 
@@ -282,12 +368,107 @@ namespace MadnessDreams
                 return;
             }
 
+            if (stats != null && stats.Stationary)
+            {
+                movement.Stop();
+                ChangeState(EnemyState.Patrol);
+                return;
+            }
+
             float speed = stats != null ? stats.MoveSpeed : 0f;
             movement.MoveTowards(homePosition, speed);
 
             if (Vector3.Distance(transform.position, homePosition) <= 0.2f)
             {
                 ChangeState(EnemyState.Patrol);
+            }
+        }
+
+        private void UpdateHideTimer()
+        {
+            if (stats == null || !stats.HidesPeriodically || State == EnemyState.Hide || State == EnemyState.Dead)
+            {
+                return;
+            }
+
+            hideTimer -= Time.deltaTime;
+            if (hideTimer <= 0f)
+            {
+                EnterHide();
+            }
+        }
+
+        private bool UpdateOutOfWaterTimer()
+        {
+            if (stats == null || stats.MaxTimeOutOfWater <= 0f)
+            {
+                return false;
+            }
+
+            if (movement.IsOnWater)
+            {
+                outOfWaterTimer = 0f;
+                return false;
+            }
+
+            outOfWaterTimer += Time.deltaTime;
+            if (outOfWaterTimer >= stats.MaxTimeOutOfWater)
+            {
+                EnterHide();
+                return true;
+            }
+
+            return false;
+        }
+
+        private void EnterHide()
+        {
+            if (State == EnemyState.Dead)
+            {
+                return;
+            }
+
+            hideRemaining = stats != null ? stats.HideDuration : 2f;
+            hideTargetSet = stats != null && stats.HideTerrain != TerrainType.Void
+                && TerrainSpawnUtility.FindNearestTerrain(transform.position, stats.HideTerrain, stats.HideSearchRadius, out hideTarget);
+            if (!hideTargetSet)
+            {
+                hideTarget = homePosition;
+            }
+
+            if (stats != null && stats.HideWhileNotVisible && identity != null)
+            {
+                identity.SetVisible(false);
+            }
+
+            ChangeState(EnemyState.Hide);
+        }
+
+        private void UpdateHide()
+        {
+            if (hideTargetSet && Vector3.Distance(transform.position, hideTarget) > 0.35f)
+            {
+                float speed = stats != null ? stats.ChaseSpeed : 0f;
+                movement.MoveTowards(hideTarget, speed);
+                return;
+            }
+
+            movement.Stop();
+            hideRemaining -= Time.deltaTime;
+
+            if (hideRemaining <= 0f)
+            {
+                if (identity != null)
+                {
+                    identity.SetVisible(true);
+                }
+
+                if (stats != null && stats.HidesPeriodically)
+                {
+                    hideTimer = Random.Range(stats.HideIntervalMin, stats.HideIntervalMax);
+                }
+
+                ChangeState(canSeePlayer ? EnemyState.Chase : EnemyState.Patrol);
             }
         }
 
@@ -307,6 +488,16 @@ namespace MadnessDreams
 
             OnExitState(State);
             State = newState;
+            if (State != EnemyState.Chase)
+            {
+                blockedTimer = 0f;
+            }
+
+            if (health != null && stats != null && stats.ImmuneWhileIdle)
+            {
+                health.Invulnerable = State == EnemyState.Patrol || State == EnemyState.Return || State == EnemyState.Hide;
+            }
+
             OnEnterState(State);
         }
 
@@ -340,6 +531,9 @@ namespace MadnessDreams
 
                 case EnemyState.Alert:
                     return AnimationState.Idle;
+
+                case EnemyState.Hide:
+                    return movement.IsMoving ? AnimationState.Move : AnimationState.Idle;
 
                 case EnemyState.Patrol:
                     return patrolIsMoving ? AnimationState.Move : AnimationState.Idle;

@@ -13,17 +13,22 @@ MonoBehaviour:
   m_Name: Bank_Sea
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.BlockBankSO
   normalChunks:
-  - {fileID: 11400000, guid: 392ce7fff7e9e3a45925a94ea19bf558, type: 2}
-  - {fileID: 11400000, guid: 9b8da08326d357e4ea1452793d34887f, type: 2}
-  - {fileID: 11400000, guid: a7dcd58b42657304bac792857b8fca18, type: 2}
-  - {fileID: 11400000, guid: 0e9e15db8b64ce440ac243e2c792deed, type: 2}
-  - {fileID: 11400000, guid: 318f9de8119add7469a6f1a5b01c9cfd, type: 2}
-  - {fileID: 11400000, guid: 9328a474d1d8e7b49908eb7bf8624c53, type: 2}
-  - {fileID: 11400000, guid: 6ab8f5cb678f39149bf8ba65773af248, type: 2}
-  - {fileID: 11400000, guid: e4473f977ea435f49a937722f84781f0, type: 2}
-  - {fileID: 11400000, guid: 186df59061fdb634ca9728517511786e, type: 2}
-  - {fileID: 11400000, guid: 250fd3d104261724d862b23dbd15c419, type: 2}
-  startRoom: {fileID: 11400000, guid: a4e176da95ef60d4986b7466aab44643, type: 2}
-  bossArena: {fileID: 11400000, guid: c7d4b072bbca75242a33255f28c43f45, type: 2}
-  merchantRoom: {fileID: 11400000, guid: 0b22c3f71bc7bb946b47e3275607255a, type: 2}
-  minibossRoom: {fileID: 11400000, guid: 9748a1c1e82c805418e358985839dcbf, type: 2}
+  - {fileID: 11400000, guid: 723159ec5de321745b0f58c07b16aa1d, type: 2}
+  - {fileID: 11400000, guid: 7319d2b232321e448a5f823434204b64, type: 2}
+  - {fileID: 11400000, guid: f77aeea519b216641a2eec5f870668c0, type: 2}
+  - {fileID: 11400000, guid: cbc6d48ede560e64bb215a3cba3af141, type: 2}
+  - {fileID: 11400000, guid: aaf897eafcff84741ab09e5665041926, type: 2}
+  - {fileID: 11400000, guid: cd1d9c3f4b969e84d9651441cffa7ac8, type: 2}
+  - {fileID: 11400000, guid: 011a50c31d342ad42898ce7a13b8e49f, type: 2}
+  - {fileID: 11400000, guid: 6704614230178074bbeddcf012fd2a7f, type: 2}
+  - {fileID: 11400000, guid: bb8bc9cadcb04f042a7e7257b771be78, type: 2}
+  - {fileID: 11400000, guid: 1202e282693e424499515cab6a6448eb, type: 2}
+  - {fileID: 11400000, guid: 509892dbb1068e642a91cb000826032d, type: 2}
+  - {fileID: 11400000, guid: a2f41290092c56b4a9ae35a68c596e1f, type: 2}
+  - {fileID: 11400000, guid: ed575e22bf00328499576a462e416a06, type: 2}
+  - {fileID: 11400000, guid: b5d1c1968a8dbdd40be6145fb4d088fc, type: 2}
+  - {fileID: 11400000, guid: 2802a60452b0fb44ca9a44191e5544b3, type: 2}
+  startRoom: {fileID: 11400000, guid: 6ca7b65f0526bea49a2d3426510183c9, type: 2}
+  bossArena: {fileID: 11400000, guid: 0585a55b2e16c2f49875c34519b655f9, type: 2}
+  merchantRoom: {fileID: 11400000, guid: 3d3b62768b96a084aab5043973717e0a, type: 2}
+  minibossRoom: {fileID: 11400000, guid: d178897150e24e9479e6cc2216f6a92b, type: 2}

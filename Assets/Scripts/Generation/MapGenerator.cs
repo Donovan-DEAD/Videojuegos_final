@@ -45,6 +45,29 @@ namespace MadnessDreams
             return catalog.IsWall(targetTilemap.GetTile(cell));
         }
 
+        /// <summary>Clasifica el terreno de una celda (Void si no hay tile).</summary>
+        public TerrainType GetTerrain(Vector3Int cell)
+        {
+            TilesetCatalogSO catalog = Tileset;
+            if (targetTilemap == null || catalog == null)
+            {
+                return TerrainType.Void;
+            }
+
+            return catalog.GetTerrain(targetTilemap.GetTile(cell));
+        }
+
+        /// <summary>Clasifica el terreno en una posición de mundo.</summary>
+        public TerrainType GetTerrain(Vector3 world)
+        {
+            if (targetTilemap == null)
+            {
+                return TerrainType.Void;
+            }
+
+            return GetTerrain(targetTilemap.WorldToCell(world));
+        }
+
         /// <summary>Cuartos colocados en la última generación.</summary>
         public List<RoomPlacement> Rooms { get; } = new List<RoomPlacement>();
         /// <summary>Conexiones (aberturas) entre cuartos adyacentes.</summary>

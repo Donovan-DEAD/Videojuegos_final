@@ -114,7 +114,7 @@ namespace MadnessDreams
                 return;
             }
         
-            bool[,] occupied = BuildOccupied(area);
+            TerrainType[,] terrain = BuildTerrain(area, out bool[,] occupied);
             HashSet<Vector2Int> keepClear = KeepClear(roomIndex, area);
         
             bool combat = room.role != CellRole.Start;
@@ -122,14 +122,14 @@ namespace MadnessDreams
         
             if (combat)
             {
-                PlaceBarriers(theme, area, occupied, keepClear, barrierFootprints, rng);
+                PlaceBarriers(theme, area, occupied, terrain, keepClear, barrierFootprints, rng);
             }
         
-            PlaceProps(theme, area, occupied, keepClear, rng);
+            PlaceProps(theme, area, occupied, terrain, keepClear, rng);
         
             if (combat)
             {
-                SpawnEnemies(room, theme, area, occupied, rng, playerLevel, worldIndex);
+                SpawnEnemies(room, theme, area, occupied, terrain, rng, playerLevel, worldIndex);
             }
         }
 
@@ -140,19 +140,22 @@ namespace MadnessDreams
             return new RectInt(origin.x, origin.y, room.sizeInCells.x * cellSize, room.sizeInCells.y * cellSize);
         }
 
-        private bool[,] BuildOccupied(RectInt area)
+        private TerrainType[,] BuildTerrain(RectInt area, out bool[,] occupied)
         {
-            bool[,] occupied = new bool[area.width, area.height];
+            TerrainType[,] terrain = new TerrainType[area.width, area.height];
+            occupied = new bool[area.width, area.height];
 
             for (int y = 0; y < area.height; y++)
             {
                 for (int x = 0; x < area.width; x++)
                 {
-                    occupied[x, y] = mapGenerator.IsWall(new Vector3Int(area.x + x, area.y + y, 0));
+                    TerrainType type = mapGenerator.GetTerrain(new Vector3Int(area.x + x, area.y + y, 0));
+                    terrain[x, y] = type;
+                    occupied[x, y] = type == TerrainType.Wall;
                 }
             }
 
-            return occupied;
+            return terrain;
         }
 
         private HashSet<Vector2Int> KeepClear(int roomIndex, RectInt area)
@@ -196,7 +199,7 @@ namespace MadnessDreams
             return result;
         }
 
-        private void PlaceBarriers(ZoneThemeSO theme, RectInt area, bool[,] occupied, HashSet<Vector2Int> keepClear, List<Vector2Int> footprints, System.Random rng)
+        private void PlaceBarriers(ZoneThemeSO theme, RectInt area, bool[,] occupied, TerrainType[,] terrain, HashSet<Vector2Int> keepClear, List<Vector2Int> footprints, System.Random rng)
         {
             int count = RangeInt(theme.BarriersMin, theme.BarriersMax, rng);
 
@@ -208,7 +211,7 @@ namespace MadnessDreams
                     break;
                 }
 
-                if (!TryFindAnchor(area, prop.Footprint, occupied, keepClear, true, rng, 0, out Vector2Int anchor))
+                if (!TryFindAnchor(area, prop.Footprint, occupied, terrain, keepClear, true, prop.AllowWater, rng, 0, out Vector2Int anchor))
                 {
                     continue;
                 }
@@ -228,7 +231,7 @@ namespace MadnessDreams
             }
         }
 
-        private void PlaceProps(ZoneThemeSO theme, RectInt area, bool[,] occupied, HashSet<Vector2Int> keepClear, System.Random rng)
+        private void PlaceProps(ZoneThemeSO theme, RectInt area, bool[,] occupied, TerrainType[,] terrain, HashSet<Vector2Int> keepClear, System.Random rng)
         {
             int count = RangeInt(theme.PropsMin, theme.PropsMax, rng);
 
@@ -241,7 +244,7 @@ namespace MadnessDreams
                 }
 
                 HashSet<Vector2Int> avoid = prop.AvoidPassages ? keepClear : null;
-                if (!TryFindAnchor(area, prop.Footprint, occupied, avoid, false, rng, propEdgeMargin, out Vector2Int anchor))
+                if (!TryFindAnchor(area, prop.Footprint, occupied, terrain, avoid, false, prop.AllowWater, rng, propEdgeMargin, out Vector2Int anchor))
                 {
                     continue;
                 }
@@ -349,7 +352,7 @@ namespace MadnessDreams
             col.size = new Vector2(sizeTiles.x, sizeTiles.y);
             col.isTrigger = false;
         }
-        private void SpawnEnemies(RoomPlacement room, ZoneThemeSO theme, RectInt area, bool[,] occupied, System.Random rng, int playerLevel, int worldIndex)
+        private void SpawnEnemies(RoomPlacement room, ZoneThemeSO theme, RectInt area, bool[,] occupied, TerrainType[,] terrain, System.Random rng, int playerLevel, int worldIndex)
         {
             if (spawner == null || room.chunk == null)
             {
@@ -404,25 +407,88 @@ namespace MadnessDreams
                     continue;
                 }
 
+                TerrainType pointTerrain = TerrainAt(points[i], terrain);
+                if (pointTerrain == TerrainType.Wall || pointTerrain == TerrainType.Void)
+                {
+                    continue;
+                }
+
                 available.Add(i);
             }
 
             for (int i = 0; i < count && available.Count > 0; i++)
             {
-                int pick = rng.Next(available.Count);
-                int pointIndex = available[pick];
-                available.RemoveAt(pick);
+                WeightedEnemy enemy = default;
+                int pointPick = -1;
+                int attempts = Mathf.Max(2, allowed.Count * 3);
 
-                WeightedEnemy enemy = PickWeighted(allowed, rng);
-                if (enemy.archetype == null || enemy.archetype.Prefab == null)
+                for (int attempt = 0; attempt < attempts; attempt++)
                 {
-                    continue;
+                    WeightedEnemy candidate = PickWeighted(allowed, rng);
+                    if (candidate.archetype == null || candidate.archetype.Prefab == null)
+                    {
+                        continue;
+                    }
+
+                    int pick = FindCompatiblePoint(available, candidate.archetype.Habitat, points, terrain, rng);
+                    if (pick < 0)
+                    {
+                        continue;
+                    }
+
+                    enemy = candidate;
+                    pointPick = pick;
+                    break;
                 }
+
+                if (pointPick < 0)
+                {
+                    break;
+                }
+
+                int pointIndex = available[pointPick];
+                available.RemoveAt(pointPick);
 
                 Vector3Int cell = new Vector3Int(area.x + points[pointIndex].localPosition.x, area.y + points[pointIndex].localPosition.y, 0);
                 Vector3 position = mapGenerator.TargetTilemap.GetCellCenterWorld(cell);
                 spawner.TrySpawn(enemy.archetype.Prefab, position, rng, out _);
             }
+        }
+
+        private static TerrainType TerrainAt(EnemySpawnPoint point, TerrainType[,] terrain)
+        {
+            if (point.terrain != TerrainType.Void)
+            {
+                return point.terrain;
+            }
+
+            Vector2Int local = point.localPosition;
+            if (local.x < 0 || local.y < 0 || local.x >= terrain.GetLength(0) || local.y >= terrain.GetLength(1))
+            {
+                return TerrainType.Void;
+            }
+
+            return terrain[local.x, local.y];
+        }
+
+        private static int FindCompatiblePoint(List<int> available, EnemyHabitat habitat, EnemySpawnPoint[] points, TerrainType[,] terrain, System.Random rng)
+        {
+            List<int> compatible = new List<int>();
+            for (int i = 0; i < available.Count; i++)
+            {
+                TerrainType type = TerrainAt(points[available[i]], terrain);
+                if (TerrainSpawnUtility.IsCompatible(habitat, type))
+                {
+                    compatible.Add(i);
+                }
+            }
+
+            if (compatible.Count == 0)
+            {
+                return -1;
+            }
+
+            return compatible[rng.Next(compatible.Count)];
         }
 
         private int DistanceBand(RoomPlacement room)
@@ -466,7 +532,7 @@ namespace MadnessDreams
             return result;
         }
 
-        private bool TryFindAnchor(RectInt area, Vector2Int footprint, bool[,] occupied, HashSet<Vector2Int> avoid, bool preferBorder, System.Random rng, int edgeMargin, out Vector2Int anchor)
+        private bool TryFindAnchor(RectInt area, Vector2Int footprint, bool[,] occupied, TerrainType[,] terrain, HashSet<Vector2Int> avoid, bool preferBorder, bool allowWater, System.Random rng, int edgeMargin, out Vector2Int anchor)
         {
             anchor = Vector2Int.zero;
             footprint = new Vector2Int(Mathf.Max(1, footprint.x), Mathf.Max(1, footprint.y));
@@ -489,6 +555,12 @@ namespace MadnessDreams
                             int gy = y + fy;
 
                             if (occupied[gx, gy])
+                            {
+                                ok = false;
+                                break;
+                            }
+
+                            if (!allowWater && terrain[gx, gy] == TerrainType.Water)
                             {
                                 ok = false;
                                 break;

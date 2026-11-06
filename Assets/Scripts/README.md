@@ -36,6 +36,9 @@ Al morir el jugador: `PlayerDeathHandler` → `GameFlowManager.NotifyPlayerDied(
 3. **`RoomContentSpawner`** puebla cada cuarto según su **`tag`** (`ZoneThemeSO`): **barreras** (validadas
    para no sellar el cuarto), **props** de ambientación y **enemigos**, con densidad y tier escalados por
    el **nivel del jugador** (`DifficultyProfileSO`).
+4. **Terreno y hábitats:** `TilesetCatalogSO.GetTerrain` clasifica `Floor/Wall/Water`; `MapGenerator.GetTerrain`
+   lo expone. `RoomContentSpawner` filtra por `EnemyHabitat` y `EnemyMovement` restringe el paso; los
+   voladores atraviesan `Walls` con `Collider2D.excludeLayers`.
 
 ## Convenciones
 
@@ -44,4 +47,9 @@ Al morir el jugador: `PlayerDeathHandler` → `GameFlowManager.NotifyPlayerDied(
 - **Eventos** (`System.Action`) para desacoplar: `MapGenerator.Generated`, `Health.HealthChanged`/`Died`,
   `BossArenaController.BossSpawned`/`BossDefeated`, `BossManager.BossDefeated`.
 - **ScriptableObjects** para todo dato ajustable (nada hardcodeado que deba balancearse).
+- **Terreno data-driven:** `TerrainType` (flags) + `TilesetCatalogSO.terrainLayers`; agregar un tipo
+  (lava/pasto) no toca el tilemap ni el pipeline.
+- **Comportamiento por autómata:** `EnemyAI` agrega `Hide`; `EnemyStatsSO` configura escondite
+  (`hidesPeriodically`, `hideTerrain`, intervalos) y `maxTimeOutOfWater` (cocodrilo); los voladores
+  se esconden en muros.
 - **Configuración por Inspector** (`[SerializeField] private`) con propiedades públicas de solo lectura.

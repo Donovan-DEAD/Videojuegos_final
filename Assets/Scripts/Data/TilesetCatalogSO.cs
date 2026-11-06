@@ -5,8 +5,20 @@ using UnityEngine.Tilemaps;
 namespace MadnessDreams
 {
     /// <summary>
-    /// Catálogo de tiles y sprites del tileset: qué tiles se usan como piso/muro y qué sprites como
-    /// props decorativos o barreras. Es el único punto que hay que tocar para cambiar el arte del mapa.
+    /// Capa de terreno adicional (agua, lava, pasto...). El catálogo clasifica los tiles por capa;
+    /// las capas extra se consultan después de piso/muro.
+    /// </summary>
+    [System.Serializable]
+    public class TerrainTileLayer
+    {
+        public TerrainType type;
+        public List<TileBase> tiles = new List<TileBase>();
+    }
+
+    /// <summary>
+    /// Catálogo de tiles y sprites del tileset: qué tiles se usan como piso/muro, qué tiles
+    /// pertenecen a cada terreno adicional y qué sprites como props decorativos o barreras.
+    /// Es el único punto que hay que tocar para cambiar el arte del mapa.
     /// </summary>
     [CreateAssetMenu(fileName = "TilesetCatalog", menuName = "Madness Dreams/Tileset Catalog")]
     public class TilesetCatalogSO : ScriptableObject
@@ -17,6 +29,9 @@ namespace MadnessDreams
         [Header("Muro")]
         [SerializeField] private List<TileBase> wallTiles = new List<TileBase>();
 
+        [Header("Terrenos adicionales")]
+        [SerializeField] private List<TerrainTileLayer> terrainLayers = new List<TerrainTileLayer>();
+
         [Header("Objetos (sprites completos)")]
         [SerializeField] private List<Sprite> decorSprites = new List<Sprite>();
         [SerializeField] private List<Sprite> barrierSprites = new List<Sprite>();
@@ -26,12 +41,14 @@ namespace MadnessDreams
         [SerializeField] private int roomSheetColumns = 13;
         [SerializeField] private List<int> floorIndices = new List<int>();
         [SerializeField] private List<int> wallIndices = new List<int>();
+        [SerializeField] private List<int> waterIndices = new List<int>();
         [SerializeField] private string objectSheetPath = "Assets/Art/Tilesets/Objects.png";
         [SerializeField] private List<int> decorIndices = new List<int>();
         [SerializeField] private List<int> barrierIndices = new List<int>();
 
         public List<TileBase> FloorTiles => floorTiles;
         public List<TileBase> WallTiles => wallTiles;
+        public List<TerrainTileLayer> TerrainTileLayers => terrainLayers;
         public List<Sprite> DecorSprites => decorSprites;
         public List<Sprite> BarrierSprites => barrierSprites;
 
@@ -39,6 +56,7 @@ namespace MadnessDreams
         public int RoomSheetColumns => Mathf.Max(1, roomSheetColumns);
         public List<int> FloorIndices => floorIndices;
         public List<int> WallIndices => wallIndices;
+        public List<int> WaterIndices => waterIndices;
         public string ObjectSheetPath => objectSheetPath;
         public List<int> DecorIndices => decorIndices;
         public List<int> BarrierIndices => barrierIndices;
@@ -63,6 +81,12 @@ namespace MadnessDreams
             wallIndices = walls != null ? new List<int>(walls) : new List<int>();
         }
 
+        /// <summary>Guarda la selección de índices de agua.</summary>
+        public void SetWaterSelection(List<int> water)
+        {
+            waterIndices = water != null ? new List<int>(water) : new List<int>();
+        }
+
         /// <summary>Guarda la selección de índices de objetos: decorativos y barreras.</summary>
         public void SetObjectSelection(List<int> decor, List<int> barriers)
         {
@@ -80,6 +104,60 @@ namespace MadnessDreams
         public TileBase PickWall(System.Random rng)
         {
             return Pick(wallTiles, rng);
+        }
+
+        /// <summary>Devuelve los tiles de una capa de terreno adicional, o null si no existe.</summary>
+        public List<TileBase> GetTiles(TerrainType type)
+        {
+            if (terrainLayers == null)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < terrainLayers.Count; i++)
+            {
+                TerrainTileLayer layer = terrainLayers[i];
+                if (layer != null && layer.type == type)
+                {
+                    return layer.tiles;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>Atajo para los tiles de agua.</summary>
+        public List<TileBase> WaterTiles => GetTiles(TerrainType.Water);
+
+        /// <summary>
+        /// Clasifica un tile: null = Void (fuera del mapa), muro = Wall, capa adicional = su tipo,
+        /// resto = Floor. Las celdas de piso sin tile no se consideran transitables automáticamente.
+        /// </summary>
+        public TerrainType GetTerrain(TileBase tile)
+        {
+            if (tile == null)
+            {
+                return TerrainType.Void;
+            }
+
+            if (IsWall(tile))
+            {
+                return TerrainType.Wall;
+            }
+
+            if (terrainLayers != null)
+            {
+                for (int i = 0; i < terrainLayers.Count; i++)
+                {
+                    TerrainTileLayer layer = terrainLayers[i];
+                    if (layer != null && layer.tiles != null && layer.tiles.Contains(tile))
+                    {
+                        return layer.type;
+                    }
+                }
+            }
+
+            return TerrainType.Floor;
         }
 
         /// <summary>

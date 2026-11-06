@@ -54,12 +54,19 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f7eea58810f5b454f8887ceea1af5882, type: 2}
   - {fileID: 11400000, guid: 20ed0b243c18fb24dba855c8a1e599a4, type: 2}
   - {fileID: 11400000, guid: f83e98320a3d59e41a6aa58a999ced33, type: 2}
+  terrainLayers:
+  - type: 4
+    tiles:
+    - {fileID: 11400000, guid: cea3e8ce9087846499e4a9c1e4d4a752, type: 2}
+    - {fileID: 11400000, guid: bd8dc5ad744c35a4093a831aacc5a22c, type: 2}
+    - {fileID: 11400000, guid: a96a03aa7c5b4034aa913067162ebf70, type: 2}
   decorSprites: []
   barrierSprites: []
   roomSheetPath: Assets/Art/Tilesets/walls_floor.png
   roomSheetColumns: 13
   floorIndices: 
   wallIndices: 
+  waterIndices: 
   objectSheetPath: Assets/Art/Tilesets/Objects.png
   decorIndices: 
   barrierIndices: 

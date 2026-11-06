@@ -130,7 +130,7 @@ namespace MadnessDreams
             Vector2Int targetCells = new Vector2Int(2, 2);
             MapChunkSO chunk = bank != null ? bank.MerchantRoom : null;
         
-            if (bank != null && bank.NormalChunks != null)
+            if (chunk == null && bank != null && bank.NormalChunks != null)
             {
                 for (int i = 0; i < bank.NormalChunks.Count; i++)
                 {
@@ -172,7 +172,7 @@ namespace MadnessDreams
             Vector2Int targetCells = new Vector2Int(2, 2);
             MapChunkSO chunk = bank != null ? bank.MinibossRoom : null;
         
-            if (bank != null && bank.NormalChunks != null)
+            if (chunk == null && bank != null && bank.NormalChunks != null)
             {
                 for (int i = 0; i < bank.NormalChunks.Count; i++)
                 {

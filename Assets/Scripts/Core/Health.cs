@@ -22,6 +22,9 @@ namespace MadnessDreams
         public int CurrentHealth { get; private set; }
         public bool IsDead => CurrentHealth <= 0;
 
+        /// <summary>Si es true, ignora el daño y los cambios de vida (enemigos inmunes en idle).</summary>
+        public bool Invulnerable { get; set; }
+
         /// <summary>
         /// Se dispara al cambiar la salud, con (salud actual, salud máxima).
         /// </summary>
@@ -63,6 +66,11 @@ namespace MadnessDreams
         /// <summary>Fija la salud actual (limitada a [0, max]) y emite los eventos.</summary>
         public void SetCurrentHealth(int value)
         {
+            if (Invulnerable)
+            {
+                return;
+            }
+
             CurrentHealth = Mathf.Clamp(value, 0, maxHealth);
             HealthChanged?.Invoke(CurrentHealth, maxHealth);
             if (CurrentHealth == 0) Died?.Invoke();
@@ -70,7 +78,7 @@ namespace MadnessDreams
 
         public void TakeDamage(int amount)
         {
-            if (IsDead)
+            if (IsDead || Invulnerable)
             {
                 return;
             }

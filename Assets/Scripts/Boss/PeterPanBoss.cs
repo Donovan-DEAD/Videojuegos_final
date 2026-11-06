@@ -477,8 +477,8 @@ namespace MadnessDreams
                     continue;
                 }
 
-                Vector2 offset = Random.insideUnitCircle.normalized * Random.Range(minionSpread * 0.5f, minionSpread);
-                Vector3 spawnPos = transform.position + (Vector3)offset;
+                Vector3 spawnPos = TerrainSpawnUtility.ResolveSpawnPosition(
+                    prefab, transform.position, minionSpread * 0.5f, minionSpread);
                 Instantiate(prefab, spawnPos, Quaternion.identity);
                 if (summonEffectPrefab != null)
                 {

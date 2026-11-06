@@ -28,19 +28,25 @@ existiendo para el `[ContextMenu]` y las herramientas de editor.
 
 | Archivo | Rol |
 |---|---|
-| `MapGenerator` | Orquesta el pipeline; expone `Rooms`, `Connections`, `StartRoom`, `BossRoom`, `StartRoomCenterCell`, `BossRoomCenterCell`, `Progress` y `GenerateRoutine`/`Generate`. Dispara `Generated`. |
+| `MapGenerator` | Orquesta el pipeline; expone `Rooms`, `Connections`, `StartRoom`, `BossRoom`, `StartRoomCenterCell`, `BossRoomCenterCell`, `Progress`, `GetTerrain` y `GenerateRoutine`/`Generate`. Dispara `Generated`. |
 | `RoomLayout` | Reservas + empaquetado + adyacencia (estático, determinista por semilla). |
 | `RoomPlacement` | Struct: `chunk`, `sizeInCells`, `originCell`, `tag`, `role`. |
 | `RoomConnection` / `RoomSide` | Struct + enum: qué cuartos conecta, lado y celda de origen. |
-| `RoomContentSpawner` | Barreras (con validación anti-sellado por flood-fill), props y enemigos desde el `ZoneThemeSO`. Expone `BeginSpawn`/`SpawnRoomAt`/`SpawnAll` y `RoomCount`. |
-| `TilemapStamper` | `Stamp` (estampa tiles) y `ClearCells` (talla pasos). |
+| `RoomContentSpawner` | Barreras (con validación anti-sellado por flood-fill), props y enemigos desde el `ZoneThemeSO`; filtra spawns por `EnemyHabitat` y terreno. Expone `BeginSpawn`/`SpawnRoomAt`/`SpawnAll` y `RoomCount`. |
+| `TilemapStamper` | `Stamp` (estampa tiles) y `FillCells` (talla pasos/rellena celdas). |
 | `Spawner` | Instancia con jitter y chequeo de obstáculos (`Physics2D.OverlapCircle`). |
 | `CellRole` | Enum `Empty / Start / Normal / Boss`. |
 
 ## Reglas de datos
 
-- **Piso = celda sin tile**; sólo los muros llevan `TileBase`. Así `caminable == sin tile` y tallar un paso
-  es limpiar tiles.
+- **Terreno data-driven:** `TilesetCatalogSO.GetTerrain(tile)` clasifica `Wall`, `Floor`, `Water` y capas
+  extra (`TerrainType` flags); `MapGenerator.GetTerrain(cell/world)` lo expone. `null` = `Void` (fuera del mapa).
+- Los pasos se tallan con `TilemapStamper.FillCells` usando un tile de piso; el piso puede estar pintado
+  (no solo celdas vacías).
+- **Hábitats:** `RoomContentSpawner` elige puntos compatibles con el `EnemyHabitat` del arquetipo
+  (`Ground`, `Water`, `Flying`); `EnemySpawnPoint.terrain` puede fijar el tipo (spawns de agua).
+- **Agua:** las variantes B/C del `RoomVariantGenerator` agregan pozos; las aperturas y el anillo se fuerzan
+  a `Floor`/`Wall`; se validan los grafos piso, agua y piso+agua.
 - Un cuarto es un **espacio abierto con anillo de muro de 1 tile** en el borde de su footprint.
 - El `tag` del cuarto se resuelve contra `WorldConfigSO.Themes` (lista `tag → ZoneThemeSO`).
 - La **dificultad** (densidad + tier de enemigos) sale de `DifficultyProfileSO` con `PlayerStats.Level`.

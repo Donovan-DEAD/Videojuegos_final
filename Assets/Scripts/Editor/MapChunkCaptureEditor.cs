@@ -6,13 +6,14 @@ using UnityEngine.Tilemaps;
 namespace MadnessDreams
 {
     /// <summary>
-    /// Ventana de editor que captura un cuarto (Tilemap) a un MapChunkSO (tiles, tamaño en celdas, tag y puntos de spawn tomados de
-    /// hijos con prefijo) y avisa de problemas de tamaño, anillo de muro o spawns. Incluye el menú "Validate Worlds".
+    /// Ventana de editor que captura un cuarto (Tilemap) a un MapChunkSO (tiles, tamaño en celdas,
+    /// tag y puntos de spawn tomados de hijos con prefijo) y valida terreno, aperturas y spawns.
     /// </summary>
     public class MapChunkCaptureEditor : EditorWindow
     {
         private Tilemap source;
         private MapChunkSO target;
+        private TilesetCatalogSO catalog;
         private int cellSize = 16;
         private RoomTag tag = RoomTag.None;
         private CellRole role = CellRole.Normal;
@@ -31,7 +32,7 @@ namespace MadnessDreams
         }
 
         /// <summary>
-        /// Menú de editor que comprueba que cada WorldConfigSO genere exactamente una sala Start y una Boss, registrando el resultado.
+        /// Menú de editor que comprueba que cada WorldConfigSO genere exactamente una sala Start y una Boss.
         /// </summary>
         [MenuItem("Tools/Madness Dreams/Validate Worlds")]
         public static void ValidateWorlds()
@@ -65,6 +66,7 @@ namespace MadnessDreams
         {
             source = (Tilemap)EditorGUILayout.ObjectField("Source Tilemap", source, typeof(Tilemap), true);
             target = (MapChunkSO)EditorGUILayout.ObjectField("Target MapChunkSO", target, typeof(MapChunkSO), false);
+            catalog = (TilesetCatalogSO)EditorGUILayout.ObjectField("Tileset Catalog", catalog, typeof(TilesetCatalogSO), false);
             cellSize = Mathf.Max(1, EditorGUILayout.IntField("Cell size (tiles)", cellSize));
             tag = (RoomTag)EditorGUILayout.EnumPopup("Tag", tag);
             role = (CellRole)EditorGUILayout.EnumPopup("Role", role);
@@ -86,15 +88,33 @@ namespace MadnessDreams
             {
                 if (GUILayout.Button("Capture"))
                 {
-                    Capture(source, target, cellSize, tag, role, captureSpawnPoints, spawnPrefix, autoGenerateSpawns, spawnGrid);
+                    Capture(source, target, catalog, cellSize, tag, role, captureSpawnPoints, spawnPrefix, autoGenerateSpawns, spawnGrid);
+                }
+            }
+
+            using (new EditorGUI.DisabledScope(target == null))
+            {
+                if (GUILayout.Button("Preview"))
+                {
+                    RoomPreviewRenderer.RenderRoom(target, "Assets/Previews/MapChunks/" + target.name + ".png", 8);
                 }
             }
         }
 
         /// <summary>
-        /// Captura el Tilemap origen en el MapChunkSO destino (tiles, tamaño en celdas, tag y puntos de spawn) y lanza las validaciones.
+        /// Captura el Tilemap origen en el MapChunkSO destino y valida terreno/aperturas/spawns.
         /// </summary>
-        public static void Capture(Tilemap source, MapChunkSO target, int cellSize, RoomTag tag, CellRole role, bool captureSpawnPoints, string spawnPrefix, bool autoGenerateSpawns, int spawnGrid)
+        public static void Capture(
+            Tilemap source,
+            MapChunkSO target,
+            TilesetCatalogSO catalog,
+            int cellSize,
+            RoomTag tag,
+            CellRole role,
+            bool captureSpawnPoints,
+            string spawnPrefix,
+            bool autoGenerateSpawns,
+            int spawnGrid)
         {
             if (source == null || target == null)
             {
@@ -123,7 +143,7 @@ namespace MadnessDreams
             int spawnCount = 0;
             if (captureSpawnPoints)
             {
-                List<Vector2Int> found = GatherSpawnPoints(source, bounds, spawnPrefix);
+                List<EnemySpawnPoint> found = GatherSpawnPoints(source, bounds, spawnPrefix);
                 spawnCount = found.Count;
 
                 var so = new SerializedObject(target);
@@ -132,8 +152,9 @@ namespace MadnessDreams
                 for (int i = 0; i < found.Count; i++)
                 {
                     var element = spawns.GetArrayElementAtIndex(i);
-                    element.FindPropertyRelative("localPosition").vector2IntValue = found[i];
-                    element.FindPropertyRelative("weight").intValue = 1;
+                    element.FindPropertyRelative("localPosition").vector2IntValue = found[i].localPosition;
+                    element.FindPropertyRelative("weight").intValue = found[i].weight;
+                    element.FindPropertyRelative("terrain").intValue = (int)found[i].terrain;
                 }
 
                 so.ApplyModifiedPropertiesWithoutUndo();
@@ -154,7 +175,12 @@ namespace MadnessDreams
             EditorUtility.SetDirty(target);
             AssetDatabase.SaveAssets();
 
-            Validate(target, size, flattened, cellSize, captureSpawnPoints, spawnCount, spawnPrefix);
+            TerrainTools.ValidateChunk(target, catalog);
+
+            if (captureSpawnPoints && spawnCount == 0)
+            {
+                Debug.LogWarning($"El cuarto '{target.name}' no encontró spawn points con el prefijo '{spawnPrefix}'.", target);
+            }
 
             Debug.Log($"Captured {size.x}x{size.y} tiles ({cells.x}x{cells.y} celdas, tag={tag}) into {target.name}.", target);
         }
@@ -185,9 +211,9 @@ namespace MadnessDreams
             return new BoundsInt(minX, minY, 0, maxX - minX + 1, maxY - minY + 1, 1);
         }
 
-        private static List<Vector2Int> GatherSpawnPoints(Tilemap source, BoundsInt bounds, string spawnPrefix)
+        private static List<EnemySpawnPoint> GatherSpawnPoints(Tilemap source, BoundsInt bounds, string spawnPrefix)
         {
-            var result = new List<Vector2Int>();
+            var result = new List<EnemySpawnPoint>();
 
             foreach (Transform candidate in GatherCandidates(source))
             {
@@ -197,7 +223,13 @@ namespace MadnessDreams
                 }
 
                 Vector3Int cell = source.WorldToCell(candidate.position);
-                result.Add(new Vector2Int(cell.x - bounds.x, cell.y - bounds.y));
+                bool water = candidate.name.IndexOf("Water", System.StringComparison.OrdinalIgnoreCase) >= 0;
+                result.Add(new EnemySpawnPoint
+                {
+                    localPosition = new Vector2Int(cell.x - bounds.x, cell.y - bounds.y),
+                    weight = 1,
+                    terrain = water ? TerrainType.Water : TerrainType.Void
+                });
             }
 
             return result;
@@ -217,44 +249,6 @@ namespace MadnessDreams
             foreach (Transform child in source.transform)
             {
                 yield return child;
-            }
-        }
-
-        private static void Validate(MapChunkSO target, Vector2Int size, TileBase[] tiles, int cellSize, bool captureSpawnPoints, int spawnCount, string spawnPrefix)
-        {
-            if (size.x % cellSize != 0 || size.y % cellSize != 0)
-            {
-                Debug.LogError($"El cuarto '{target.name}' mide {size} y no es múltiplo de la celda ({cellSize}): dejará una costura abierta al estamparse.", target);
-            }
-
-            if (tiles != null && tiles.Length == size.x * size.y && size.x > 1 && size.y > 1)
-            {
-                bool ringOk = true;
-                for (int x = 0; x < size.x && ringOk; x++)
-                {
-                    if (tiles[x] == null || tiles[(size.y - 1) * size.x + x] == null)
-                    {
-                        ringOk = false;
-                    }
-                }
-
-                for (int y = 0; y < size.y && ringOk; y++)
-                {
-                    if (tiles[y * size.x] == null || tiles[y * size.x + size.x - 1] == null)
-                    {
-                        ringOk = false;
-                    }
-                }
-
-                if (!ringOk)
-                {
-                    Debug.LogWarning($"El cuarto '{target.name}' no tiene el anillo de muro de 1 tile en el borde.", target);
-                }
-            }
-
-            if (captureSpawnPoints && spawnCount == 0)
-            {
-                Debug.LogWarning($"El cuarto '{target.name}' no encontró spawn points con el prefijo '{spawnPrefix}'.", target);
             }
         }
     }

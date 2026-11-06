@@ -23,7 +23,8 @@ namespace MadnessDreams
         {
             Ignore = 0,
             Floor = 1,
-            Wall = 2
+            Wall = 2,
+            Water = 3
         }
 
         private enum ObjectPaint
@@ -47,6 +48,7 @@ namespace MadnessDreams
         private Texture2D sheetTexture;
         private readonly List<int> floors = new List<int>();
         private readonly List<int> walls = new List<int>();
+        private readonly List<int> water = new List<int>();
         private Vector2 scroll;
 
         // Objetos
@@ -93,6 +95,7 @@ namespace MadnessDreams
 
             floors.Clear();
             walls.Clear();
+            water.Clear();
             decor.Clear();
             barriers.Clear();
 
@@ -103,6 +106,7 @@ namespace MadnessDreams
                 objectSheetPath = catalog.ObjectSheetPath;
                 floors.AddRange(catalog.FloorIndices);
                 walls.AddRange(catalog.WallIndices);
+                water.AddRange(catalog.WaterIndices);
                 decor.AddRange(catalog.DecorIndices);
                 barriers.AddRange(catalog.BarrierIndices);
             }
@@ -148,9 +152,9 @@ namespace MadnessDreams
 
             EditorGUILayout.EndHorizontal();
             sheetColumns = Mathf.Max(1, EditorGUILayout.IntField("Columnas", sheetColumns));
-            paint = (Paint)GUILayout.Toolbar((int)paint, new[] { "Ignorar", "Piso", "Muro" });
+            paint = (Paint)GUILayout.Toolbar((int)paint, new[] { "Ignorar", "Piso", "Muro", "Agua" });
             DrawGrid(sprites, sheetTexture, sheetColumns, IsTileSelected, ref scroll, ToggleTile);
-            EditorGUILayout.LabelField("Piso: " + floors.Count + "   |   Muro: " + walls.Count);
+            EditorGUILayout.LabelField("Piso: " + floors.Count + "   |   Muro: " + walls.Count + "   |   Agua: " + water.Count);
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("2) Objetos (props y barreras)", EditorStyles.boldLabel);
@@ -224,7 +228,7 @@ namespace MadnessDreams
 
         private bool IsTileSelected(int i)
         {
-            return floors.Contains(i) || walls.Contains(i);
+            return floors.Contains(i) || walls.Contains(i) || water.Contains(i);
         }
 
         private bool IsObjectSelected(int i)
@@ -238,15 +242,23 @@ namespace MadnessDreams
             {
                 case Paint.Floor:
                     walls.Remove(i);
+                    water.Remove(i);
                     if (!floors.Contains(i)) floors.Add(i);
                     break;
                 case Paint.Wall:
                     floors.Remove(i);
+                    water.Remove(i);
                     if (!walls.Contains(i)) walls.Add(i);
+                    break;
+                case Paint.Water:
+                    floors.Remove(i);
+                    walls.Remove(i);
+                    if (!water.Contains(i)) water.Add(i);
                     break;
                 default:
                     floors.Remove(i);
                     walls.Remove(i);
+                    water.Remove(i);
                     break;
             }
         }
@@ -330,6 +342,7 @@ namespace MadnessDreams
             catalog.SetRoomSheet(sheetPath, sheetColumns);
             catalog.SetObjectSheet(objectSheetPath);
             catalog.SetSelection(floors, walls);
+            catalog.SetWaterSelection(water);
             catalog.SetObjectSelection(decor, barriers);
             EditorUtility.SetDirty(catalog);
             AssetDatabase.SaveAssets();
@@ -552,6 +565,7 @@ namespace MadnessDreams
 
             List<int> floorIdx = catalog.FloorIndices.Count > 0 ? new List<int>(catalog.FloorIndices) : new List<int>(DefaultFloorIndices);
             List<int> wallIdx = catalog.WallIndices.Count > 0 ? new List<int>(catalog.WallIndices) : new List<int>(DefaultWallIndices);
+            List<int> waterIdx = catalog.WaterIndices.Count > 0 ? new List<int>(catalog.WaterIndices) : new List<int>();
 
             var floors = new List<TileBase>();
             foreach (int idx in floorIdx)
@@ -565,6 +579,13 @@ namespace MadnessDreams
             {
                 var tile = CreateTile(sheet, tilesFolder, idx, "wall_" + idx, true);
                 if (tile != null) walls.Add(tile);
+            }
+
+            var waterTiles = new List<TileBase>();
+            foreach (int idx in waterIdx)
+            {
+                var tile = CreateTile(sheet, tilesFolder, idx, "water_" + idx, false);
+                if (tile != null) waterTiles.Add(tile);
             }
 
             // Objetos: si hay selección se usa tal cual; si no, se cae al heurístico por área.
@@ -598,13 +619,14 @@ namespace MadnessDreams
             var so = new SerializedObject(catalog);
             Fill(so, "floorTiles", floors);
             Fill(so, "wallTiles", walls);
+            FillTerrainLayer(so, TerrainType.Water, waterTiles);
             Fill(so, "decorSprites", decor);
             Fill(so, "barrierSprites", barriers);
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(catalog);
             AssetDatabase.SaveAssets();
 
-            Debug.Log($"Catálogo '{catalog.name}': {floors.Count} de piso, {walls.Count} de muro, {decor.Count} props, {barriers.Count} barreras.", catalog);
+            Debug.Log($"Catálogo '{catalog.name}': {floors.Count} de piso, {walls.Count} de muro, {waterTiles.Count} de agua, {decor.Count} props, {barriers.Count} barreras.", catalog);
             return catalog;
         }
 
@@ -852,6 +874,34 @@ namespace MadnessDreams
             var prop = so.FindProperty(field);
             prop.arraySize = items.Count;
             for (int i = 0; i < items.Count; i++) prop.GetArrayElementAtIndex(i).objectReferenceValue = items[i];
+        }
+
+        private static void FillTerrainLayer(SerializedObject so, TerrainType type, List<TileBase> tiles)
+        {
+            if (tiles == null || tiles.Count == 0) return;
+
+            var layers = so.FindProperty("terrainLayers");
+            int index = -1;
+            for (int i = 0; i < layers.arraySize; i++)
+            {
+                if (layers.GetArrayElementAtIndex(i).FindPropertyRelative("type").intValue == (int)type)
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index < 0)
+            {
+                layers.arraySize++;
+                index = layers.arraySize - 1;
+                var added = layers.GetArrayElementAtIndex(index);
+                added.FindPropertyRelative("type").intValue = (int)type;
+            }
+
+            var list = layers.GetArrayElementAtIndex(index).FindPropertyRelative("tiles");
+            list.arraySize = tiles.Count;
+            for (int i = 0; i < tiles.Count; i++) list.GetArrayElementAtIndex(i).objectReferenceValue = tiles[i];
         }
 
         private static void EnsureFolder(string path)

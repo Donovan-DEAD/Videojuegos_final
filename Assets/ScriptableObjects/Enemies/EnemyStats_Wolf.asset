@@ -26,5 +26,18 @@ MonoBehaviour:
   fovRadius: 9
   fovAngle: 360
   hearingRadius: 4
+  habitat: 1
+  passThroughWalls: 0
+  visionThroughWalls: 0
+  hidesPeriodically: 0
+  hideIntervalMin: 5
+  hideIntervalMax: 8
+  hideDuration: 2
+  hideTerrain: 4
+  hideSearchRadius: 10
+  maxTimeOutOfWater: 0
+  hideWhileNotVisible: 1
+  stationary: 0
+  immuneWhileIdle: 0
   displayName: "Lobo guardi\xE1n"
   identityColor: {r: 0.85, g: 0.25, b: 0.22, a: 1}

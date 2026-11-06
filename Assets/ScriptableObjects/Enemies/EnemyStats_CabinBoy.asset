@@ -26,5 +26,18 @@ MonoBehaviour:
   fovRadius: 8
   fovAngle: 360
   hearingRadius: 4
+  habitat: 1
+  passThroughWalls: 0
+  visionThroughWalls: 0
+  hidesPeriodically: 0
+  hideIntervalMin: 5
+  hideIntervalMax: 8
+  hideDuration: 2
+  hideTerrain: 4
+  hideSearchRadius: 10
+  maxTimeOutOfWater: 0
+  hideWhileNotVisible: 1
+  stationary: 0
+  immuneWhileIdle: 0
   displayName: Grumete perdido
   identityColor: {r: 0.45, g: 0.7, b: 1, a: 1}
