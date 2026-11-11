@@ -226,6 +226,7 @@ namespace MadnessDreams
                 }
 
                 Vector3 position = FootprintCenter(area, anchor, prop.Footprint);
+                position.z = prop.Prefab.transform.position.z;
                 Instantiate(prop.Prefab, position, Quaternion.identity);
                 footprints.Add(anchor);
             }
@@ -251,6 +252,7 @@ namespace MadnessDreams
 
                 MarkFootprint(occupied, anchor, prop.Footprint, true);
                 Vector3 position = FootprintCenter(area, anchor, prop.Footprint);
+                position.z = prop.Prefab.transform.position.z;
                 GameObject instance = Instantiate(prop.Prefab, position, Quaternion.identity);
                 ClampPropScale(instance);
             }

@@ -9,6 +9,7 @@ namespace MadnessDreams
         Forest = 1,
         Sea = 2,
         Cave = 3,
-        Ruins = 4
+        Ruins = 4,
+        Snow = 5
     }
 }

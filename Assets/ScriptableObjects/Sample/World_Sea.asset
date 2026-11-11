@@ -24,6 +24,18 @@ MonoBehaviour:
   themes:
   - tag: 2
     theme: {fileID: 11400000, guid: b32773e6ec2fac144bb1aba8fe10c705, type: 2}
+    weight: 4
+  - tag: 1
+    theme: {fileID: 11400000, guid: 9d583cef6a7947c49848d8b492cc600b, type: 2}
+    weight: 3
+  - tag: 3
+    theme: {fileID: 11400000, guid: d9ea097a6405f4841bbf5ddc8bd08ef3, type: 2}
+    weight: 1
+  - tag: 4
+    theme: {fileID: 11400000, guid: 5ecefcac4ffe09f44a1c9f23207a5363, type: 2}
+    weight: 1
+  - tag: 5
+    theme: {fileID: 11400000, guid: c4b655eef16157a45960fe1e93dd2b6a, type: 2}
     weight: 1
   tileset: {fileID: 11400000, guid: 0e82b0b60c3491f4692705aebd27bcdf, type: 2}
   difficulty: {fileID: 11400000, guid: a979387f7821c7d409e467ee5ee29fd8, type: 2}
