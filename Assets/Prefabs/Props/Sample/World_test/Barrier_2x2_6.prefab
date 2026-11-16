@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4370162567075502567}
   - component: {fileID: 4024209028903811046}
   - component: {fileID: 8570513460161993229}
+  - component: {fileID: 5162190173930032952}
   m_Layer: 7
   m_Name: Barrier_2x2_6
   m_TagString: Untagged
@@ -138,3 +139,17 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.375, y: 1.8125}
   m_EdgeRadius: 0
+--- !u!114 &5162190173930032952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4186661863726355611}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d682f5cdad27e4d81b1b71935c7e41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.YSortOrder
+  baseOrder: 100000
+  includeChildren: 0

@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 6401177241677451886}
   - component: {fileID: 2441203169393799470}
   - component: {fileID: 5476659907669349991}
+  - component: {fileID: 3738750668297284043}
   m_Layer: 9
   m_Name: Enemy_DustFairy
   m_TagString: Untagged
@@ -210,6 +211,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da8743e007d8da04ea04bee5342eeea8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.EnemyMovement
+  terrainLookAhead: 0.35
+  barrierMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &6401177241677451886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -263,6 +268,20 @@ MonoBehaviour:
   deathLingerTime: 2
   fragmentsPerKill: 1
   fragmentPickupPrefab: {fileID: 7373975785493461432, guid: d9d788b860672ec49acbc78e97bcf87a, type: 3}
+--- !u!114 &3738750668297284043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4910841688769433107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d682f5cdad27e4d81b1b71935c7e41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.YSortOrder
+  baseOrder: 100000
+  includeChildren: 1
 --- !u!1 &5056905883723328497
 GameObject:
   m_ObjectHideFlags: 0

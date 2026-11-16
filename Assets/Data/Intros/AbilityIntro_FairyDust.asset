@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec557b2198ce6fa4a92558228cd4599c, type: 3}
+  m_Name: AbilityIntro_FairyDust
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.BossIntroSO
+  portrait: {fileID: 21300000, guid: 84848f4e9b5753a409425b1ea0d836c8, type: 3}
+  accent: {r: 0.95, g: 0.55, b: 0.95, a: 1}
+  background: {r: 0, g: 0, b: 0, a: 0.85}
+  portraitScale: 1
+  title: "\xA1Nueva habilidad!"
+  subtitle: "Polvo de Hada \u2014 dash instant\xE1neo para reposicionarte y esquivar."
+  hint: Presiona ENTER para continuar
+  fadeIn: 0.35
+  fadeOut: 0.25
+  holdDuration: 999
+  waitForInput: 1
+  maxWaitSeconds: 15
+  sfx: {fileID: 0}

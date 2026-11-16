@@ -560,12 +560,64 @@ namespace MadnessDreams
             }
 
             Died?.Invoke(this);
+
+            if (stats != null && stats.ExplodesOnDeath)
+            {
+                StartCoroutine(ExplosionRoutine());
+                return;
+            }
+
             SpawnFragmentDrop();
 
             if (deathLingerTime > 0f)
             {
                 Destroy(gameObject, deathLingerTime);
             }
+        }
+
+        /// <summary>
+        /// Cuenta regresiva y estallido del enemigo que explota al morir: sacudida de
+        /// escala como aviso, daño en área al jugador, VFX y destrucción.
+        /// </summary>
+        private System.Collections.IEnumerator ExplosionRoutine()
+        {
+            float delay = stats != null ? stats.ExplosionDelay : 0.8f;
+            float radius = stats != null ? stats.ExplosionRadius : 2f;
+            int damage = stats != null ? stats.ExplosionDamage : 15;
+
+            Vector3 baseScale = transform.localScale;
+
+            float elapsed = 0f;
+            while (elapsed < delay)
+            {
+                elapsed += Time.deltaTime;
+                float pulse = Mathf.Repeat(elapsed, 0.2f) / 0.2f;
+                float shake = 1f + pulse * 0.15f;
+                transform.localScale = new Vector3(baseScale.x * shake, baseScale.y * shake, baseScale.z);
+                yield return null;
+            }
+
+            transform.localScale = baseScale;
+
+            int playerLayer = LayerMask.NameToLayer("Player");
+            if (playerLayer >= 0)
+            {
+                Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, radius, 1 << playerLayer);
+                for (int i = 0; i < hits.Length; i++)
+                {
+                    IDamageable damageable = hits[i].GetComponent<IDamageable>();
+                    if (damageable == null)
+                    {
+                        damageable = hits[i].GetComponentInParent<IDamageable>();
+                    }
+
+                    damageable?.TakeDamage(damage);
+                }
+            }
+
+            ExplosionVFX.Play(transform.position, radius);
+            SpawnFragmentDrop();
+            Destroy(gameObject);
         }
 
         private void SpawnFragmentDrop()

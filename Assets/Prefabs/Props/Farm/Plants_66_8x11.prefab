@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5220603260359262749}
   - component: {fileID: 1356268908173109750}
+  - component: {fileID: 5672464072212753352}
   m_Layer: 0
   m_Name: Plants_66_8x11
   m_TagString: Untagged
@@ -91,3 +92,17 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &5672464072212753352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7891482942247229201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d682f5cdad27e4d81b1b71935c7e41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.YSortOrder
+  baseOrder: 100000
+  includeChildren: 0

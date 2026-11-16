@@ -39,6 +39,7 @@ namespace MadnessDreams
         [SerializeField] private string displayName;
         [SerializeField] private string description;
         [SerializeField] private Sprite icon;
+        [SerializeField] private BossIntroSO acquiredIntro;
 
         [Header("Timing")]
         [SerializeField] private float cooldown = 2f;
@@ -67,6 +68,9 @@ namespace MadnessDreams
         public string DisplayName => displayName;
         public string Description => description;
         public Sprite Icon => icon;
+
+        /// <summary>Pantalla mostrada al aprender la habilidad (overlay pausado).</summary>
+        public BossIntroSO AcquiredIntro => acquiredIntro;
         public float Cooldown => cooldown;
         public float AnimationDuration => animationDuration;
         public int Damage => damage;

@@ -39,5 +39,9 @@ MonoBehaviour:
   hideWhileNotVisible: 1
   stationary: 0
   immuneWhileIdle: 0
+  explodesOnDeath: 1
+  explosionDelay: 0.8
+  explosionRadius: 2
+  explosionDamage: 15
   displayName: Cocodrilo Tik-Tak
   identityColor: {r: 0.35, g: 0.75, b: 0.25, a: 1}

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4804516787759074504}
   - component: {fileID: 4978636404005505723}
   - component: {fileID: 1622866227265956598}
+  - component: {fileID: 7251380789188159292}
   m_Layer: 7
   m_Name: Snow_christmass_tree3
   m_TagString: Untagged
@@ -126,7 +127,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.0069327354, y: -0.30157393}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -136,5 +137,19 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2, y: 2}
+  m_Size: {x: 1.4315157, y: 1.2443318}
   m_EdgeRadius: 0
+--- !u!114 &7251380789188159292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3916457719103800953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d682f5cdad27e4d81b1b71935c7e41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.YSortOrder
+  baseOrder: 100000
+  includeChildren: 0

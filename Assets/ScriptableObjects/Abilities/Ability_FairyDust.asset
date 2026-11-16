@@ -15,8 +15,9 @@ MonoBehaviour:
   category: 1
   type: 3
   displayName: Polvo de Hada
-  description: 
-  icon: {fileID: 21300000, guid: fa3c5a768cc96e8459792b8189e8abb3, type: 3}
+  description: "Polvo de Hada \u2014 dash instant\xE1neo para reposicionarte y esquivar."
+  icon: {fileID: 21300000, guid: 84848f4e9b5753a409425b1ea0d836c8, type: 3}
+  acquiredIntro: {fileID: 11400000, guid: a21030fe10452834bb013dfb7875f935, type: 2}
   cooldown: 2.5
   animationDuration: 0.3
   damage: 0

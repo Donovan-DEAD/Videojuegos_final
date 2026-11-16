@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6194372544152702750}
   - component: {fileID: 4897370182079859138}
   - component: {fileID: 6289352245961555459}
+  - component: {fileID: 8718827915102672189}
   m_Layer: 10
   m_Name: Projectile_Thorn
   m_TagString: Untagged
@@ -170,3 +171,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.Projectile
   lifetime: 5
+--- !u!114 &8718827915102672189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1103385813527103405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d682f5cdad27e4d81b1b71935c7e41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.YSortOrder
+  baseOrder: 101000
+  includeChildren: 1

@@ -54,9 +54,17 @@ namespace MadnessDreams
             if (abilities == null) abilities = playerObject.GetComponentInParent<PlayerAbilities>();
             if (abilities == null) return;
 
-            if (abilities.Learn(ability) && destroyOnPickup)
+            if (abilities.Learn(ability))
             {
-                Destroy(gameObject);
+                if (ability.AcquiredIntro != null && BossIntroController.Instance != null)
+                {
+                    BossIntroController.Instance.Show(ability.AcquiredIntro, null);
+                }
+
+                if (destroyOnPickup)
+                {
+                    Destroy(gameObject);
+                }
             }
         }
     }

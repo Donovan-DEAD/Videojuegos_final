@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4486581783132118774}
   - component: {fileID: 5345024473320109128}
   - component: {fileID: 6498905912469407328}
+  - component: {fileID: 1629754800428142592}
   m_Layer: 10
   m_Name: Projectile_Player
   m_TagString: Untagged
@@ -170,3 +171,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.Projectile
   lifetime: 5
+--- !u!114 &1629754800428142592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7089407660976009523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d682f5cdad27e4d81b1b71935c7e41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.YSortOrder
+  baseOrder: 101000
+  includeChildren: 1

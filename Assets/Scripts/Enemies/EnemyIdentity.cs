@@ -32,20 +32,15 @@ namespace MadnessDreams
         /// <summary>Muestra u oculta el borde y la etiqueta (se oculta al morir).</summary>
         public void SetVisible(bool visible)
         {
-            if (badge != null)
-            {
-                badge.enabled = visible;
-            }
+            if (badge != null) badge.enabled = visible;
+            if (label != null) label.gameObject.SetActive(visible);
+            if (labelShadow != null) labelShadow.gameObject.SetActive(visible);
+        }
 
-            if (label != null)
-            {
-                label.gameObject.SetActive(visible);
-            }
-
-            if (labelShadow != null)
-            {
-                labelShadow.gameObject.SetActive(visible);
-            }
+        private int BodyBaseOrder()
+        {
+            var bodySort = GetComponent<YSortOrder>();
+            return bodySort != null ? bodySort.BaseOrder : 0;
         }
 
         private void EnsureBadge(Color color)
@@ -62,7 +57,9 @@ namespace MadnessDreams
                 badge = go.AddComponent<SpriteRenderer>();
                 badge.sprite = GetWhiteSprite();
                 badge.sortingLayerID = body != null ? body.sortingLayerID : 0;
-                badge.sortingOrder = body != null ? body.sortingOrder - 1 : 0;
+
+                var badgeSort = go.AddComponent<YSortOrder>();
+                badgeSort.SetBaseOrder(BodyBaseOrder() - 1);
             }
 
             badge.color = color;
@@ -72,10 +69,10 @@ namespace MadnessDreams
         {
             if (label == null)
             {
-                labelShadow = CreateLabel("NameLabelShadow", new Color(0f, 0f, 0f, 0.85f), 4);
+                labelShadow = CreateLabel("NameLabelShadow", new Color(0f, 0f, 0f, 0.85f), 200);
                 labelShadow.transform.localPosition = new Vector3(0.02f, 0.87f, 0.01f);
 
-                label = CreateLabel("NameLabel", color, 5);
+                label = CreateLabel("NameLabel", color, 200);
                 label.transform.localPosition = new Vector3(0f, 0.85f, 0f);
             }
 
@@ -103,18 +100,17 @@ namespace MadnessDreams
             {
                 renderer.sharedMaterial = mesh.font.material;
                 renderer.sortingLayerID = body != null ? body.sortingLayerID : 0;
-                renderer.sortingOrder = (body != null ? body.sortingOrder : 0) + orderOffset;
             }
+
+            var labelSort = go.AddComponent<YSortOrder>();
+            labelSort.SetBaseOrder(BodyBaseOrder() + orderOffset);
 
             return mesh;
         }
 
         private static Sprite GetWhiteSprite()
         {
-            if (whiteSprite != null)
-            {
-                return whiteSprite;
-            }
+            if (whiteSprite != null) return whiteSprite;
 
             Texture2D texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
             texture.SetPixel(0, 0, Color.white);
@@ -128,30 +124,15 @@ namespace MadnessDreams
 
         private static Font GetFont()
         {
-            if (labelFont != null)
-            {
-                return labelFont;
-            }
+            if (labelFont != null) return labelFont;
 
-            try
-            {
-                labelFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            }
-            catch (System.Exception)
-            {
-                labelFont = null;
-            }
+            try { labelFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); }
+            catch (System.Exception) { labelFont = null; }
 
             if (labelFont == null)
             {
-                try
-                {
-                    labelFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
-                }
-                catch (System.Exception)
-                {
-                    labelFont = null;
-                }
+                try { labelFont = Resources.GetBuiltinResource<Font>("Arial.ttf"); }
+                catch (System.Exception) { labelFont = null; }
             }
 
             return labelFont;

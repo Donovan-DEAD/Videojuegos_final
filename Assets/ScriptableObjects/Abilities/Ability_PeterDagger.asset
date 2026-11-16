@@ -15,8 +15,10 @@ MonoBehaviour:
   category: 1
   type: 2
   displayName: Daga de Peter
-  description: 
-  icon: {fileID: 21300000, guid: 8e3597ee28e6a9d47b78f873cf42b9a4, type: 3}
+  description: "Daga de Peter \u2014 lanza un abanico de dagas r\xE1pidas en direcci\xF3n
+    al mouse."
+  icon: {fileID: 21300000, guid: 52351c3940d5fe442893b564d5ef5316, type: 3}
+  acquiredIntro: {fileID: 11400000, guid: 7df736502a597e546b93ad7dd3a16fe8, type: 2}
   cooldown: 1.5
   animationDuration: 0.3
   damage: 6

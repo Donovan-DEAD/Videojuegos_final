@@ -10,8 +10,10 @@ namespace MadnessDreams
     public class EnemyMovement : MonoBehaviour
     {
         [SerializeField] private float terrainLookAhead = 0.35f;
+        [SerializeField] private LayerMask barrierMask;
 
         private Rigidbody2D rb;
+        private Collider2D bodyCollider;
         private MapGenerator mapGenerator;
         private EnemyHabitat habitat = EnemyHabitat.Ground;
 
@@ -25,6 +27,8 @@ namespace MadnessDreams
         {
             rb = GetComponent<Rigidbody2D>();
             mapGenerator = FindAnyObjectByType<MapGenerator>();
+            bodyCollider = GetComponent<Collider2D>();
+            if (barrierMask.value == 0) barrierMask = LayerMask.GetMask("Walls");
         }
 
         /// <summary>Define el terreno que puede pisar el enemigo (lo llama EnemyAI).</summary>
@@ -149,7 +153,7 @@ namespace MadnessDreams
         private bool TryVelocity(Vector2 direction, float speed)
         {
             Vector2 next = rb.position + direction * terrainLookAhead;
-            if (!CanStandAt(next))
+            if (!CanStandAt(next) || BlockedByCollider(direction))
             {
                 return false;
             }
@@ -157,6 +161,32 @@ namespace MadnessDreams
             rb.linearVelocity = direction * speed * SpeedMultiplier;
             LastMoveBlocked = false;
             return true;
+        }
+
+        /// <summary>True si hay una barrera (collider en Walls) delante del enemigo.</summary>
+        private bool BlockedByCollider(Vector2 direction)
+        {
+            if ((habitat & EnemyHabitat.Flying) != 0 || bodyCollider == null || barrierMask.value == 0)
+            {
+                return false;
+            }
+
+            float radius = bodyCollider.bounds.extents.x;
+            if (bodyCollider is CircleCollider2D circle)
+            {
+                radius = circle.radius * Mathf.Max(transform.lossyScale.x, transform.lossyScale.y);
+            }
+
+            Vector2 forward = direction.normalized;
+            Vector2 side = new Vector2(-forward.y, forward.x);
+            float originOffset = Mathf.Max(0.1f, radius * 0.5f);
+            float rayDistance = terrainLookAhead + radius * 0.5f;
+            Vector2 originA = rb.position + forward * originOffset + side * radius * 0.4f;
+            Vector2 originB = rb.position + forward * originOffset - side * radius * 0.4f;
+
+            RaycastHit2D hitA = Physics2D.Raycast(originA, forward, rayDistance, barrierMask);
+            RaycastHit2D hitB = Physics2D.Raycast(originB, forward, rayDistance, barrierMask);
+            return hitA.collider != null || hitB.collider != null;
         }
 
         private bool CanStandAt(Vector2 position)

@@ -98,10 +98,32 @@ namespace MadnessDreams
                 yield break;
             }
 
-            if (IsInRange(targetTransform))
+            if (IsInRange(targetTransform) && HasClearLineTo(targetTransform))
             {
                 target.TakeDamage(stats.Damage);
             }
+        }
+
+        /// <summary>True si no hay una barrera (Walls) entre el enemigo y el objetivo.</summary>
+        private bool HasClearLineTo(Transform targetTransform)
+        {
+            int walls = LayerMask.GetMask("Walls");
+            if (walls == 0 || targetTransform == null)
+            {
+                return true;
+            }
+
+            Vector2 origin = transform.position;
+            Vector2 target = targetTransform.position;
+            float distance = Vector2.Distance(origin, target);
+            if (distance <= 0.0001f)
+            {
+                return true;
+            }
+
+            Vector2 direction = (target - origin).normalized;
+            RaycastHit2D hit = Physics2D.Raycast(origin, direction, distance, walls);
+            return hit.collider == null;
         }
 
         private IEnumerator RangedRoutine(Transform targetTransform)

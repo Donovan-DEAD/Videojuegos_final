@@ -60,6 +60,11 @@ namespace MadnessDreams
         [SerializeField] private bool hideWhileNotVisible = true;
         [SerializeField] private bool stationary;
         [SerializeField] private bool immuneWhileIdle;
+        [Header("Death Explosion")]
+        [SerializeField] private bool explodesOnDeath;
+        [SerializeField] private float explosionDelay = 0.8f;
+        [SerializeField] private float explosionRadius = 2f;
+        [SerializeField] private int explosionDamage = 15;
 
         [Header("Identity (greybox)")]
         [SerializeField] private string displayName = "";
@@ -99,6 +104,18 @@ namespace MadnessDreams
         public bool HideWhileNotVisible => hideWhileNotVisible;
         public bool Stationary => stationary;
         public bool ImmuneWhileIdle => immuneWhileIdle;
+
+        /// <summary>True si el enemigo explota en área al morir (p. ej. Cocodrilo Tik-Tak).</summary>
+        public bool ExplodesOnDeath => explodesOnDeath;
+
+        /// <summary>Segundos de cuenta regresiva antes del estallido.</summary>
+        public float ExplosionDelay => Mathf.Max(0f, explosionDelay);
+
+        /// <summary>Radio del estallido en unidades.</summary>
+        public float ExplosionRadius => Mathf.Max(0.1f, explosionRadius);
+
+        /// <summary>Daño del estallido al jugador.</summary>
+        public int ExplosionDamage => Mathf.Max(1, explosionDamage);
 
         /// <summary>Nombre visible del enemigo; si está vacío usa el nombre del asset.</summary>
         public string DisplayName => string.IsNullOrEmpty(displayName) ? name : displayName;
