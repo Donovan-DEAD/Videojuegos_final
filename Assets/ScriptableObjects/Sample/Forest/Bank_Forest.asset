@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 290755dce7e408c499bca5bb58b5195c, type: 3}
+  m_Name: Bank_Forest
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.BlockBankSO
+  normalChunks:
+  - {fileID: 11400000, guid: 06e23b7a4bf4e5e4d9e11b8f539a2927, type: 2}
+  - {fileID: 11400000, guid: 20b22a9f807fa9e44ba87c347b9d44e9, type: 2}
+  - {fileID: 11400000, guid: 6f04b78b93729074c885e78700f1205b, type: 2}
+  - {fileID: 11400000, guid: 813150dd11b0ccf49a564bde8e7a8d66, type: 2}
+  - {fileID: 11400000, guid: 73a25ab12c0f662458c75de12a0db22a, type: 2}
+  startRoom: {fileID: 11400000, guid: bc52ede67481b3f49bd699289b9fb0d4, type: 2}
+  bossArena: {fileID: 11400000, guid: 4b41caa6a8088b7489cc4cf3b124e9cf, type: 2}
+  merchantRoom: {fileID: 0}
+  minibossRoom: {fileID: 0}

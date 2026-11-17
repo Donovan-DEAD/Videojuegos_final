@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: World_Sample_A 1
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.WorldConfigSO
   seed: 200
-  bank: {fileID: 11400000, guid: e275584334f7463429bc588b47fb6d1d, type: 2}
+  bank: {fileID: 11400000, guid: cb998a0f98771a6499cdc832fe5f0652, type: 2}
   width: 16
   height: 16
   chunkSize: 16
@@ -25,7 +25,7 @@ MonoBehaviour:
   - tag: 1
     theme: {fileID: 11400000, guid: 179a2ba7a856ef1439c4d4e4a1daa577, type: 2}
     weight: 1
-  tileset: {fileID: 11400000, guid: 03f859f17d0327443b49e740fb515079, type: 2}
+  tileset: {fileID: 11400000, guid: 705db1c62d91f0f4198677480e8ed6f6, type: 2}
   difficulty: {fileID: 11400000, guid: a979387f7821c7d409e467ee5ee29fd8, type: 2}
   enemyPool:
   - {fileID: 11400000, guid: 8eb25e91f354d284a837b2c8262fa026, type: 2}
