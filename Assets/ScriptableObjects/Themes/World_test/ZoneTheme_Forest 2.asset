@@ -65,7 +65,33 @@ MonoBehaviour:
     weight: 1
   - prop: {fileID: 11400000, guid: 910d31a1f9c13df4e9135bdfd2adbebc, type: 2}
     weight: 1
+  - prop: {fileID: 11400000, guid: 9d185bd7b78207849941e8f9dbbfc0de, type: 2}
+    weight: 1
+  - prop: {fileID: 11400000, guid: 1e4c31b3358850940b2f3326555b2947, type: 2}
+    weight: 1
+  - prop: {fileID: 11400000, guid: e2d8b60dfa85c114ca35b27a8a4ab9f3, type: 2}
+    weight: 1
+  - prop: {fileID: 11400000, guid: 9c68b9e14467bf047bcc79291eec5788, type: 2}
+    weight: 1
+  - prop: {fileID: 11400000, guid: 01035bf1d3a6ed84593aa2bdd1e5a258, type: 2}
+    weight: 1
+  - prop: {fileID: 11400000, guid: 4e5b6a78f6e2e4849b64542fff1ae2d2, type: 2}
+    weight: 1
+  - prop: {fileID: 11400000, guid: d34ba9bc25548f1479e43264b77c0ceb, type: 2}
+    weight: 1
+  - prop: {fileID: 11400000, guid: c84052a806972804d8a8063352e993a3, type: 2}
+    weight: 1
+  - prop: {fileID: 11400000, guid: 7dd81a7dc24b1334b9f9d4db12407052, type: 2}
+    weight: 1
+  - prop: {fileID: 11400000, guid: 9f2d531c3cb76874f8e1001e440a2f2d, type: 2}
+    weight: 1
   barrierBank:
+  - prop: {fileID: 11400000, guid: 467766f5ccd7b5b48bc3a4b6d50d3e9f, type: 2}
+    weight: 1
+  - prop: {fileID: 11400000, guid: 7dd6dcec3eeab294ca16ef51c52acb20, type: 2}
+    weight: 1
+  - prop: {fileID: 11400000, guid: 83e77dab19890a44bb317183b011c093, type: 2}
+    weight: 1
   - prop: {fileID: 11400000, guid: 3799688eb71a0094abdd90380ae7b055, type: 2}
     weight: 3
   - prop: {fileID: 11400000, guid: 39543bfd9233a73418d15b7152b2625c, type: 2}
