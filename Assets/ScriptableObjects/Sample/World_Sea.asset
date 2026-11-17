@@ -53,7 +53,7 @@ MonoBehaviour:
   merchantCell: {x: 1, y: 0}
   merchantPrefab: {fileID: 5277286200323792214, guid: 5dd38f4ed50e2a94b9989086c444f0e0, type: 3}
   specialCell: {x: 7, y: 7}
-  minibossPrefab: {fileID: 7883852240400934066, guid: c531b42d7c1784c40af4f5ac1789d88e, type: 3}
+  minibossPrefab: {fileID: 2435454979752136544, guid: c531b42d7c1784c40af4f5ac1789d88e, type: 3}
   minibossRewardAbility: {fileID: 11400000, guid: edb4799c45027ec449e88d4adc404ab0, type: 2}
   minibossRoomTint: {r: 0.55, g: 0.2, b: 0.75, a: 0.35}
   bossIntro: {fileID: 11400000, guid: edc97baee62d38a4588e3d36f48e413c, type: 2}
