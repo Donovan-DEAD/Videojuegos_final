@@ -130,7 +130,10 @@ namespace MadnessDreams
             Vector2 direction = (Vector2)(aimWorld - origin);
             direction.Normalize();
 
-            GameObject instance = Instantiate(projectilePrefab, origin, Quaternion.identity);
+            // El firePoint está en el centro del sprite; adelantar el spawn 0.5u
+            // para que el proyectil nazca por delante del personaje y no por detrás.
+            Vector3 spawnAt = origin + (Vector3)direction * 0.5f;
+            GameObject instance = Instantiate(projectilePrefab, spawnAt, Quaternion.identity);
             Projectile projectile = instance.GetComponent<Projectile>();
             if (projectile != null)
             {

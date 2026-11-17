@@ -29,7 +29,7 @@ namespace MadnessDreams
             spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = CreateCircleSprite();
             spriteRenderer.color = flashColor;
-            spriteRenderer.sortingOrder = 200000;
+            spriteRenderer.sortingOrder = 32000;
             targetDiameter = Mathf.Max(0.2f, radius * 2f);
             transform.localScale = new Vector3(0.05f, 0.05f, 1f);
         }
