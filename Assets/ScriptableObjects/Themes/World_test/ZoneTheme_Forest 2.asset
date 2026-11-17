@@ -148,6 +148,12 @@ MonoBehaviour:
     weight: 1
   - prop: {fileID: 11400000, guid: 2aa72f7ae48abbc4dbe5512ee068da39, type: 2}
     weight: 1
+  - prop: {fileID: 11400000, guid: 3799688eb71a0094abdd90380ae7b055, type: 2}
+    weight: 3
+  - prop: {fileID: 11400000, guid: 39543bfd9233a73418d15b7152b2625c, type: 2}
+    weight: 3
+  - prop: {fileID: 11400000, guid: 265de397688ced34cafe3d8b4339371c, type: 2}
+    weight: 3
   enemiesMin: 1
   enemiesMax: 3
   propsMin: 3
