@@ -183,5 +183,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d682f5cdad27e4d81b1b71935c7e41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.YSortOrder
-  baseOrder: 101000
+  baseOrder: 31000
   includeChildren: 1

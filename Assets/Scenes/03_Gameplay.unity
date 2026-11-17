@@ -1082,6 +1082,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.RoomContentSpawner
   mapGenerator: {fileID: 1372381221}
   spawner: {fileID: 824076614}
+  propMaxSize: 3
+  propEdgeMargin: 2
 --- !u!1 &1585152216
 GameObject:
   m_ObjectHideFlags: 0
