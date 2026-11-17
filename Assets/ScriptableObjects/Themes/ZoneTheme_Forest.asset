@@ -208,7 +208,7 @@ MonoBehaviour:
     weight: 2
   enemiesMin: 1
   enemiesMax: 3
-  propsMin: 4
-  propsMax: 8
-  barriersMin: 1
-  barriersMax: 3
+  propsMin: 8
+  propsMax: 16
+  barriersMin: 2
+  barriersMax: 5

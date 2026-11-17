@@ -3,21 +3,18 @@ using UnityEngine;
 namespace MadnessDreams
 {
     /// <summary>
-    /// Identificación visual greybox de un enemigo: un borde del color del arquetipo (hijo, fuera del
-    /// Animator) y una etiqueta flotante con su nombre. Se oculta al morir.
+    /// Identificación visual de un enemigo: una etiqueta flotante con su nombre. Se oculta al morir.
     /// </summary>
     [DisallowMultipleComponent]
     public class EnemyIdentity : MonoBehaviour
     {
-        private static Sprite whiteSprite;
         private static Font labelFont;
 
         private SpriteRenderer body;
-        private SpriteRenderer badge;
         private TextMesh label;
         private TextMesh labelShadow;
 
-        /// <summary>Aplica el nombre y el color del arquetipo, creando los elementos visuales si faltan.</summary>
+        /// <summary>Aplica el nombre del arquetipo, creando la etiqueta si falta.</summary>
         public void Apply(EnemyStatsSO stats)
         {
             if (stats == null)
@@ -25,14 +22,13 @@ namespace MadnessDreams
                 return;
             }
 
-            EnsureBadge(stats.IdentityColor);
+            body = GetComponent<SpriteRenderer>();
             EnsureLabel(stats.DisplayName, stats.IdentityColor);
         }
 
-        /// <summary>Muestra u oculta el borde y la etiqueta (se oculta al morir).</summary>
+        /// <summary>Muestra u oculta la etiqueta (se oculta al morir).</summary>
         public void SetVisible(bool visible)
         {
-            if (badge != null) badge.enabled = visible;
             if (label != null) label.gameObject.SetActive(visible);
             if (labelShadow != null) labelShadow.gameObject.SetActive(visible);
         }
@@ -41,28 +37,6 @@ namespace MadnessDreams
         {
             var bodySort = GetComponent<YSortOrder>();
             return bodySort != null ? bodySort.BaseOrder : 0;
-        }
-
-        private void EnsureBadge(Color color)
-        {
-            if (badge == null)
-            {
-                body = GetComponent<SpriteRenderer>();
-
-                GameObject go = new GameObject("IdentityBadge");
-                go.transform.SetParent(transform, false);
-                go.transform.localPosition = Vector3.zero;
-                go.transform.localScale = new Vector3(1.45f, 1.45f, 1f);
-
-                badge = go.AddComponent<SpriteRenderer>();
-                badge.sprite = GetWhiteSprite();
-                badge.sortingLayerID = body != null ? body.sortingLayerID : 0;
-
-                var badgeSort = go.AddComponent<YSortOrder>();
-                badgeSort.SetBaseOrder(BodyBaseOrder() - 1);
-            }
-
-            badge.color = color;
         }
 
         private void EnsureLabel(string text, Color color)
@@ -106,20 +80,6 @@ namespace MadnessDreams
             labelSort.SetBaseOrder(BodyBaseOrder() + orderOffset);
 
             return mesh;
-        }
-
-        private static Sprite GetWhiteSprite()
-        {
-            if (whiteSprite != null) return whiteSprite;
-
-            Texture2D texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
-            texture.SetPixel(0, 0, Color.white);
-            texture.Apply();
-            texture.hideFlags = HideFlags.HideAndDontSave;
-
-            whiteSprite = Sprite.Create(texture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
-            whiteSprite.hideFlags = HideFlags.HideAndDontSave;
-            return whiteSprite;
         }
 
         private static Font GetFont()
