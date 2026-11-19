@@ -4852,7 +4852,6 @@ GameObject:
   - component: {fileID: 5489332497279493493}
   - component: {fileID: 2730356117602366723}
   - component: {fileID: 4581652280582737509}
-  - component: {fileID: 2286140765032590691}
   - component: {fileID: 6501257052462071451}
   - component: {fileID: 8958526097058193931}
   - component: {fileID: 6664231474420168605}
@@ -4861,6 +4860,7 @@ GameObject:
   - component: {fileID: 4928834064072710313}
   - component: {fileID: 2842288700867289714}
   - component: {fileID: 7421323536507985065}
+  - component: {fileID: 7481415615392433029}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -5057,42 +5057,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efa4be2287b84ce45bfb42459eff7383, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.PlayerDeathHandler
---- !u!58 &2286140765032590691
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2519860285677557331}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.1}
-  m_Radius: 0.32
 --- !u!95 &6501257052462071451
 Animator:
   serializedVersion: 7
@@ -5236,6 +5200,43 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.YSortOrder
   baseOrder: 30000
   includeChildren: 0
+--- !u!70 &7481415615392433029
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2519860285677557331}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.000650545, y: -0.022514343}
+  m_Size: {x: 0.19215462, y: 0.37897867}
+  m_Direction: 0
 --- !u!1 &2855265012472593398
 GameObject:
   m_ObjectHideFlags: 0
