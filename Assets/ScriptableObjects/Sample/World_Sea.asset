@@ -48,7 +48,7 @@ MonoBehaviour:
   bossPrefab: {fileID: 5166569382037719708, guid: c84865c60e31652478865c30714950c3, type: 3}
   boss: {fileID: 11400000, guid: 5752e32b26b9b284a828e81cd1ab6df7, type: 2}
   rewardAbility: {fileID: 11400000, guid: 5adeea99a96b60146b356c7ed997a410, type: 2}
-  startCell: {x: 0, y: 0}
+  startCell: {x: -1, y: -1}
   bossCell: {x: 13, y: 13}
   merchantCell: {x: 1, y: 0}
   merchantPrefab: {fileID: 5277286200323792214, guid: 5dd38f4ed50e2a94b9989086c444f0e0, type: 3}
