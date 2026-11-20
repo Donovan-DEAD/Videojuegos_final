@@ -11,3 +11,8 @@
 - When fitting art/sprite assets to an existing entity, prefers resizing the asset to match the hitbox (not the hitbox to the asset), and preserving the asset's aspect ratio so it doesn't look compressed or stretched. Confidence: 0.6
 - Prefers deriving asset/character metadata (e.g. character names) from folder structure and file names rather than invoking vision models ("No need to use vision models"). Confidence: 0.7
 - When applying source art to a UI Image or SpriteRenderer, prefers keeping the artwork untinted — sets the component's color to white so the original art isn't darkened or recolored. Confidence: 0.5
+- Prefers shadow/phantom copies of a character (e.g. a boss's shadow clone) to be rendered as a darkened version of that character's own sprite rather than a generic placeholder shape, while keeping the dark tint and the original hitbox/collider. Confidence: 0.6
+- Prefers visual effects (particles, auras) to be small and subtle rather than large or flashy — explicitly asked for "small" particles and to keep the aura "small". Confidence: 0.6
+- When changing a specific visual property (e.g. swapping a UI title's font), prefers unrelated properties (e.g. color) to be preserved untouched — explicitly asked to "preserve the color". Confidence: 0.6
+- Prefers display titles/text in title case (e.g. "Madness Dreams") rather than all caps, asking to keep that format going forward. Confidence: 0.6
+- Works in a team Unity project and cares that newly added assets (including Unity `.meta` files) are committed to the repo so teammates can load them without broken references. Confidence: 0.5
