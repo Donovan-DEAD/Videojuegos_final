@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "context7": {
+      "transport": "http",
+      "enabled": true,
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "figma": {
+      "transport": "http",
+      "enabled": true,
+      "url": "https://mcp.figma.com/mcp"
+    }
+  }
+}
