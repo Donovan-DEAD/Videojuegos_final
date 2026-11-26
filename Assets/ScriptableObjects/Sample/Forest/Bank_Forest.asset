@@ -19,7 +19,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 813150dd11b0ccf49a564bde8e7a8d66, type: 2}
   - {fileID: 11400000, guid: 73a25ab12c0f662458c75de12a0db22a, type: 2}
   - {fileID: 11400000, guid: 7eb39dcf1868d22409b4c0dedd6f2444, type: 2}
-  - {fileID: 11400000, guid: 54ebae77d11519548ab6670ac1142c90, type: 2}
+  - {fileID: 11400000, guid: f63558202f2be494f9211e6696d9bdc1, type: 2}
+  - {fileID: 11400000, guid: 5c454fa09a1c61d429fb06ccfef35e35, type: 2}
+  - {fileID: 11400000, guid: d802a7d314d392d42aeb084cb4938ecc, type: 2}
   startRoom: {fileID: 11400000, guid: bc52ede67481b3f49bd699289b9fb0d4, type: 2}
   bossArena: {fileID: 11400000, guid: 4b41caa6a8088b7489cc4cf3b124e9cf, type: 2}
   merchantRoom: {fileID: 11400000, guid: 826f878c25b278644a50d8ffe2f9ae68, type: 2}

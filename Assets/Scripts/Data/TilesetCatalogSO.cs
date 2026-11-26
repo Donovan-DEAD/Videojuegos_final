@@ -150,7 +150,7 @@ namespace MadnessDreams
                 for (int i = 0; i < terrainLayers.Count; i++)
                 {
                     TerrainTileLayer layer = terrainLayers[i];
-                    if (layer != null && layer.tiles != null && layer.tiles.Contains(tile))
+                    if (layer != null && ContainsTileOrSprite(layer.tiles, tile))
                     {
                         return layer.type;
                     }
@@ -166,7 +166,87 @@ namespace MadnessDreams
         /// </summary>
         public bool IsWall(TileBase tile)
         {
-            return tile != null && wallTiles != null && wallTiles.Contains(tile);
+            return ContainsTileOrSprite(wallTiles, tile);
+        }
+
+        /// <summary>
+        /// Resuelve tiles capturados directamente del atlas al tile canónico del catálogo.
+        /// Los tiles del atlas suelen tener colisión Sprite por defecto, mientras que el catálogo
+        /// configura el piso sin colisión y los muros con colisión de grilla.
+        /// </summary>
+        public TileBase ResolveTile(TileBase tile)
+        {
+            if (tile == null)
+            {
+                return null;
+            }
+
+            TileBase resolved = FindMatchingTile(wallTiles, tile);
+            if (resolved != null)
+            {
+                return resolved;
+            }
+
+            resolved = FindMatchingTile(floorTiles, tile);
+            if (resolved != null)
+            {
+                return resolved;
+            }
+
+            if (terrainLayers != null)
+            {
+                for (int i = 0; i < terrainLayers.Count; i++)
+                {
+                    TerrainTileLayer layer = terrainLayers[i];
+                    resolved = layer != null ? FindMatchingTile(layer.tiles, tile) : null;
+                    if (resolved != null)
+                    {
+                        return resolved;
+                    }
+                }
+            }
+
+            return tile;
+        }
+
+        private static bool ContainsTileOrSprite(List<TileBase> tiles, TileBase tile)
+        {
+            return FindMatchingTile(tiles, tile) != null;
+        }
+
+        private static TileBase FindMatchingTile(List<TileBase> tiles, TileBase tile)
+        {
+            if (tiles == null || tile == null)
+            {
+                return null;
+            }
+
+            if (tiles.Contains(tile))
+            {
+                return tile;
+            }
+
+            Sprite sourceSprite = GetSprite(tile);
+            if (sourceSprite == null)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                TileBase candidate = tiles[i];
+                if (candidate != null && GetSprite(candidate) == sourceSprite)
+                {
+                    return candidate;
+                }
+            }
+
+            return null;
+        }
+
+        private static Sprite GetSprite(TileBase tile)
+        {
+            return tile is Tile spriteTile ? spriteTile.sprite : null;
         }
 
         private static T Pick<T>(List<T> list, System.Random rng) where T : class

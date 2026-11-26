@@ -9,7 +9,7 @@ namespace MadnessDreams
     public static class TilemapStamper
     {
         /// <summary>Copia en bloque los tiles de un MapChunkSO en el Tilemap, sin rotación, desde la celda de origen.</summary>
-        public static void Stamp(Tilemap tilemap, MapChunkSO chunk, Vector3Int origin)
+        public static void Stamp(Tilemap tilemap, MapChunkSO chunk, Vector3Int origin, TilesetCatalogSO catalog = null)
         {
             if (tilemap == null || chunk == null)
             {
@@ -21,6 +21,17 @@ namespace MadnessDreams
             if (flat == null || flat.Length == 0 || size.x <= 0 || size.y <= 0)
             {
                 return;
+            }
+
+            if (catalog != null)
+            {
+                var resolved = new TileBase[flat.Length];
+                for (int i = 0; i < flat.Length; i++)
+                {
+                    resolved[i] = catalog.ResolveTile(flat[i]);
+                }
+
+                flat = resolved;
             }
 
             BoundsInt area = new BoundsInt(origin.x, origin.y, origin.z, size.x, size.y, 1);
@@ -52,9 +63,15 @@ namespace MadnessDreams
         /// con muro las celdas del footprint que el chunk no cubre, de modo que un chunk más corto que su
         /// footprint no deje una costura abierta.
         /// </summary>
-        public static void StampFootprint(Tilemap tilemap, MapChunkSO chunk, Vector3Int origin, Vector2Int footprint, TileBase wall)
+        public static void StampFootprint(
+            Tilemap tilemap,
+            MapChunkSO chunk,
+            Vector3Int origin,
+            Vector2Int footprint,
+            TileBase wall,
+            TilesetCatalogSO catalog = null)
         {
-            Stamp(tilemap, chunk, origin);
+            Stamp(tilemap, chunk, origin, catalog);
 
             if (tilemap == null || footprint.x <= 0 || footprint.y <= 0)
             {

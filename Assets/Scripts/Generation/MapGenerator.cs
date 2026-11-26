@@ -253,7 +253,7 @@ namespace MadnessDreams
                 Debug.LogError($"MapGenerator: chunk '{room.chunk.name}' size {room.chunk.Size} != footprint {footprint}; padding with walls.", room.chunk);
             }
 
-            TilemapStamper.StampFootprint(targetTilemap, room.chunk, ChunkToCell(room.originCell), footprint, wall);
+            TilemapStamper.StampFootprint(targetTilemap, room.chunk, ChunkToCell(room.originCell), footprint, wall, catalog);
         }
 
         /// <summary>

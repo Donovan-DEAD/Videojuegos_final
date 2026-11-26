@@ -37,7 +37,7 @@ MonoBehaviour:
   - tag: 5
     theme: {fileID: 11400000, guid: c4b655eef16157a45960fe1e93dd2b6a, type: 2}
     weight: 1
-  tileset: {fileID: 11400000, guid: 0e82b0b60c3491f4692705aebd27bcdf, type: 2}
+  tileset: {fileID: 11400000, guid: 4c2c1975453ef7e4bb63902e8ef0e49e, type: 2}
   difficulty: {fileID: 11400000, guid: a979387f7821c7d409e467ee5ee29fd8, type: 2}
   enemyPool:
   - {fileID: 11400000, guid: fe72eb45dc5965c4a9eb45197d97c251, type: 2}
@@ -55,7 +55,7 @@ MonoBehaviour:
   specialCell: {x: 7, y: 7}
   minibossPrefab: {fileID: 2435454979752136544, guid: c531b42d7c1784c40af4f5ac1789d88e, type: 3}
   minibossRewardAbility: {fileID: 11400000, guid: edb4799c45027ec449e88d4adc404ab0, type: 2}
-  minibossRoomTint: {r: 0.55, g: 0.2, b: 0.75, a: 0.35}
+  minibossRoomTint: {r: 0.5707547, g: 0.93604565, b: 1, a: 0.35}
   bossIntro: {fileID: 11400000, guid: edc97baee62d38a4588e3d36f48e413c, type: 2}
   minibossIntro: {fileID: 11400000, guid: aff2b8e0c0166e047a9d68fe9d40d85f, type: 2}
   bossOutro: {fileID: 11400000, guid: 4ad918401beb41f4482886925f2146c5, type: 2}
