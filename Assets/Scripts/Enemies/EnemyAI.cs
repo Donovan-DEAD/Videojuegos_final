@@ -44,6 +44,7 @@ namespace MadnessDreams
         [SerializeField] private float deathLingerTime = 2f;
         [SerializeField] private int fragmentsPerKill = 1;
         [SerializeField] private GameObject fragmentPickupPrefab;
+        [SerializeField] private bool showIdentityLabel;
 
         /// <summary>Estado actual de la FSM.</summary>
         public EnemyState State { get; private set; } = EnemyState.Patrol;
@@ -85,11 +86,7 @@ namespace MadnessDreams
 
             homePosition = transform.position;
 
-            identity = GetComponent<EnemyIdentity>();
-            if (identity == null)
-            {
-                identity = gameObject.AddComponent<EnemyIdentity>();
-            }
+            identity = showIdentityLabel ? GetComponent<EnemyIdentity>() : null;
 
             ApplyStats();
         }

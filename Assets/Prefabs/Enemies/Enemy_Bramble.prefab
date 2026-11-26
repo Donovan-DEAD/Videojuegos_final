@@ -92,7 +92,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 8e3597ee28e6a9d47b78f873cf42b9a4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 629a76c00e32e79279162f18a5a80d7d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -269,6 +269,7 @@ MonoBehaviour:
   deathLingerTime: 2
   fragmentsPerKill: 1
   fragmentPickupPrefab: {fileID: 7373975785493461432, guid: d9d788b860672ec49acbc78e97bcf87a, type: 3}
+  showIdentityLabel: 0
 --- !u!114 &1044204920742270420
 MonoBehaviour:
   m_ObjectHideFlags: 0
