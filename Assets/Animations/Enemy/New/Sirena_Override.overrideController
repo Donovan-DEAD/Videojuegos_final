@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Sirena_Override
+  m_Controller: {fileID: 9100000, guid: 2153b91813c29b345bd401cd27b6b69f, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 46face4c84049fb45a71d5a2919ed260, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 8cb33dfef7a02fdb5991ad2cb4a79ac9, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 05541b30c12e7e84494ef3e664e79925, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: d415c5bf7a83068b58b5484c4992707c, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: a92de703d2d41f6479ad39e4252946e9, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: c0565b3291845d444b4a26d34d084a92, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 24c9929c2b503794d83ebb0483f79f92, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: c0565b3291845d444b4a26d34d084a92, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: dcddb5a43862b864cb938732340437a9, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: c0565b3291845d444b4a26d34d084a92, type: 2}
