@@ -389,7 +389,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 72
+    m_MaxSize: 180
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -511,7 +511,7 @@ MonoBehaviour:
     m_DisabledColor: {r: 0.62, g: 0.62, b: 0.68, a: 0.6}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
-    m_SpriteState:
+  m_SpriteState:
     m_HighlightedSprite: {fileID: 21300000, guid: 06ca83be2c184bb2ad41701216869f34, type: 3}
     m_PressedSprite: {fileID: 21300000, guid: a8a2891a8f784d7c83025606f1065e8a, type: 3}
     m_SelectedSprite: {fileID: 21300000, guid: 1680a6b337d64669944faf1319f239b9, type: 3}
@@ -727,7 +727,7 @@ MonoBehaviour:
     m_DisabledColor: {r: 0.62, g: 0.62, b: 0.68, a: 0.6}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
-    m_SpriteState:
+  m_SpriteState:
     m_HighlightedSprite: {fileID: 21300000, guid: 06ca83be2c184bb2ad41701216869f34, type: 3}
     m_PressedSprite: {fileID: 21300000, guid: a8a2891a8f784d7c83025606f1065e8a, type: 3}
     m_SelectedSprite: {fileID: 21300000, guid: 1680a6b337d64669944faf1319f239b9, type: 3}
@@ -1022,7 +1022,7 @@ MonoBehaviour:
     m_DisabledColor: {r: 0.62, g: 0.62, b: 0.68, a: 0.6}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
-    m_SpriteState:
+  m_SpriteState:
     m_HighlightedSprite: {fileID: 21300000, guid: 06ca83be2c184bb2ad41701216869f34, type: 3}
     m_PressedSprite: {fileID: 21300000, guid: a8a2891a8f784d7c83025606f1065e8a, type: 3}
     m_SelectedSprite: {fileID: 21300000, guid: 1680a6b337d64669944faf1319f239b9, type: 3}
@@ -1240,6 +1240,57 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1465001483
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1465001485}
+  - component: {fileID: 1465001484}
+  m_Layer: 0
+  m_Name: MusicManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1465001484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1465001483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff27aa6c618abe261b25cb748b6363be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MadnessDreams.MusicManager
+  mainMenu: {fileID: 8300000, guid: be51b10582d6d7d6b9d0c973faa55f31, type: 3}
+  forestWorld: {fileID: 8300000, guid: fc7f43fcf861ba2bfb1443756a68a09c, type: 3}
+  forestBoss: {fileID: 8300000, guid: f73b7cb1cbaf732ce9bc223f2ddfe49e, type: 3}
+  seaWorld: {fileID: 8300000, guid: eb765f5a8d3a73469a54b0b66fee1051, type: 3}
+  seaBoss: {fileID: 8300000, guid: 771a9cb9b0b8b5d1ea9a87acca2b1e37, type: 3}
+  musicVolume: 0.45
+  fadeDuration: 0.9
+--- !u!4 &1465001485
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1465001483}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1506111335
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1443,7 +1494,7 @@ MonoBehaviour:
     m_DisabledColor: {r: 0.62, g: 0.62, b: 0.68, a: 0.6}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
-    m_SpriteState:
+  m_SpriteState:
     m_HighlightedSprite: {fileID: 21300000, guid: 06ca83be2c184bb2ad41701216869f34, type: 3}
     m_PressedSprite: {fileID: 21300000, guid: a8a2891a8f784d7c83025606f1065e8a, type: 3}
     m_SelectedSprite: {fileID: 21300000, guid: 1680a6b337d64669944faf1319f239b9, type: 3}
@@ -1695,3 +1746,4 @@ SceneRoots:
   - {fileID: 495983841}
   - {fileID: 1826834584}
   - {fileID: 1506111335}
+  - {fileID: 1465001485}
