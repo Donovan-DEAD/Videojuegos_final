@@ -13,7 +13,6 @@ namespace MadnessDreams
         [SerializeField] private Image[] slotFrames;
         [SerializeField] private Color readyColor = Color.white;
         [SerializeField] private Color lockedColor = new Color(0.12f, 0.12f, 0.18f, 1f);
-        [SerializeField] private Color lockedKeyColor = new Color(1f, 1f, 1f, 0.35f);
         [SerializeField] private Color basicFrameColor = new Color(0.25f, 0.55f, 0.95f, 1f);
         [SerializeField] private Color specialFrameColor = new Color(0.85f, 0.65f, 0.20f, 1f);
         [SerializeField] private Color emptyFrameColor = new Color(0.08f, 0.08f, 0.12f, 1f);
@@ -81,7 +80,10 @@ namespace MadnessDreams
                 else slotFrames[index].color = category == AbilityCategory.Special ? specialFrameColor : basicFrameColor;
             }
 
-            if (slotKeys != null && index < slotKeys.Length && slotKeys[index] != null) slotKeys[index].color = (hasAbility && !locked) ? Color.black : lockedKeyColor;
+            if (slotKeys != null && index < slotKeys.Length && slotKeys[index] != null)
+            {
+                slotKeys[index].transform.parent.gameObject.SetActive(KeyLabelsToggle.Visible && hasAbility && !locked);
+            }
         }
     }
 }
